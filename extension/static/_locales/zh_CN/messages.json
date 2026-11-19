@@ -1,0 +1,6 @@
+{
+  "extName": { "message": "Veil — iCloud 隐藏邮件地址" },
+  "extShortName": { "message": "Veil" },
+  "extDescription": { "message": "在任意浏览器中创建和管理 iCloud+ 隐藏邮件地址。注册表单自动填充，右键菜单，模糊搜索。" },
+  "actionTitle": { "message": "Veil — 隐藏邮件地址" }
+}

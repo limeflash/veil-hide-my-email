@@ -1,7 +1,8 @@
 //! Messages exchanged between the extension's contexts.
 //!
 //! * [`Request`]: content script / popup → background (`runtime.sendMessage`),
-//!   answered with a [`Reply`] through `sendResponse`.
+//!   answered with a [`Reply`] through `sendResponse`. Content scripts may
+//!   only send [`Request::is_allowed_from_content_script`] requests.
 //! * [`TabMessage`]: background / popup → content script (`tabs.sendMessage`).
 //!
 //! The content script is plain JavaScript, so these shapes are the contract:
@@ -18,17 +19,19 @@ pub enum Request {
         #[serde(default)]
         deauth_on_failure: bool,
     },
-    /// Propose a fresh address (not reserved yet).
-    Generate,
-    /// Reserve a proposed address under a label.
-    Reserve {
-        hme: String,
-        label: String,
-        #[serde(default)]
-        note: Option<String>,
-    },
+    /// Generate and reserve an address for the page that sent the message.
+    /// The background derives the label from the sender's tab URL, never
+    /// from the message, so a page can't choose it.
+    CreateForSite,
     /// Sign out of iCloud on this browser.
     SignOut,
+}
+
+impl Request {
+    /// What a content script (running inside arbitrary web pages) may ask.
+    pub fn is_allowed_from_content_script(&self) -> bool {
+        matches!(self, Request::SyncAuth { .. } | Request::CreateForSite)
+    }
 }
 
 /// Answer to a [`Request`]. Unused fields are omitted from the JSON.
@@ -122,20 +125,13 @@ mod tests {
 
     #[test]
     fn request_wire_format() {
-        let r: Request = serde_json::from_value(json!({"type": "generate"})).unwrap();
-        assert_eq!(r, Request::Generate);
-        let r: Request = serde_json::from_value(
-            json!({"type": "reserve", "hme": "a@icloud.com", "label": "x.com"}),
-        )
-        .unwrap();
-        assert_eq!(
-            r,
-            Request::Reserve {
-                hme: "a@icloud.com".into(),
-                label: "x.com".into(),
-                note: None
-            }
-        );
+        let r: Request = serde_json::from_value(json!({"type": "createForSite"})).unwrap();
+        assert_eq!(r, Request::CreateForSite);
+        assert!(r.is_allowed_from_content_script());
+        let r: Request = serde_json::from_value(json!({"type": "signOut"})).unwrap();
+        assert!(!r.is_allowed_from_content_script());
+        // Removed requests are rejected rather than silently accepted.
+        assert!(serde_json::from_value::<Request>(json!({"type": "reserve", "hme": "a", "label": "b"})).is_err());
         let r: Request =
             serde_json::from_value(json!({"type": "syncAuth", "deauthOnFailure": true})).unwrap();
         assert_eq!(

@@ -3,7 +3,7 @@
 use crate::icons::{Icon, I};
 use crate::widgets::{rich, Toasts};
 use crate::{ctx, tr, ToastKind};
-use hme_core::i18n::T;
+use hme_core::i18n::{Lang, T};
 use hme_core::model::{ClientState, LanguagePref, Options, Theme};
 use hme_core::protocol::{Reply, Request};
 use hme_web::client::Hme;
@@ -26,8 +26,12 @@ enum Forward {
 pub fn OptionsPage() -> impl IntoView {
     let session = RwSignal::new(None::<ClientState>);
     let forward = RwSignal::new(Forward::Loading);
+    let home = RwSignal::new("https://www.icloud.com/");
+    provide_context(home);
+    let c = ctx();
 
     spawn_local(async move {
+        home.set(hme_web::icloud_home().await);
         let req = Request::SyncAuth {
             deauth_on_failure: false,
         };
@@ -42,7 +46,7 @@ pub fn OptionsPage() -> impl IntoView {
                 emails: list.forward_to_emails,
                 current: list.selected_forward_to,
             }),
-            Err(e) => forward.set(Forward::Failed(hme_web::describe_error(&e, ctx().lang_now()))),
+            Err(e) => forward.set(Forward::Failed(hme_web::describe_error(&e, c.lang_now()))),
         }
     });
 
@@ -114,6 +118,7 @@ fn Section(id: &'static str, title: T, #[prop(optional)] desc: Option<T>, childr
 #[component]
 fn ForwardSection(session: RwSignal<Option<ClientState>>, forward: RwSignal<Forward>) -> impl IntoView {
     let c = ctx();
+    let home = expect_context::<RwSignal<&'static str>>();
     let selected = RwSignal::new(String::new());
     let saving = RwSignal::new(false);
     let saved = RwSignal::new(false);
@@ -176,7 +181,7 @@ fn ForwardSection(session: RwSignal<Option<ClientState>>, forward: RwSignal<Forw
                     <span class="v-empty__icon"><Icon icon=I::Lock class="v-icon--xl"/></span>
                     <h3 class="v-empty__title">{tr(T::SignInTitle)}</h3>
                     <p class="v-empty__text">{tr(T::FwdSignedOut)}</p>
-                    <a class="v-btn v-btn--primary v-empty__action" href="https://www.icloud.com/" target="_blank" rel="noreferrer">
+                    <a class="v-btn v-btn--primary v-empty__action" href=move || home.get() target="_blank" rel="noreferrer">
                         {tr(T::OpenICloud)}<Icon icon=I::External/>
                     </a>
                 </div>
@@ -360,20 +365,42 @@ fn AppearanceSection() -> impl IntoView {
                         <span class="v-setting__title" id="opt-lang">{tr(T::Language)}</span>
                         <span class="v-setting__desc">{tr(T::LanguageDesc)}</span>
                     </span>
-                    {segmented(
-                        "lang",
-                        "opt-lang",
-                        vec![
-                            (LanguagePref::Auto, T::LangAuto, None),
-                            (LanguagePref::Ru, T::LangRu, None),
-                            (LanguagePref::En, T::LangEn, None),
-                        ],
-                        |o| o.language,
-                        |o, v| o.language = v,
-                    )}
+                    <LanguageSelect/>
                 </div>
             </div>
         </Section>
+    }
+}
+
+/// Auto + every language, each shown in its own script.
+#[component]
+fn LanguageSelect() -> impl IntoView {
+    let c = ctx();
+    let current = move || match c.options.get().language.lang() {
+        None => "auto".to_string(),
+        Some(l) => l.tag().to_string(),
+    };
+    view! {
+        <select
+            class="v-select"
+            aria-labelledby="opt-lang"
+            prop:value=current
+            on:change=move |ev| {
+                let v = event_target_value(&ev);
+                let pref = Lang::ALL
+                    .into_iter()
+                    .find(|l| l.tag() == v)
+                    .map(LanguagePref::from_lang)
+                    .unwrap_or(LanguagePref::Auto);
+                save_options(|o| o.language = pref);
+            }
+        >
+            <option value="auto">{tr(T::LangAuto)}</option>
+            {Lang::ALL
+                .into_iter()
+                .map(|l| view! { <option value=l.tag() lang=l.tag()>{l.native_name()}</option> })
+                .collect_view()}
+        </select>
     }
 }
 

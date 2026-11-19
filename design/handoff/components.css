@@ -115,7 +115,7 @@
   padding: var(--spacing-2) var(--spacing-3) var(--spacing-2) var(--spacing-4);
   border-bottom: var(--border-width) solid var(--color-border);
 }
-.v-popup__header--nav { padding-left: var(--spacing-2); }  /* drill-in views: back button first */
+.v-popup__header--nav { padding-inline-start: var(--spacing-2); }  /* drill-in views: back button first */
 .v-popup__body {
   flex: 1; min-height: 0;
   display: flex; flex-direction: column; gap: var(--spacing-3);
@@ -569,13 +569,14 @@
   transition: background-color var(--duration-fast) var(--ease-standard);
 }
 .v-toggle::after {
-  content: ""; position: absolute; top: 4px; left: 4px;
+  content: ""; position: absolute; top: 4px; inset-inline-start: 4px;
   width: 16px; height: 16px; border-radius: var(--radius-full);
   background: var(--color-background-surface); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
   transition: transform var(--duration-fast) var(--ease-standard);   /* transform only: 16 -> 20 is a scale */
 }
 .v-toggle:checked { background-color: var(--color-accent); }
 .v-toggle:checked::after { transform: translateX(16px) scale(1.25); }
+[dir="rtl"] .v-toggle:checked::after { transform: translateX(-16px) scale(1.25); }
 @media (hover: hover) {
   .v-toggle:hover:not(:disabled) { background-color: color-mix(in srgb, var(--color-background-gray), var(--color-tint-hover) 5%); }
   .v-toggle:checked:hover:not(:disabled) { background-color: color-mix(in srgb, var(--color-accent) 86%, var(--color-background-body)); }
@@ -722,7 +723,7 @@ label.v-setting { cursor: pointer; }
 .v-tip strong { color: var(--color-text-primary); font-weight: var(--font-weight-medium); }
 .v-tip__icon { width: 16px; height: 20px; flex: none; display: grid; place-items: center; color: var(--color-icon-secondary); }
 /* --warn / --danger stay in the markup contract; meaning is carried by the bold words, icons keep the text role */
-.v-tip .v-badge { vertical-align: 1px; margin-right: var(--spacing-1); }
+.v-tip .v-badge { vertical-align: 1px; margin-inline-end: var(--spacing-1); }
 
 /* -------------------------------------------------------------- Banner -- */
 /* Astryx Banner: pale status fill, no border, container radius; icon in the
@@ -746,7 +747,7 @@ label.v-setting { cursor: pointer; }
   color: var(--color-text-secondary); overflow-wrap: anywhere;
 }
 .v-alert__title { display: block; font-size: var(--text-label-size); line-height: var(--text-label-leading); font-weight: var(--font-weight-medium); color: var(--color-text-primary); }
-.v-alert__action { flex: none; margin-left: auto; align-self: center; }
+.v-alert__action { flex: none; margin-inline-start: auto; align-self: center; }
 .v-alert--info { background: var(--color-info-muted); color: var(--color-on-info-muted); }
 .v-alert--warning { background: var(--color-warning-muted); color: var(--color-on-warning-muted); }
 .v-alert--error { background: var(--color-error-muted); color: var(--color-on-error-muted); }
@@ -765,7 +766,7 @@ label.v-setting { cursor: pointer; }
   display: flex; flex-direction: column; align-items: center; gap: var(--spacing-2);
   pointer-events: none;
 }
-.v-toast-region--page { position: fixed; left: auto; right: var(--spacing-4); bottom: var(--spacing-4); width: 400px; max-width: calc(100% - 2 * var(--spacing-4)); align-items: flex-end; }
+.v-toast-region--page { position: fixed; inset-inline-start: auto; inset-inline-end: var(--spacing-4); bottom: var(--spacing-4); width: 400px; max-width: calc(100% - 2 * var(--spacing-4)); align-items: flex-end; }
 .v-toast {
   display: flex; align-items: flex-start; gap: var(--spacing-3);
   width: 100%; max-width: 400px;
@@ -877,7 +878,7 @@ label.v-setting { cursor: pointer; }
   .v-hero { padding-top: var(--spacing-8); }
   .v-hero__title { font-size: var(--text-display-3-size); line-height: var(--text-display-3-leading); }
   .v-step { flex-wrap: wrap; }
-  .v-step__action { margin-left: calc(20px + var(--spacing-3)); }
+  .v-step__action { margin-inline-start: calc(20px + var(--spacing-3)); }
   .v-setting--wrap { flex-direction: column; align-items: flex-start; gap: var(--spacing-2); }
 }
 
@@ -887,6 +888,14 @@ label.v-setting { cursor: pointer; }
 @keyframes v-fade-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes v-view-in { from { opacity: 0; transform: translateX(8px); } to { opacity: 1; transform: none; } }
 @keyframes v-view-back { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: none; } }
+/* Right-to-left (Arabic, Persian): mirror motion and directional icons;
+   keep addresses and other Latin identifiers in their own LTR runs. */
+@keyframes v-view-in-rtl { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: none; } }
+@keyframes v-view-back-rtl { from { opacity: 0; transform: translateX(8px); } to { opacity: 1; transform: none; } }
+[dir="rtl"] .v-view { animation-name: v-view-in-rtl; }
+[dir="rtl"] .v-view--back { animation-name: v-view-back-rtl; }
+[dir="rtl"] .v-icon--dir { transform: scaleX(-1); }
+.v-address, .v-list-item__sub, .v-mono, .v-kv__val, .v-radio__label { unicode-bidi: isolate; }
 @keyframes v-toast-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
 @keyframes v-toast-out { to { opacity: 0; transform: translateY(12px); } }
 @keyframes v-sheet-in { from { transform: translateY(100%); } to { transform: none; } }
@@ -910,4 +919,13 @@ label.v-setting { cursor: pointer; }
   .v-skeleton,
   .v-address-card[aria-busy="true"] .v-address { animation: none !important; }
   .v-check-draw { animation: none; stroke-dashoffset: 0; }
+}
+
+/* Arabic and Persian are cursive: tracking breaks letter joining. */
+[dir="rtl"] :not(.v-address):not(.v-address *) { letter-spacing: normal !important; }
+/* Monospace fonts have no proper Arabic/Persian shaping: in RTL only the
+   addresses themselves stay monospace. */
+[dir="rtl"] { --font-family-code: var(--font-family-body); }
+[dir="rtl"] :is(.v-address, .v-list-item__sub, .v-mono) {
+  font-family: ui-monospace, "SF Mono", SFMono-Regular, "Cascadia Code", "Segoe UI Mono", "Roboto Mono", Menlo, Consolas, monospace;
 }

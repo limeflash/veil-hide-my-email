@@ -4,7 +4,16 @@
 //! web service, so the structs can be deserialized straight from responses
 //! and stored as-is in `storage.local`.
 
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize};
+
+/// `#[serde(default)]` only covers missing fields; iCloud also sends `null`.
+fn null_default<'de, D, T>(d: D) -> Result<T, D::Error>
+where
+    D: Deserializer<'de>,
+    T: Default + Deserialize<'de>,
+{
+    Ok(Option::<T>::deserialize(d)?.unwrap_or_default())
+}
 
 /// One Hide My Email address as returned by `/v2/hme/list` and `/v1/hme/reserve`.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -12,22 +21,22 @@ use serde::{Deserialize, Serialize};
 pub struct HmeEmail {
     pub anonymous_id: String,
     pub hme: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_default")]
     pub origin: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_default")]
     pub domain: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_default")]
     pub forward_to_email: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_default")]
     pub is_active: bool,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_default")]
     pub label: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_default")]
     pub note: String,
     /// Milliseconds since the Unix epoch.
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_default")]
     pub create_timestamp: f64,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_default")]
     pub recipient_mail_id: String,
 }
 
@@ -35,11 +44,11 @@ pub struct HmeEmail {
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct HmeList {
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_default")]
     pub hme_emails: Vec<HmeEmail>,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_default")]
     pub selected_forward_to: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_default")]
     pub forward_to_emails: Vec<String>,
 }
 
@@ -59,9 +68,9 @@ impl HmeList {
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Account {
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_default")]
     pub full_name: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "null_default")]
     pub apple_id: String,
 }
 
@@ -132,8 +141,52 @@ impl Theme {
 pub enum LanguagePref {
     #[default]
     Auto,
-    Ru,
     En,
+    Ru,
+    Es,
+    De,
+    Fr,
+    Tr,
+    Ar,
+    Fa,
+    Zh,
+    Ja,
+}
+
+impl LanguagePref {
+    /// The fixed language, or `None` for "follow the browser".
+    pub fn lang(self) -> Option<crate::i18n::Lang> {
+        use crate::i18n::Lang;
+        Some(match self {
+            LanguagePref::Auto => return None,
+            LanguagePref::En => Lang::En,
+            LanguagePref::Ru => Lang::Ru,
+            LanguagePref::Es => Lang::Es,
+            LanguagePref::De => Lang::De,
+            LanguagePref::Fr => Lang::Fr,
+            LanguagePref::Tr => Lang::Tr,
+            LanguagePref::Ar => Lang::Ar,
+            LanguagePref::Fa => Lang::Fa,
+            LanguagePref::Zh => Lang::Zh,
+            LanguagePref::Ja => Lang::Ja,
+        })
+    }
+
+    pub fn from_lang(lang: crate::i18n::Lang) -> Self {
+        use crate::i18n::Lang;
+        match lang {
+            Lang::En => LanguagePref::En,
+            Lang::Ru => LanguagePref::Ru,
+            Lang::Es => LanguagePref::Es,
+            Lang::De => LanguagePref::De,
+            Lang::Fr => LanguagePref::Fr,
+            Lang::Tr => LanguagePref::Tr,
+            Lang::Ar => LanguagePref::Ar,
+            Lang::Fa => LanguagePref::Fa,
+            Lang::Zh => LanguagePref::Zh,
+            Lang::Ja => LanguagePref::Ja,
+        }
+    }
 }
 
 /// User settings, stored under [`crate::storage_keys::OPTIONS`].
@@ -170,6 +223,18 @@ mod tests {
         assert_eq!(e.anonymous_id, "abc123");
         assert!(e.is_active);
         assert_eq!(e.create_timestamp, 1_700_000_000_000.0);
+    }
+
+    #[test]
+    fn nulls_are_tolerated() {
+        let e: HmeEmail = serde_json::from_str(
+            r#"{"anonymousId":"a","hme":"x@icloud.com","note":null,"label":null,"isActive":null,"createTimestamp":null}"#,
+        )
+        .unwrap();
+        assert_eq!(e.note, "");
+        assert!(!e.is_active);
+        let a: Account = serde_json::from_str(r#"{"fullName":null}"#).unwrap();
+        assert_eq!(a.full_name, "");
     }
 
     #[test]

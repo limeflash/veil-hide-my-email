@@ -1,0 +1,14 @@
+{
+  "extName": {
+    "message": "Veil — إخفاء إيميلي لـ iCloud"
+  },
+  "extShortName": {
+    "message": "Veil"
+  },
+  "extDescription": {
+    "message": "أنشئ عناوين \"إخفاء إيميلي\" من iCloud+ وأدرها في أي متصفح. تعبئة تلقائية في نماذج التسجيل، وقائمة النقر الأيمن، وبحث تقريبي."
+  },
+  "actionTitle": {
+    "message": "Veil — إخفاء إيميلي"
+  }
+}

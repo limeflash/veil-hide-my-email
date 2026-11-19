@@ -104,7 +104,8 @@ const menus = () => api.contextMenus ?? api.menus;
 export async function menuRecreate(id, title, enabled, visible) {
   await menus().removeAll();
   await new Promise((resolve) => {
-    menus().create({ id, title, enabled, visible, contexts: ['editable'] }, () => {
+    const documentUrlPatterns = ['http://*/*', 'https://*/*'];
+    menus().create({ id, title, enabled, visible, contexts: ['editable'], documentUrlPatterns }, () => {
       void api.runtime.lastError;
       resolve();
     });
@@ -124,7 +125,8 @@ export async function menuUpdate(id, title, enabled, visible) {
 
 export async function notify(title, message) {
   try {
-    await api.notifications.create({
+    // A fixed id replaces an earlier notification instead of stacking.
+    await api.notifications.create('veil', {
       type: 'basic',
       title,
       message,

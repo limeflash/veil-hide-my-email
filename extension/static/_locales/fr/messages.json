@@ -1,0 +1,14 @@
+{
+  "extName": {
+    "message": "Veil — Masquer mon adresse e-mail pour iCloud"
+  },
+  "extShortName": {
+    "message": "Veil"
+  },
+  "extDescription": {
+    "message": "Créez et gérez vos adresses iCloud+ Masquer mon adresse e-mail dans tout navigateur. Remplissage auto et menu contextuel."
+  },
+  "actionTitle": {
+    "message": "Veil — Masquer mon adresse e-mail"
+  }
+}

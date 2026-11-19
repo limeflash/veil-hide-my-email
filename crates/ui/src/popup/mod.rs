@@ -5,7 +5,7 @@ mod manage;
 
 use crate::icons::{Icon, I};
 use crate::widgets::{rich, templ, Toasts};
-use crate::{ctx, tr};
+use crate::{ctx, tr, Ctx};
 use hme_core::api::ApiError;
 use hme_core::i18n::T;
 use hme_core::model::{ClientState, HmeEmail};
@@ -43,8 +43,18 @@ pub struct PopupCtx {
     pub list: RwSignal<ListState>,
     /// `anonymousId` of the address open in the details view.
     pub selected: RwSignal<Option<String>>,
-    /// Proposed address restored from the session cache.
+    /// The proposed (not yet reserved) address shown on the Generate screen.
     pub candidate: RwSignal<Option<String>>,
+    /// What the user typed on the Generate screen.
+    pub draft_label: RwSignal<String>,
+    pub draft_note: RwSignal<String>,
+    /// iCloud.com or iCloud.com.cn, for "Open iCloud" links.
+    pub home: RwSignal<&'static str>,
+    /// When the last auth-triggered re-sync ran (ms), to avoid loops.
+    last_resync: StoredValue<f64>,
+    /// Captured at mount: async tasks run without a reactive owner, so they
+    /// can't call `ctx()` themselves.
+    pub c: Ctx,
 }
 
 /// What the popup keeps in `storage.session` between openings. Tagged with
@@ -62,9 +72,10 @@ struct CandidateCache {
     hme: String,
 }
 
+/// Cache owner. Caches are cleared on every sign-out, so the service URLs
+/// are enough to tell sessions apart (the Apple ID isn't persisted).
 fn owner_of(state: &ClientState) -> String {
-    let id = state.account.as_ref().map(|a| a.apple_id.as_str()).unwrap_or_default();
-    format!("{}|{id}", state.pms_url)
+    format!("{}|{}", state.setup_url, state.pms_url)
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -127,8 +138,18 @@ impl PopupCtx {
             let Ok(reply) = ext::send_message::<_, Reply>(&req).await else { return };
             match reply.client_state.filter(|_| reply.authenticated == Some(true)) {
                 Some(state) => {
-                    if self.session.get_untracked().as_ref() != Some(&state) {
-                        self.session.set(Some(state));
+                    let current = self.session.get_untracked();
+                    let moved = current
+                        .as_ref()
+                        .is_none_or(|c| c.setup_url != state.setup_url || c.pms_url != state.pms_url);
+                    if moved {
+                        // Another account: drop everything shown for the old one.
+                        self.list.set(ListState::Loading);
+                        self.count.set(None);
+                        self.forward_to.set(None);
+                        self.candidate.set(None);
+                        self.session.set(Some(state.clone()));
+                        self.refresh_summary(state);
                     }
                 }
                 // (Offline replies still carry the stored session.)
@@ -171,12 +192,20 @@ impl PopupCtx {
         spawn_local(async move {
             match Hme::new(state).list().await {
                 Ok(list) => {
+                    // A cached proposal that got reserved elsewhere (the
+                    // in-page button, another window) is no longer offered.
+                    if let Some(c) = self.candidate.get_untracked() {
+                        if list.hme_emails.iter().any(|e| e.hme == c) {
+                            self.candidate.set(None);
+                            self.save_candidate(None);
+                        }
+                    }
                     self.count.set(Some(list.hme_emails.len()));
                     self.forward_to.set(Some(list.selected_forward_to));
                     self.list.set(ListState::Ready(list.hme_emails));
                 }
                 Err(e) => {
-                    let lang = ctx().lang_now();
+                    let lang = self.c.lang_now();
                     self.list.set(ListState::Failed(hme_web::describe_error(&e, lang)));
                 }
             }
@@ -209,13 +238,25 @@ impl PopupCtx {
         self.list.with(|l| l.items().iter().find(|e| e.anonymous_id == id).cloned())
     }
 
-    /// Error text for an API failure; an expired session sends the user
-    /// back through the session check.
+    /// Error text for an API failure. An expired session sends the user back
+    /// through the session check, at most once per 30 s: if iCloud keeps
+    /// rejecting a session that /validate accepts, show the error instead of
+    /// looping.
     pub fn error_text(self, e: &ApiError) -> String {
         if e.is_auth() {
-            self.sync();
+            let now = js_sys::Date::now();
+            if now - self.last_resync.get_value() > 30_000.0 {
+                self.last_resync.set_value(now);
+                self.sync();
+            }
         }
-        hme_web::describe_error(e, ctx().lang_now())
+        hme_web::describe_error(e, self.c.lang_now())
+    }
+
+    /// Clears the Generate form for a new address.
+    pub fn reset_draft(self) {
+        self.draft_label.set(self.site.get_untracked().unwrap_or_default());
+        self.draft_note.set(String::new());
     }
 
     pub fn sign_out(self) {
@@ -253,7 +294,8 @@ impl PopupCtx {
             let lang = c.lang_now();
             let filled = match tab {
                 Some(id) => {
-                    let reply = ext::send_to_tab(id, &TabMessage::Autofill { hme }, None).await;
+                    // Top frame only: never hand the address to embedded third-party frames.
+                    let reply = ext::send_to_tab(id, &TabMessage::Autofill { hme }, Some(0)).await;
                     js_sys::Reflect::get(&reply, &"filled".into())
                         .ok()
                         .and_then(|v| v.as_f64())
@@ -284,6 +326,11 @@ pub fn Popup() -> impl IntoView {
         list: RwSignal::new(ListState::Loading),
         selected: RwSignal::new(None),
         candidate: RwSignal::new(None),
+        draft_label: RwSignal::new(String::new()),
+        draft_note: RwSignal::new(String::new()),
+        home: RwSignal::new("https://www.icloud.com/"),
+        last_resync: StoredValue::new(0.0),
+        c: ctx(),
     };
     provide_context(p);
 
@@ -300,6 +347,8 @@ pub fn Popup() -> impl IntoView {
                 .filter(|h| !h.is_empty());
             p.site.set(host.map(|h| urls::label_for_host(&h)));
         }
+        p.reset_draft();
+        p.home.set(hme_web::icloud_home().await);
         match hme_web::load_client_state().await {
             Some(state) => {
                 p.restore_caches(&state).await;
@@ -372,7 +421,7 @@ fn Header() -> impl IntoView {
                         title=tr(T::BackToList)
                         on:click=move |_| p.selected.set(None)
                     >
-                        <Icon icon=I::ChevronLeft/>
+                        <Icon icon=I::ChevronLeft class="v-icon--dir"/>
                     </button>
                     <div class="v-brand">
                         <div class="v-brand__text">
@@ -440,13 +489,7 @@ fn SignedOut() -> impl IntoView {
             </li>
         }
     };
-    let icloud_url = move || {
-        if p.session.get().as_ref().is_some_and(ClientState::is_china) {
-            "https://www.icloud.com.cn/"
-        } else {
-            "https://www.icloud.com/"
-        }
-    };
+    let icloud_url = move || p.home.get();
     view! {
         <main class="v-popup__body v-view">
             <div class="v-intro">

@@ -123,6 +123,7 @@ fn apply_document_settings(options: &Options, lang: Lang) {
         None => html.remove_attribute("data-theme"),
     };
     let _ = html.set_attribute("lang", lang.tag());
+    let _ = html.set_attribute("dir", if lang.is_rtl() { "rtl" } else { "ltr" });
 }
 
 fn provide_ctx(initial: Options) -> Ctx {

@@ -5,14 +5,32 @@
     "action": {
       "type": "modifyHeaders",
       "requestHeaders": [
-        { "header": "Origin", "operation": "set", "value": "https://www.icloud.com" },
-        { "header": "Referer", "operation": "set", "value": "https://www.icloud.com/" }
+        {
+          "header": "Origin",
+          "operation": "set",
+          "value": "https://www.icloud.com"
+        },
+        {
+          "header": "Referer",
+          "operation": "set",
+          "value": "https://www.icloud.com/"
+        }
       ]
     },
     "condition": {
-      "urlFilter": "|https://*.icloud.com/*",
-      "resourceTypes": ["xmlhttprequest"],
-      "excludedInitiatorDomains": ["apple.com", "icloud.com"]
+      "requestDomains": [
+        "icloud.com"
+      ],
+      "resourceTypes": [
+        "xmlhttprequest"
+      ],
+      "excludedInitiatorDomains": [
+        "apple.com",
+        "icloud.com"
+      ],
+      "excludedRequestDomains": [
+        "icloud.com.cn"
+      ]
     }
   },
   {
@@ -21,14 +39,29 @@
     "action": {
       "type": "modifyHeaders",
       "requestHeaders": [
-        { "header": "Origin", "operation": "set", "value": "https://www.icloud.com.cn" },
-        { "header": "Referer", "operation": "set", "value": "https://www.icloud.com.cn/" }
+        {
+          "header": "Origin",
+          "operation": "set",
+          "value": "https://www.icloud.com.cn"
+        },
+        {
+          "header": "Referer",
+          "operation": "set",
+          "value": "https://www.icloud.com.cn/"
+        }
       ]
     },
     "condition": {
-      "urlFilter": "|https://*.icloud.com.cn/*",
-      "resourceTypes": ["xmlhttprequest"],
-      "excludedInitiatorDomains": ["apple.com.cn", "icloud.com.cn"]
+      "requestDomains": [
+        "icloud.com.cn"
+      ],
+      "resourceTypes": [
+        "xmlhttprequest"
+      ],
+      "excludedInitiatorDomains": [
+        "apple.com.cn",
+        "icloud.com.cn"
+      ]
     }
   }
 ]

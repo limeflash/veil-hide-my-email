@@ -1,0 +1,14 @@
+{
+  "extName": {
+    "message": "Veil — iCloud için E-postamı Gizle"
+  },
+  "extShortName": {
+    "message": "Veil"
+  },
+  "extDescription": {
+    "message": "iCloud+ E-postamı Gizle adreslerini her tarayıcıda oluştur ve yönet. Formlarda otomatik doldurma, sağ tık menüsü, bulanık arama."
+  },
+  "actionTitle": {
+    "message": "Veil — E-postamı Gizle"
+  }
+}

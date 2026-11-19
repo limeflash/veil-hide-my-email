@@ -48,8 +48,12 @@ async fn sync_auth(setup_url: Option<String>, opts: SyncOpts) -> SyncResult {
 
     match &result {
         Ok(state) => {
+            hme_web::remember_setup_url(&state.setup_url).await;
             let previous = hme_web::load_client_state().await;
-            if previous.as_ref() != Some(state) {
+            let same = previous
+                .as_ref()
+                .is_some_and(|p| p.setup_url == state.setup_url && p.pms_url == state.pms_url);
+            if !same {
                 let _ = hme_web::save_client_state(Some(state)).await;
             }
             refresh_menu().await;
@@ -58,9 +62,9 @@ async fn sync_auth(setup_url: Option<String>, opts: SyncOpts) -> SyncResult {
                 ext::notify(T::NotifyReadyTitle.get(l), T::NotifyReadyBody.get(l)).await;
             }
         }
-        // Offline is not "signed out": keep the session we have.
-        Err(ApiError::Network(_)) => {}
-        Err(_) if opts.deauth_on_failure => deauth().await,
+        // Only a definite answer signs out; offline, 5xx or an odd response
+        // keep the session we have.
+        Err(e) if opts.deauth_on_failure && (e.is_auth() || *e == ApiError::NoHmeService) => deauth().await,
         Err(_) => {}
     }
     result
@@ -142,15 +146,32 @@ where
     }
 }
 
-async fn handle(req: Request) -> Reply {
+/// Who sent a message. Content scripts run inside web pages and are treated
+/// as untrusted; extension pages (popup, options, welcome) are trusted.
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Sender {
+    ExtensionPage,
+    ContentScript,
+}
+
+async fn handle(req: Request, sender: Sender, tab_url: Option<String>) -> Reply {
     let l = lang().await;
+    if sender == Sender::ContentScript && !req.is_allowed_from_content_script() {
+        return Reply::error("not allowed");
+    }
     match req {
         Request::SyncAuth { deauth_on_failure } => {
             let opts = SyncOpts {
                 notify: true,
-                deauth_on_failure,
+                // Pages must not be able to drop the stored session.
+                deauth_on_failure: deauth_on_failure && sender == Sender::ExtensionPage,
             };
-            match sync_auth(None, opts).await {
+            // From an icloud.com(.cn) page: check that region first.
+            let region = tab_url
+                .as_deref()
+                .filter(|u| urls::hostname(u).is_some_and(|h| urls::is_icloud_host(&h)))
+                .map(|u| urls::setup_url_for_page(u).to_owned());
+            let reply = match sync_auth(region, opts).await {
                 Ok(state) => Reply::auth(Some(state)),
                 Err(ApiError::Network(_)) => Reply {
                     error: Some(T::ErrNetwork.get(l).to_owned()),
@@ -161,20 +182,27 @@ async fn handle(req: Request) -> Reply {
                     ..Reply::auth(None)
                 },
                 Err(_) => Reply::auth(None),
+            };
+            match sender {
+                ExtensionPage => reply,
+                // Content scripts learn only whether a session exists.
+                Sender::ContentScript => Reply {
+                    client_state: None,
+                    error: None,
+                    ..reply
+                },
             }
         }
-        Request::Generate => match with_session(|h| async move { h.generate().await }).await {
-            Ok(hme) => Reply::hme(hme),
-            Err(f) => f.reply(l),
-        },
-        Request::Reserve { hme, label, note } => {
-            let result = with_session(|h| {
-                let (hme, label, note) = (hme.clone(), label.clone(), note.clone());
-                async move { h.reserve(&hme, &label, note.as_deref()).await }
-            })
-            .await;
-            match result {
-                Ok(reserved) => Reply::hme(reserved.hme),
+        Request::CreateForSite => {
+            let Some(label) = tab_url
+                .as_deref()
+                .and_then(urls::hostname)
+                .map(|h| urls::label_for_host(&h))
+            else {
+                return Reply::error(T::ErrGeneric.get(l));
+            };
+            match create_and_reserve(label).await {
+                Ok(hme) => Reply::hme(hme),
                 Err(f) => f.reply(l),
             }
         }
@@ -188,28 +216,43 @@ async fn handle(req: Request) -> Reply {
     }
 }
 
+use Sender::ExtensionPage;
+
+/// Generates a fresh address and reserves it under `label`.
+async fn create_and_reserve(label: String) -> Result<String, Failure> {
+    with_session(|h| {
+        let label = label.clone();
+        async move {
+            let hme = h.generate().await?;
+            h.reserve(&hme, &label, None).await.map(|r| r.hme)
+        }
+    })
+    .await
+}
+
 // ---------------------------------------------------------------------------
 // Exports called from background.js
 
-/// `runtime.onMessage` (from the popup and content scripts).
+/// `runtime.onMessage`. `from_extension_page` is decided in background.js
+/// from `sender.url`; `tab_url` is the sender tab's top-level URL.
 #[wasm_bindgen]
-pub async fn on_message(message: JsValue) -> JsValue {
+pub async fn on_message(message: JsValue, from_extension_page: bool, tab_url: Option<String>) -> JsValue {
+    let sender = if from_extension_page { Sender::ExtensionPage } else { Sender::ContentScript };
     let reply = match ext::from_js::<Request>(message) {
-        Ok(req) => handle(req).await,
-        Err(e) => Reply::error(format!("bad message: {e}")),
+        Ok(req) => handle(req, sender, tab_url).await,
+        Err(_) => Reply::error("bad message"),
     };
     ext::to_js(&reply)
 }
 
-/// Runs every time the worker / event page starts.
+/// Runs every time the worker / event page starts. No network here: the
+/// worker restarts often, and install/startup/icloud.com events already
+/// cover session checks.
 #[wasm_bindgen]
 pub async fn boot() {
     // Chromium persists context menus across restarts; Firefox doesn't.
     if ext::is_firefox() {
         setup_menu().await;
-    }
-    if hme_web::load_client_state().await.is_none() {
-        let _ = sync_auth(None, SyncOpts { notify: true, ..Default::default() }).await;
     }
 }
 
@@ -253,26 +296,32 @@ pub async fn on_menu_click(menu_item_id: String, page_url: Option<String>, tab_i
     let Some(tab_id) = tab_id else { return };
     let l = lang().await;
     let send = |phase: Phase, text: Option<String>, copy: bool| async move {
-        ext::send_to_tab(tab_id, &TabMessage::ContextFill { phase, text, copy }, frame_id).await;
+        ext::send_to_tab(tab_id, &TabMessage::ContextFill { phase, text, copy }, frame_id).await
     };
-    send(Phase::Loading, None, false).await;
+    // Only reserve if a content script is there to receive the address
+    // (tabs opened before install/update have none).
+    let ack = send(Phase::Loading, None, false).await;
+    let acked = js_sys::Reflect::get(&ack, &"ok".into())
+        .ok()
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
+    if !acked {
+        ext::notify(T::AppName.get(l), T::ErrReloadPage.get(l)).await;
+        return;
+    }
 
     let label = page_url
         .as_deref()
         .and_then(urls::hostname)
         .map(|h| urls::label_for_host(&h))
         .unwrap_or_default();
-    let result = with_session(|h| {
-        let label = label.clone();
-        async move {
-            let hme = h.generate().await?;
-            h.reserve(&hme, &label, None).await.map(|r| r.hme)
+    match create_and_reserve(label).await {
+        Ok(hme) => {
+            send(Phase::Done, Some(hme), true).await;
         }
-    })
-    .await;
-    match result {
-        Ok(hme) => send(Phase::Done, Some(hme), true).await,
-        Err(f) => send(Phase::Error, f.reply(l).error, false).await,
+        Err(f) => {
+            send(Phase::Error, f.reply(l).error, false).await;
+        }
     }
 }
 
@@ -288,23 +337,21 @@ pub async fn on_auth_response(url: String, status: u16, from_extension: bool) {
     let _ = sync_auth(setup, SyncOpts { notify: true, ..Default::default() }).await;
 }
 
-/// `webRequest.onResponseStarted` for `/logout`: the user signed out on icloud.com.
+/// `webRequest.onResponseStarted` for `/logout`: the user probably signed
+/// out on icloud.com. Re-check instead of trusting it, since any page can
+/// make the browser request that URL.
 #[wasm_bindgen]
 pub async fn on_logout_response(status: u16) {
     if (200..300).contains(&status) {
-        deauth().await;
+        let _ = sync_auth(
+            None,
+            SyncOpts {
+                notify: false,
+                deauth_on_failure: true,
+            },
+        )
+        .await;
     }
-}
-
-/// `tabs.onUpdated` with `status: complete`.
-#[wasm_bindgen]
-pub async fn on_tab_complete(url: String) {
-    let Some(host) = urls::hostname(&url) else { return };
-    if !urls::is_icloud_host(&host) {
-        return;
-    }
-    let setup = urls::setup_url_for_page(&url).to_owned();
-    let _ = sync_auth(Some(setup), SyncOpts { notify: true, ..Default::default() }).await;
 }
 
 /// Localized strings for the in-page button, so the content script doesn't
@@ -315,11 +362,11 @@ pub async fn inpage_strings() -> JsValue {
     let pairs = [
         ("clickToFill", T::InpageClickToFill),
         ("generating", T::InpageGenerating),
-        ("reserving", T::InpageReserving),
         ("filled", T::InpageFilled),
         ("signedOut", T::ErrSignedOut),
         ("appName", T::AppName),
     ];
-    let map: std::collections::BTreeMap<&str, &str> = pairs.iter().map(|(k, t)| (*k, t.get(l))).collect();
+    let mut map: std::collections::BTreeMap<&str, &str> = pairs.iter().map(|(k, t)| (*k, t.get(l))).collect();
+    map.insert("dir", if l.is_rtl() { "rtl" } else { "ltr" });
     ext::to_js(&map)
 }

@@ -1,9 +1,14 @@
 // Veil content script: the in-field button and the right-click fill.
 //
-// Plain JS on purpose — it runs on every page, so it stays tiny and never
-// loads WASM there. All decisions about iCloud (sessions, generating,
-// reserving) happen in the Rust background worker; this file only finds email
-// fields, draws the button inside a closed Shadow DOM and fills values in.
+// Plain JS on purpose: it runs on every page, so it stays tiny and never
+// loads WASM there. All iCloud logic (sessions, generating, reserving) is in
+// the Rust background worker; this file finds email fields, draws the button
+// in a closed Shadow DOM inside the top layer, and writes values.
+//
+// Security model: pages can focus fields, restyle our host element and stack
+// things around it. So nothing touches the network until a real, left-button
+// click on a button that has been visibly on screen for a moment, and the
+// address only enters the page DOM once it has been filled in.
 (() => {
   'use strict';
 
@@ -16,22 +21,55 @@
 
   const BUTTON = 28;
   const INSET = 6;
-  const SUCCESS_MS = 900;
+  const SUCCESS_MS = 1200;
   const ERROR_MS = 3500;
+  const DWELL_MS = 500; // the button must sit still this long before a click counts
 
-  // ---------------------------------------------------------------- helpers
+  // ---- DOM access that page markup can't clobber (<form name="activeElement">…)
+  const D = Document.prototype;
+  const doc = document;
+  const getter = (proto, name) => Object.getOwnPropertyDescriptor(proto, name).get;
+  const activeOf = getter(D, 'activeElement');
+  const rootOf = getter(D, 'documentElement');
+  const qsa = (sel) => D.querySelectorAll.call(doc, sel);
+  const make = (tag) => D.createElement.call(doc, tag);
+  const makeNS = (ns, tag) => D.createElementNS.call(doc, ns, tag);
+  const hasPopover = typeof HTMLElement.prototype.showPopover === 'function';
 
-  const send = (message) =>
-    api.runtime.sendMessage(message).catch((e) => ({ ok: false, error: String(e?.message ?? e) }));
+  // The button only appears in the top frame or same-origin frames; any
+  // frame can still use the right-click menu (that click is the browser's).
+  const buttonFrame = (() => {
+    try {
+      return window.top === window || window.top.location.origin === location.origin;
+    } catch {
+      return false;
+    }
+  })();
+
+  let alive = true;
+  const isAlive = () => alive && !!api.runtime?.id;
+
+  const send = async (message) => {
+    if (!isAlive()) {
+      teardown();
+      return { ok: false };
+    }
+    try {
+      return await api.runtime.sendMessage(message);
+    } catch (e) {
+      if (!api.runtime?.id) teardown(); // extension updated or removed
+      return { ok: false, error: String(e?.message ?? e) };
+    }
+  };
 
   let strings = null;
   const FALLBACK_STRINGS = {
-    clickToFill: 'Click to fill',
+    clickToFill: 'Create and fill a hidden address',
     generating: 'Creating a hidden address…',
-    reserving: 'Saving the address…',
     filled: 'Done — address filled',
     signedOut: 'Sign in to iCloud first',
     appName: 'Veil',
+    dir: 'ltr',
   };
   const loadStrings = async () => {
     if (!strings) {
@@ -42,7 +80,7 @@
   };
 
   const deepActiveElement = () => {
-    let el = document.activeElement;
+    let el = activeOf.call(doc);
     while (el?.shadowRoot?.activeElement) el = el.shadowRoot.activeElement;
     return el;
   };
@@ -65,7 +103,7 @@
       .map((a) => el.getAttribute(a) || '')
       .join(' ')
       .toLowerCase();
-    return /e-?mail|почт/.test(hints);
+    return /e-?mail|почт|correo|courriel|e-?posta|邮箱|メール|ایمیل|بريد/.test(hints);
   };
 
   const isEditable = (el) =>
@@ -77,42 +115,46 @@
     // Tiny or hidden fields are usually honeypots.
     if (r.width < 30 || r.height < 10) return false;
     const cs = getComputedStyle(el);
-    return cs.display !== 'none' && cs.visibility !== 'hidden' && cs.opacity !== '0';
+    return cs.display !== 'none' && cs.visibility !== 'hidden' && Number(cs.opacity) >= 0.5;
   };
 
-  /** Writes a value so that React/Vue/Angular forms notice it. */
-  const fill = (el, value) => {
-    if (!el) return false;
-    el.focus({ preventScroll: true });
-    if (el.isContentEditable) {
-      document.execCommand('selectAll', false);
-      document.execCommand('insertText', false, value);
-      return true;
-    }
+  const setNativeValue = (el, value) => {
     const proto = el.tagName === 'TEXTAREA' ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype;
     const setter = Object.getOwnPropertyDescriptor(proto, 'value')?.set;
     if (setter) setter.call(el, value);
     else el.value = value;
+  };
+
+  const notify = (el) => {
     el.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
     el.dispatchEvent(new Event('change', { bubbles: true }));
+  };
+
+  /**
+   * Writes `value` so React/Vue/Angular forms notice it. Single-line inputs
+   * get the whole value; textareas and rich editors get it at the caret, so
+   * existing text is kept. Focus is never stolen from where the user is.
+   */
+  const fill = (el, value) => {
+    if (!el?.isConnected) return false;
+    if (el.isContentEditable) {
+      el.focus({ preventScroll: true });
+      document.execCommand('insertText', false, value);
+      return true;
+    }
+    if (el.tagName === 'TEXTAREA') {
+      const start = el.selectionStart ?? el.value.length;
+      const end = el.selectionEnd ?? start;
+      el.setRangeText(value, start, end, 'end');
+      notify(el);
+      return true;
+    }
+    setNativeValue(el, value);
+    notify(el);
     return true;
   };
 
   const copy = (text) => navigator.clipboard?.writeText(text).catch(() => {});
-
-  /** Label stored with the address: the top-level site, without "www.". */
-  const siteLabel = () => {
-    let host = location.hostname;
-    try {
-      if (window.top !== window) {
-        const origins = location.ancestorOrigins;
-        if (origins?.length) host = new URL(origins[origins.length - 1]).hostname;
-      }
-    } catch {
-      /* cross-origin parent: keep our own host */
-    }
-    return host.replace(/^www\./, '');
-  };
 
   /** Luminance of the field's effective background, to pick the button scheme. */
   const schemeFor = (el) => {
@@ -131,12 +173,12 @@
 
   const SVG_NS = 'http://www.w3.org/2000/svg';
   const svgIcon = (modifier, shapes) => {
-    const svg = document.createElementNS(SVG_NS, 'svg');
+    const svg = makeNS(SVG_NS, 'svg');
     svg.setAttribute('viewBox', '0 0 24 24');
     svg.setAttribute('aria-hidden', 'true');
     svg.setAttribute('class', `veil-icon veil-icon--${modifier}`);
     for (const [tag, attrs] of shapes) {
-      const node = document.createElementNS(SVG_NS, tag);
+      const node = makeNS(SVG_NS, tag);
       for (const [k, v] of Object.entries(attrs)) node.setAttribute(k, v);
       svg.appendChild(node);
     }
@@ -148,23 +190,40 @@
       ['path', { d: 'M5 5h14a3 3 0 0 1 2.6 1.5L12 13.2 2.4 6.5A3 3 0 0 1 5 5z' }],
       ['path', { d: 'M2 9.3l8.9 6.2a1.9 1.9 0 0 0 2.2 0L22 9.3V16a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3z' }],
     ],
-    check: [['path', { d: 'M5 12.5l4.5 4.5L19 7.5' }]],
+    check: [['path', { d: 'M20 6 9 17l-5-5' }]],
     alert: [['path', { d: 'M12 7v6M12 17h.01' }]],
   };
 
   const el = (tag, cls, text) => {
-    const n = document.createElement(tag);
+    const n = make(tag);
     if (cls) n.className = cls;
     if (text) n.textContent = text;
     return n;
   };
 
+  /** Inline !important styles for the host; re-applied every frame. */
+  const hostStyle = (top, left, shown) =>
+    [
+      'all:initial', 'position:fixed', 'z-index:2147483647', 'display:block',
+      `top:${top}px`, `left:${left}px`, 'right:auto', 'bottom:auto',
+      `width:${BUTTON}px`, `height:${BUTTON}px`, 'margin:0', 'padding:0', 'border:0',
+      'background:transparent', 'overflow:visible', 'opacity:1', 'transform:none',
+      'filter:none', 'clip-path:none', 'mask:none', 'pointer-events:auto',
+      `visibility:${shown ? 'visible' : 'hidden'}`, 'color-scheme:normal',
+    ]
+      .map((d) => `${d} !important`)
+      .join(';');
+
   class Widget {
     constructor(target) {
       this.target = target;
-      this.host = document.createElement('div');
-      this.host.style.cssText =
-        `all:initial;position:fixed;z-index:2147483647;top:0;left:0;width:${BUTTON}px;height:${BUTTON}px;display:block;`;
+      this.busy = false;
+      this.stableSince = performance.now();
+      this.visibleToUser = null; // IntersectionObserver v2 verdict, when available
+      this.pos = { top: -1, left: -1, shown: false };
+
+      this.host = make('div');
+      if (hasPopover) this.host.setAttribute('popover', 'manual');
       const shadow = this.host.attachShadow({ mode: 'closed' });
       try {
         const sheet = new CSSStyleSheet();
@@ -177,7 +236,12 @@
       this.btn = el('button', 'veil-btn');
       this.btn.type = 'button';
       this.btn.setAttribute('aria-describedby', 'veil-tip');
-      this.btn.append(svgIcon('logo', ICONS.logo), svgIcon('check', ICONS.check), svgIcon('alert', ICONS.alert), el('span', 'veil-spinner'));
+      this.btn.append(
+        svgIcon('logo', ICONS.logo),
+        svgIcon('check', ICONS.check),
+        svgIcon('alert', ICONS.alert),
+        el('span', 'veil-spinner'),
+      );
       this.tip = el('span', 'veil-tip');
       this.tip.id = 'veil-tip';
       this.tip.setAttribute('role', 'tooltip');
@@ -186,31 +250,82 @@
 
       const scheme = schemeFor(target);
       if (scheme) this.root.dataset.scheme = scheme;
+      if (strings?.dir === 'rtl') this.root.dir = 'rtl';
 
       // Keep focus in the field while pressing the button.
-      this.btn.addEventListener('mousedown', (e) => {
+      this.btn.addEventListener('pointerdown', (e) => {
         e.preventDefault();
         e.stopPropagation();
-        onPress(this);
+        if (this.canAccept(e)) onPress(this);
       });
+      this.btn.addEventListener('mousedown', (e) => e.preventDefault());
       this.btn.addEventListener('click', (e) => e.preventDefault());
 
-      (document.documentElement || document.body).appendChild(this.host);
+      // Chromium: ask the compositor whether the button is really visible
+      // (not covered, not faded, not transformed by the page).
+      try {
+        this.io = new IntersectionObserver(
+          (entries) => {
+            const last = entries[entries.length - 1];
+            if (typeof last.isVisible === 'boolean') this.visibleToUser = last.isVisible;
+          },
+          { trackVisibility: true, delay: 100 },
+        );
+        this.io.observe(this.btn);
+      } catch {
+        this.io = null;
+      }
+
+      this.mount();
       this.track();
+    }
+
+    mount() {
+      const root = rootOf.call(doc) || doc.body;
+      if (this.host.parentNode !== root) root.appendChild(this.host);
+      if (hasPopover && !this.host.matches(':popover-open')) {
+        try {
+          this.host.showPopover();
+        } catch {
+          /* not connected yet */
+        }
+      }
+    }
+
+    /** Anti-clickjacking checks for a press on the button. */
+    canAccept(e) {
+      if (!e.isTrusted || e.button !== 0) return false;
+      if (performance.now() - this.stableSince < DWELL_MS) return false;
+      if (this.visibleToUser === false) return false;
+      const top = D.elementsFromPoint.call(doc, e.clientX, e.clientY)[0];
+      return top === this.host;
     }
 
     track() {
       const step = () => {
-        if (!this.host.isConnected) return;
-        if (!isVisibleField(this.target)) {
-          this.host.style.setProperty('display', 'none', 'important');
-        } else {
+        if (!this.host) return;
+        if (!this.target.isConnected && !this.busy) {
+          detach();
+          return;
+        }
+        const shown = isVisibleField(this.target);
+        let { top, left } = this.pos;
+        if (shown) {
           const r = this.target.getBoundingClientRect();
-          this.host.style.setProperty('display', 'block', 'important');
-          this.host.style.top = `${Math.round(r.top + (r.height - BUTTON) / 2)}px`;
-          this.host.style.left = `${Math.round(r.right - BUTTON - INSET)}px`;
+          const rtl = getComputedStyle(this.target).direction === 'rtl';
+          top = Math.round(r.top + (r.height - BUTTON) / 2);
+          left = Math.round(rtl ? r.left + INSET : r.right - BUTTON - INSET);
           this.tip.classList.toggle('veil-tip--below', r.top < 64);
         }
+        if (Math.abs(top - this.pos.top) > 2 || Math.abs(left - this.pos.left) > 2 || shown !== this.pos.shown) {
+          this.stableSince = performance.now();
+        }
+        this.pos = { top, left, shown };
+        // Undo anything the page did to the host (styles, parent, popover).
+        const css = hostStyle(top, left, shown);
+        if (this.host.style.cssText !== css) this.host.style.cssText = css;
+        if (!this.host.isConnected || this.host.parentNode !== (rootOf.call(doc) || doc.body)) this.mount();
+        if (hasPopover && !this.host.matches(':popover-open')) this.mount();
         this.frame = requestAnimationFrame(step);
       };
       step();
@@ -225,24 +340,30 @@
       if (title) this.tip.append(el('span', 'veil-tip__title', title));
       if (addr) this.tip.append(el('span', 'veil-tip__addr', addr));
       if (text) this.tip.append(el('span', 'veil-tip__text', text));
-      this.btn.setAttribute('aria-label', [title, addr, text].filter(Boolean).join(' '));
+      this.btn.setAttribute('aria-label', [title, text].filter(Boolean).join(' '));
       this.tip.classList.toggle('is-open', open);
     }
 
     destroy() {
       cancelAnimationFrame(this.frame);
       clearTimeout(this.timer);
+      this.io?.disconnect();
+      try {
+        if (hasPopover) this.host.hidePopover();
+      } catch {
+        /* already hidden */
+      }
       this.host.remove();
+      this.host = null;
     }
   }
 
   // ------------------------------------------------------------------ state
 
   let widget = null;
-  let candidate = null; // generated but not yet reserved, reused across focuses
-  let lastEmailInput = null;
+  let lastEmailInput = null; // last email field the user focused
   let buttonEnabled = true;
-  let request = 0; // guards against stale replies
+  let signedIn = false;
 
   const detach = () => {
     widget?.destroy();
@@ -251,9 +372,15 @@
 
   const attach = (target) => {
     if (widget?.target === target) return widget;
+    if (widget?.busy) return null; // let the running request finish first
     detach();
     widget = new Widget(target);
     return widget;
+  };
+
+  const showIdle = async (w) => {
+    const s = await loadStrings();
+    if (w === widget && !w.busy) w.set('ready', { title: s.clickToFill });
   };
 
   const showError = async (w, reply) => {
@@ -261,118 +388,112 @@
     const message = reply?.signedOut ? s.signedOut : reply?.error || s.signedOut;
     w.set('error', { title: s.appName, text: message, error: true, open: true });
     clearTimeout(w.timer);
-    w.timer = setTimeout(() => w === widget && w.tip.classList.remove('is-open'), ERROR_MS);
-  };
-
-  const generate = async (w) => {
-    const s = await loadStrings();
-    if (candidate) {
-      w.set('ready', { title: s.clickToFill, addr: candidate });
-      return;
-    }
-    const id = ++request;
-    w.set('loading', { title: s.generating });
-    const reply = await send({ type: 'generate' });
-    if (id !== request || w !== widget) return;
-    if (reply?.ok && reply.hme) {
-      candidate = reply.hme;
-      w.set('ready', { title: s.clickToFill, addr: candidate });
-    } else {
-      showError(w, reply);
-    }
-  };
-
-  const reserve = async (w) => {
-    const s = await loadStrings();
-    const hme = candidate;
-    const id = ++request;
-    w.set('reserving', { title: s.reserving, addr: hme, open: true });
-    const reply = await send({ type: 'reserve', hme, label: siteLabel() });
-    if (id !== request || w !== widget) return;
-    if (reply?.ok && reply.hme) {
-      candidate = null;
-      fill(w.target, reply.hme);
-      succeed(w, s, reply.hme);
-    } else {
-      // The proposal may have expired; get a fresh one next time.
-      candidate = null;
-      showError(w, reply);
-    }
+    w.timer = setTimeout(() => {
+      if (w !== widget) return;
+      if (deepActiveElement() === w.target) showIdle(w);
+      else detach();
+    }, ERROR_MS);
   };
 
   const succeed = (w, s, hme) => {
     w.set('success', { title: s.filled, addr: hme, open: true });
+    clearTimeout(w.timer);
     w.timer = setTimeout(() => w === widget && detach(), SUCCESS_MS);
   };
 
-  function onPress(w) {
-    if (w.state === 'ready') reserve(w);
-    else if (w.state === 'error') generate(w);
+  /** One click: the background generates, reserves and returns an address. */
+  async function onPress(w) {
+    if (w.busy || w.state === 'success') return;
+    const s = await loadStrings();
+    w.busy = true;
+    w.set('reserving', { title: s.generating, open: true });
+    const reply = await send({ type: 'createForSite' });
+    w.busy = false;
+    if (reply?.ok && reply.hme) {
+      // Fill the field the press was for, even if focus moved meanwhile.
+      if (!fill(w.target, reply.hme)) copy(reply.hme);
+      if (w === widget) succeed(w, s, reply.hme);
+    } else if (w === widget) {
+      showError(w, reply);
+    }
   }
+
+  const buttonAllowed = () => buttonFrame && buttonEnabled && signedIn && isAlive();
+
+  const maybeAttach = (target) => {
+    if (!isEmailInput(target)) return;
+    lastEmailInput = target;
+    if (buttonAllowed() && isVisibleField(target)) {
+      const w = attach(target);
+      if (w) loadStrings().then(() => showIdle(w));
+    }
+  };
 
   // ------------------------------------------------------------- listeners
 
-  api.storage.local.get('options').then((r) => {
-    buttonEnabled = r?.options?.autofill?.button !== false;
+  const readSettings = (items) => {
+    buttonEnabled = items?.options?.autofill?.button !== false;
+    signedIn = !!items?.clientState;
+    if (!buttonAllowed() && !widget?.busy) detach();
+  };
+  api.storage.local.get(['options', 'clientState']).then((items) => {
+    readSettings(items);
+    // A field that already had focus when the script loaded.
+    const active = deepActiveElement();
+    if (active) maybeAttach(active);
   });
-  api.storage.onChanged.addListener((changes, area) => {
-    if (area === 'local' && changes.options) {
-      buttonEnabled = changes.options.newValue?.autofill?.button !== false;
-      if (!buttonEnabled) detach();
-    }
-  });
+  const onStorage = (changes, area) => {
+    if (area !== 'local' || !(changes.options || changes.clientState)) return;
+    api.storage.local.get(['options', 'clientState']).then(readSettings);
+  };
+  api.storage.onChanged.addListener(onStorage);
 
-  window.addEventListener(
-    'focusin',
-    (e) => {
-      const target = e.composedPath?.()[0] ?? e.target;
-      if (!isEmailInput(target)) return;
-      lastEmailInput = target;
-      if (buttonEnabled && isVisibleField(target)) generate(attach(target));
-    },
-    true,
-  );
+  const onFocusIn = (e) => maybeAttach(e.composedPath?.()[0] ?? e.target);
 
-  window.addEventListener(
-    'focusout',
-    () => {
-      const w = widget;
-      setTimeout(() => {
-        if (w && w === widget && deepActiveElement() !== w.target && w.state !== 'reserving' && w.state !== 'success') {
-          detach();
-        }
-      }, 150);
-    },
-    true,
-  );
+  const onFocusOut = () => {
+    const w = widget;
+    setTimeout(() => {
+      if (w && w === widget && !w.busy && w.state !== 'success' && w.state !== 'error' && deepActiveElement() !== w.target) {
+        detach();
+      }
+    }, 150);
+  };
 
-  window.addEventListener(
-    'keydown',
-    (e) => {
-      if (e.key === 'Escape' && widget) detach();
-    },
-    true,
-  );
+  const onKeyDown = (e) => {
+    if (e.key === 'Escape' && widget && !widget.busy) detach();
+  };
 
-  // From the popup ("Fill on page") and the background (right-click menu).
-  api.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+  window.addEventListener('focusin', onFocusIn, true);
+  window.addEventListener('focusout', onFocusOut, true);
+  window.addEventListener('keydown', onKeyDown, true);
+
+  // From the popup ("Fill on page", sent to the top frame only) and from the
+  // background (right-click menu, sent to the clicked frame).
+  const onMessage = (message, _sender, sendResponse) => {
     if (message?.type === 'autofill') {
-      const targets =
-        lastEmailInput?.isConnected && isVisibleField(lastEmailInput)
-          ? [lastEmailInput]
-          : [...document.querySelectorAll('input')].filter((i) => isEmailInput(i) && isVisibleField(i));
-      if (targets.length === 0) return false; // let a frame that has a field answer
-      targets.forEach((t) => fill(t, message.hme));
-      if (widget && targets.includes(widget.target)) detach();
-      sendResponse({ filled: targets.length });
+      // Exactly one field: the one the user last focused, or the only email
+      // field on the page. Never every matching input.
+      let target = lastEmailInput?.isConnected && isVisibleField(lastEmailInput) ? lastEmailInput : null;
+      if (!target) {
+        const fields = [...qsa('input')].filter((i) => isEmailInput(i) && isVisibleField(i));
+        if (fields.length === 1) target = fields[0];
+      }
+      if (!target) return false; // no answer → the popup says "no field"
+      fill(target, message.hme);
+      if (widget?.target === target && !widget.busy) detach();
+      sendResponse({ filled: 1 });
       return false;
     }
 
     if (message?.type === 'contextFill') {
+      // Acknowledge the start, so the background only reserves an address
+      // when there is a page to put it in.
+      if (message.phase === 'loading') sendResponse({ ok: true });
       handleContextFill(message);
     }
     return false;
-  });
+  };
+  api.runtime.onMessage.addListener(onMessage);
 
   let contextTarget = null;
 
@@ -381,23 +502,43 @@
     if (phase === 'loading') {
       const active = deepActiveElement();
       contextTarget = isEditable(active) ? active : null;
-      if (contextTarget && isVisibleField(contextTarget)) {
-        request++; // cancel any in-field generation
-        attach(contextTarget).set('loading', { title: s.generating, open: true });
+      if (contextTarget && isVisibleField(contextTarget) && !widget?.busy) {
+        const w = attach(contextTarget);
+        if (w) {
+          w.busy = true;
+          w.set('reserving', { title: s.generating, open: true });
+        }
       }
       return;
     }
     const target = contextTarget ?? deepActiveElement();
     contextTarget = null;
+    if (widget && widget.target === target) widget.busy = false;
     if (phase === 'done' && text) {
       if (isEditable(target)) fill(target, text);
       if (shouldCopy) copy(text);
-      if (widget) succeed(widget, s, text);
+      if (widget?.target === target) succeed(widget, s, text);
     } else if (phase === 'error') {
-      const w = widget ?? (isEditable(target) && isVisibleField(target) ? attach(target) : null);
+      const w = widget?.target === target ? widget : isEditable(target) && isVisibleField(target) ? attach(target) : null;
       if (w) showError(w, { error: text });
     }
   };
+
+  /** The extension was updated or removed: drop everything. */
+  function teardown() {
+    if (!alive) return;
+    alive = false;
+    detach();
+    window.removeEventListener('focusin', onFocusIn, true);
+    window.removeEventListener('focusout', onFocusOut, true);
+    window.removeEventListener('keydown', onKeyDown, true);
+    try {
+      api.storage.onChanged.removeListener(onStorage);
+      api.runtime.onMessage.removeListener(onMessage);
+    } catch {
+      /* context already gone */
+    }
+  }
 
   // Tell the background about a fresh icloud.com session.
   if (/(^|\.)icloud\.com(\.cn)?$/.test(location.hostname)) {

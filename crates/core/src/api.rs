@@ -118,7 +118,7 @@ pub struct ValidateInfo {
 pub fn parse_validate(body: &str) -> Result<ValidateInfo, ApiError> {
     #[derive(Deserialize)]
     struct Service {
-        url: String,
+        url: Option<String>,
     }
     #[derive(Deserialize)]
     struct Webservices {
@@ -135,9 +135,13 @@ pub fn parse_validate(body: &str) -> Result<ValidateInfo, ApiError> {
     let pms_url = v
         .webservices
         .and_then(|w| w.premiummailsettings)
-        .map(|s| s.url.trim_end_matches('/').to_owned())
+        .and_then(|s| s.url)
+        .map(|u| u.trim_end_matches('/').to_owned())
         .filter(|u| !u.is_empty())
         .ok_or(ApiError::NoHmeService)?;
+    if !crate::urls::is_icloud_service_url(&pms_url) {
+        return Err(ApiError::Parse(format!("unexpected service host: {pms_url}")));
+    }
     Ok(ValidateInfo {
         pms_url,
         account: v.ds_info,
@@ -317,6 +321,10 @@ mod tests {
             parse_validate(r#"{"webservices":{}}"#),
             Err(ApiError::NoHmeService)
         );
+        assert!(matches!(
+            parse_validate(r#"{"webservices":{"premiummailsettings":{"url":"https://evil.example"}}}"#),
+            Err(ApiError::Parse(_))
+        ));
     }
 
     #[test]

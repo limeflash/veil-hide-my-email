@@ -15,13 +15,13 @@ pub fn Generate() -> impl IntoView {
     let p = pctx();
     let c = ctx();
 
-    let address = RwSignal::new(None::<String>);
+    // The proposal and the typed label/note live in PopupCtx, so they
+    // survive switching to "My addresses" and back.
+    let address = p.candidate;
+    let label = p.draft_label;
+    let note = p.draft_note;
     let generating = RwSignal::new(false);
     let gen_error = RwSignal::new(None::<String>);
-
-    let default_label = move || p.site.get_untracked().unwrap_or_default();
-    let label = RwSignal::new(default_label());
-    let note = RwSignal::new(String::new());
     let label_invalid = RwSignal::new(false);
 
     let reserving = RwSignal::new(false);
@@ -37,21 +37,30 @@ pub fn Generate() -> impl IntoView {
             match client.generate().await {
                 Ok(a) => {
                     p.save_candidate(Some(a.clone()));
-                    address.set(Some(a));
+                    p.candidate.set(Some(a));
                 }
                 Err(e) => gen_error.set(Some(p.error_text(&e))),
             }
             generating.set(false);
         });
     };
-    // Reopening the popup shows the same proposal instead of a new one.
-    match p.candidate.get_untracked() {
-        Some(a) => address.set(Some(a)),
-        None => regenerate(),
-    }
+    // Propose an address whenever there is none: on first open, after
+    // "Create another", or when the cached one turned out to be taken.
+    Effect::new(move |_| {
+        if p.candidate.get().is_none()
+            && reserved.get().is_none()
+            && !generating.get_untracked()
+            && gen_error.get().is_none()
+        {
+            regenerate();
+        }
+    });
 
     let on_submit = move |ev: SubmitEvent| {
         ev.prevent_default();
+        if reserving.get_untracked() || generating.get_untracked() {
+            return;
+        }
         let (Some(client), Some(hme)) = (p.client(), address.get_untracked()) else { return };
         let label_text = label.get_untracked().trim().to_owned();
         if label_text.is_empty() {
@@ -81,11 +90,9 @@ pub fn Generate() -> impl IntoView {
     };
 
     let start_over = move |_| {
-        reserved.set(None);
-        note.set(String::new());
-        label.set(default_label());
+        p.reset_draft();
         label_invalid.set(false);
-        regenerate();
+        reserved.set(None); // the effect above proposes a new address
     };
 
     let address_text = Signal::derive(move || address.get().unwrap_or_default());

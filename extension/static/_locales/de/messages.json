@@ -1,0 +1,14 @@
+{
+  "extName": {
+    "message": "Veil — E-Mail-Adresse verbergen für iCloud"
+  },
+  "extShortName": {
+    "message": "Veil"
+  },
+  "extDescription": {
+    "message": "Erstelle und verwalte iCloud+-Adressen für „E-Mail-Adresse verbergen“ in jedem Browser. Autofill, Rechtsklick-Menü, unscharfe Suche."
+  },
+  "actionTitle": {
+    "message": "Veil — E-Mail-Adresse verbergen"
+  }
+}

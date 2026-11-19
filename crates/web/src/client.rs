@@ -54,16 +54,20 @@ pub async fn validate(setup_url: &str) -> Result<ClientState, ApiError> {
 
 /// Tries the preferred setup URL, then iCloud.com, then iCloud.com.cn.
 pub async fn authenticate_with_cookies(preferred: Option<&str>) -> Result<ClientState, ApiError> {
-    let mut last = ApiError::Http(401);
+    // A definite answer ("not signed in") beats "couldn't reach the other
+    // region", otherwise an unreachable .com.cn would keep a dead session.
+    let mut auth_error: Option<ApiError> = None;
+    let mut other_error: Option<ApiError> = None;
     for url in candidate_setup_urls(preferred) {
         match validate(&url).await {
             Ok(state) => return Ok(state),
             // A valid session without HME won't get better on the other region.
             Err(ApiError::NoHmeService) => return Err(ApiError::NoHmeService),
-            Err(e) => last = e,
+            Err(e) if e.is_auth() => auth_error = auth_error.or(Some(e)),
+            Err(e) => other_error = other_error.or(Some(e)),
         }
     }
-    Err(last)
+    Err(auth_error.or(other_error).unwrap_or(ApiError::Http(401)))
 }
 
 pub async fn sign_out(setup_url: &str) {

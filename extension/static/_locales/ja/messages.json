@@ -1,0 +1,6 @@
+{
+  "extName": { "message": "Veil — iCloudのメールを非公開" },
+  "extShortName": { "message": "Veil" },
+  "extDescription": { "message": "iCloud+の「メールを非公開」アドレスを、どのブラウザでも作成・管理。登録フォームへの自動入力、右クリックメニュー、あいまい検索に対応。" },
+  "actionTitle": { "message": "Veil — メールを非公開" }
+}

@@ -19,6 +19,8 @@ use std::process::Command;
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 const WASM_CRATES: [&str; 2] = ["hme_background", "hme_ui"];
 const ICON_SIZES: [u32; 4] = [16, 32, 48, 128];
+/// Must equal the `wasm-bindgen` crate version pinned in Cargo.toml.
+const WASM_BINDGEN: &str = "0.2.130";
 
 #[derive(Clone, Copy, PartialEq)]
 enum Browser {
@@ -80,15 +82,24 @@ fn build(dev: bool) -> Result<Vec<(Browser, PathBuf)>> {
     let mut cargo = Command::new(env!("CARGO"));
     cargo
         .current_dir(&root)
-        .args(["build", "--target", "wasm32-unknown-unknown", "-p", "hme-background", "-p", "hme-ui"]);
+        .args(["build", "--locked", "--target", "wasm32-unknown-unknown", "-p", "hme-background", "-p", "hme-ui"]);
     if !dev {
         cargo.arg("--release");
     }
     run(&mut cargo)?;
 
     // 2. wasm-bindgen (+ wasm-opt) into a staging dir shared by both browsers
-    if !has_tool("wasm-bindgen") {
-        bail!("wasm-bindgen not found: cargo install wasm-bindgen-cli --version 0.2.130");
+    let bindgen_version = Command::new("wasm-bindgen")
+        .arg("--version")
+        .output()
+        .ok()
+        .map(|o| String::from_utf8_lossy(&o.stdout).trim().to_owned())
+        .unwrap_or_default();
+    if bindgen_version != format!("wasm-bindgen {WASM_BINDGEN}") {
+        bail!(
+            "need wasm-bindgen {WASM_BINDGEN}, found {:?}: cargo install wasm-bindgen-cli --version {WASM_BINDGEN} --locked",
+            bindgen_version
+        );
     }
     let staging = root.join("target/veil-wasm");
     let _ = fs::remove_dir_all(&staging);
@@ -199,12 +210,8 @@ fn manifest(browser: Browser) -> Value {
             "all_frames": true,
             "run_at": "document_idle"
         }],
-        "declarative_net_request": {
-            "rule_resources": [{ "id": "icloud_headers", "enabled": true, "path": "rules.json" }]
-        },
         "permissions": [
-            "declarativeNetRequest", "storage", "tabs", "contextMenus",
-            "webRequest", "notifications", "clipboardWrite"
+            "storage", "activeTab", "contextMenus", "webRequest", "notifications", "clipboardWrite"
         ],
         "host_permissions": ["https://*.icloud.com/*", "https://*.icloud.com.cn/*"],
         "content_security_policy": {
@@ -214,6 +221,13 @@ fn manifest(browser: Browser) -> Value {
     let obj = m.as_object_mut().unwrap();
     match browser {
         Browser::Chrome => {
+            // Chromium only applies these rules to requests whose initiator the
+            // extension has host access to, i.e. its own and iCloud's.
+            obj.insert(
+                "declarative_net_request".into(),
+                json!({ "rule_resources": [{ "id": "icloud_headers", "enabled": true, "path": "rules.json" }] }),
+            );
+            push_permission(obj, "declarativeNetRequest");
             obj.insert(
                 "background".into(),
                 json!({ "service_worker": "background.js", "type": "module" }),
@@ -221,6 +235,11 @@ fn manifest(browser: Browser) -> Value {
             obj.insert("minimum_chrome_version".into(), json!("111"));
         }
         Browser::Firefox => {
+            // Firefox grants content-script match patterns as host permissions,
+            // which would let static DNR rules touch other sites' requests to
+            // iCloud. Headers are set instead by a blocking webRequest listener
+            // in background.js that only handles the extension's own requests.
+            push_permission(obj, "webRequestBlocking");
             obj.insert(
                 "background".into(),
                 json!({ "scripts": ["background.js"], "type": "module" }),
@@ -236,6 +255,12 @@ fn manifest(browser: Browser) -> Value {
         }
     }
     m
+}
+
+fn push_permission(obj: &mut serde_json::Map<String, Value>, permission: &str) {
+    if let Some(Value::Array(list)) = obj.get_mut("permissions") {
+        list.push(json!(permission));
+    }
 }
 
 fn render_icons(svg: &[u8], out: &Path) -> Result<()> {

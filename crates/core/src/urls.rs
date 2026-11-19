@@ -59,6 +59,13 @@ pub fn setup_url_from_auth_request(url: &str) -> Option<String> {
         .then(|| format!("{root}{version}"))
 }
 
+/// True for `https://` URLs on an iCloud host, the only servers Veil may call
+/// with the user's cookies. Guards against tampered storage or responses.
+pub fn is_icloud_service_url(url: &str) -> bool {
+    url.get(..8).is_some_and(|s| s.eq_ignore_ascii_case("https://"))
+        && hostname(url).is_some_and(|h| is_icloud_host(&h))
+}
+
 /// Setup URLs to try, the preferred one first, without duplicates.
 pub fn candidate_setup_urls(preferred: Option<&str>) -> Vec<String> {
     let mut out: Vec<String> = Vec::with_capacity(3);
@@ -109,6 +116,16 @@ mod tests {
         );
         assert_eq!(setup_url_from_auth_request("https://setup.icloud.com/setup/ws/1/logout"), None);
         assert_eq!(setup_url_from_auth_request("https://evil.com/setup/ws/1/validate"), None);
+    }
+
+    #[test]
+    fn service_urls() {
+        assert!(is_icloud_service_url("https://p68-maildomainws.icloud.com:443"));
+        assert!(is_icloud_service_url("https://setup.icloud.com.cn/setup/ws/1"));
+        assert!(!is_icloud_service_url("http://p68-maildomainws.icloud.com"));
+        assert!(!is_icloud_service_url("https://icloud.com.evil.org/x"));
+        assert!(!is_icloud_service_url("https://evil.org/x.icloud.com/"));
+        assert!(!is_icloud_service_url("javascript:alert(1)"));
     }
 
     #[test]

@@ -61,6 +61,7 @@ const mock = {
     recipientMailId: '',
   })),
   generated: 0,
+  fail: {}, // e.g. { generate: true } → the next generate answers HTTP 500
 };
 
 const json = (route, body, status = 200) =>
@@ -88,11 +89,19 @@ async function handleICloud(route) {
     const find = () => mock.emails.find((e) => e.anonymousId === body.anonymousId);
     switch (p) {
       case '/v2/hme/list':
+        if (mock.fail.list) {
+          delete mock.fail.list;
+          return json(route, { error: 'boom' }, 500);
+        }
         return json(route, {
           success: true,
           result: { hmeEmails: mock.emails, forwardToEmails: mock.forwardTo, selectedForwardTo: mock.selected },
         });
       case '/v1/hme/generate':
+        if (mock.fail.generate) {
+          delete mock.fail.generate;
+          return json(route, { error: 'boom' }, 500);
+        }
         mock.generated++;
         return json(route, { success: true, result: { hme: `fresh_owl.${mock.generated}k@icloud.com` } });
       case '/v1/hme/reserve': {
@@ -178,7 +187,8 @@ const welcome =
 check(!!welcome, 'welcome page opens on install');
 
 const popup = await context.newPage();
-popup.on('console', (m) => m.type() === 'error' && pageErrors.push(`popup console: ${m.text()}`));
+// Mocked HTTP 500s are logged by the browser itself; they're expected.
+popup.on('console', (m) => m.type() === 'error' && !m.text().startsWith('Failed to load resource') && pageErrors.push(`popup console: ${m.text()}`));
 
 async function openPopup(scheme) {
   await popup.emulateMedia({ colorScheme: scheme });
@@ -218,9 +228,22 @@ if (mock.signedIn) {
   await pause(400);
   await shot(popup, 'popup-reserved-dark');
 
-  // ---- manage
+  // ---- API errors are shown and don't leave the popup stuck
+  mock.fail.generate = true;
+  await popup.click('.v-btn--ghost.v-btn--block'); // "Create another"
+  await popup.waitForSelector('.v-alert--error', { timeout: 5000 });
+  check(true, 'generate error is shown');
+  await popup.click('.v-address-card .v-icon-btn');
+  await popup.waitForSelector('.v-address', { timeout: 5000 });
+  check(!(await popup.isVisible('.v-alert--error')), 'regenerate recovers after an error');
+
+  // ---- manage (first load fails, retry works)
+  mock.fail.list = true;
   await popup.click('.v-popup__footer .v-btn >> nth=0');
-  await popup.waitForSelector('.v-list .v-list-item');
+  await popup.waitForSelector('.v-empty--error', { timeout: 5000 });
+  check(true, 'list error is shown');
+  await popup.click('.v-empty--error .v-btn');
+  await popup.waitForSelector('.v-list .v-list-item:not(.v-list-item--skeleton)');
   const rows = await popup.locator('.v-list .v-list-item').count();
   check(rows === mock.emails.length, `list shows ${rows} addresses`);
   await shot(popup, 'popup-manage-dark');
@@ -293,13 +316,29 @@ if (mock.signedIn) {
   await options.click('.v-setting:has(.v-toggle) >> nth=0'); // back on
   await options.click('.v-segmented__item >> nth=0'); // theme: system
 
+  // ---- languages (right-to-left included)
+  for (const lang of ['ar', 'ja']) {
+    await options.selectOption('select.v-select', lang);
+    await pause(300);
+    const dir = await options.getAttribute('html', 'dir');
+    check((await options.getAttribute('html', 'lang')) === lang && dir === (lang === 'ar' ? 'rtl' : 'ltr'), `language ${lang} applied (dir=${dir})`);
+    await popup.goto(url('popup.html'));
+    await popup.waitForSelector('.v-address');
+    await pause(400);
+    await shot(popup, `popup-${lang}`);
+  }
+  await options.screenshot({ path: path.join(SHOTS, 'options-ja.png'), fullPage: true });
+  await options.selectOption('select.v-select', 'auto');
+
   // ---- in-field button on a third-party page
   const page = await context.newPage();
   await page.setViewportSize({ width: 900, height: 500 });
   await page.goto(SITE);
   await pause(300);
+  const generatedBefore = mock.generated;
   await page.click('#email');
   await pause(1200);
+  check(mock.generated === generatedBefore, 'focusing a field makes no iCloud request');
   await page.screenshot({ path: path.join(SHOTS, 'inpage-ready.png') });
   // The button lives in a closed shadow root; click where it is drawn.
   const box = await page.locator('#email').boundingBox();
@@ -315,9 +354,9 @@ if (mock.signedIn) {
   await page.fill('#email', '');
   await page.click('#email');
   await page.bringToFront();
-  const tabId = await sw.evaluate(async (u) => (await chrome.tabs.query({})).find((t) => t.url?.startsWith(u))?.id, SITE);
+  const tabId = await sw.evaluate(async () => (await chrome.tabs.query({ active: true, lastFocusedWindow: true }))[0]?.id);
   const reply = await sw.evaluate(
-    ([id, hme]) => chrome.tabs.sendMessage(id, { type: 'autofill', hme }),
+    ([id, hme]) => chrome.tabs.sendMessage(id, { type: 'autofill', hme }, { frameId: 0 }),
     [tabId, 'popup_fill@icloud.com'],
   );
   check(reply?.filled === 1 && (await page.inputValue('#email')) === 'popup_fill@icloud.com', 'popup → page autofill');

@@ -16,6 +16,9 @@ pub mod urls;
 pub mod storage_keys {
     pub const OPTIONS: &str = "options";
     pub const CLIENT_STATE: &str = "clientState";
+    /// Setup URL of the last successful sign-in; kept after sign-out so the
+    /// "Open iCloud" links point at the right region (.com / .com.cn).
+    pub const LAST_SETUP_URL: &str = "lastSetupUrl";
     /// `storage.session` (memory-only) cache of the address list, so the
     /// popup can render it before iCloud answers.
     pub const LIST_CACHE: &str = "listCache";
