@@ -1,87 +1,145 @@
 /* ==========================================================================
-   Veil — design tokens
-   Theme selection:
+   Veil — design tokens: Astryx theme "Moonveil"
+   --------------------------------------------------------------------------
+   Token NAMES are Astryx's own (github.com/meta/astryx, MIT —
+   packages/core/src/theme/tokens.stylex.ts). VALUES are the Moonveil theme:
+   ink-violet night surfaces / pearl-lavender paper, one iris accent.
+   Astryx themes write colours as light-dark(); here each mode is a plain
+   block so the extension can force a mode with an attribute:
+
      <html data-theme="light">  -> light
      <html data-theme="dark">   -> dark
      no data-theme              -> follows prefers-color-scheme
-   The [data-theme] selectors are intentionally not limited to :root, so a
-   subtree can be forced to a theme too (used by the design previews).
+
+   [data-theme] also works on any subtree (the design previews use that).
+   Theme-local tokens follow Astryx's convention: --astryx-theme-<name>-*.
+   App layout constants that are not Astryx tokens are prefixed --veil-*.
    ========================================================================== */
 
 :root {
-  /* ---- Typography ---- */
-  --v-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI Variable", "Segoe UI", Inter, Roboto, system-ui, sans-serif;
-  --v-font-mono: ui-monospace, "SF Mono", SFMono-Regular, "Cascadia Code", "Segoe UI Mono", "Roboto Mono", Menlo, Consolas, monospace;
+  /* ---- Spacing (Astryx scale, 4px x step, rem) ---- */
+  --spacing-0: 0rem;
+  --spacing-0-5: 0.125rem;
+  --spacing-1: 0.25rem;
+  --spacing-1-5: 0.375rem;
+  --spacing-2: 0.5rem;
+  --spacing-3: 0.75rem;
+  --spacing-4: 1rem;
+  --spacing-5: 1.25rem;
+  --spacing-6: 1.5rem;
+  --spacing-7: 1.75rem;
+  --spacing-8: 2rem;
+  --spacing-9: 2.25rem;
+  --spacing-10: 2.5rem;
+  --spacing-11: 2.75rem;
+  --spacing-12: 3rem;
 
-  --v-text-xs: 11px;    --v-leading-xs: 16px;
-  --v-text-sm: 12px;    --v-leading-sm: 16px;
-  --v-text-base: 13px;  --v-leading-base: 20px;   /* popup body */
-  --v-text-md: 14px;    --v-leading-md: 20px;     /* page body, titles in popup */
-  --v-text-lg: 16px;    --v-leading-lg: 24px;
-  --v-text-xl: 20px;    --v-leading-xl: 28px;
-  --v-text-2xl: 28px;   --v-leading-2xl: 34px;
-  --v-text-3xl: 40px;   --v-leading-3xl: 44px;
+  /* ---- Element sizes (control heights) ---- */
+  --size-element-sm: 28px;
+  --size-element-md: 32px;
+  --size-element-lg: 36px;
 
-  --v-weight-regular: 400;
-  --v-weight-medium: 500;
-  --v-weight-semibold: 600;
-  --v-weight-bold: 700;
+  /* ---- Border ---- */
+  --border-width: 1px;
 
-  --v-tracking-tight: -0.02em;
-  --v-tracking-caps: 0.05em;
+  /* ---- Focus ring (Astryx default offset is 3px; 2px keeps it inside the popup) ---- */
+  --focus-outline-width: 2px;
+  --focus-outline-style: solid;
+  --focus-outline-color: var(--color-text-accent);
+  --focus-outline-offset: 2px;
 
-  /* ---- Spacing (4px base) ---- */
-  --v-space-1: 4px;
-  --v-space-2: 8px;
-  --v-space-3: 12px;
-  --v-space-4: 16px;
-  --v-space-5: 20px;
-  --v-space-6: 24px;
-  --v-space-8: 32px;
-  --v-space-10: 40px;
-  --v-space-12: 48px;
-  --v-space-16: 64px;
+  /* ---- Radius (Moonveil is a little rounder than Astryx's 4/8/12) ---- */
+  --radius-none: 0px;
+  --radius-inner: 6px;
+  --radius-element: 10px;
+  --radius-container: 16px;
+  --radius-page: 28px;
+  --radius-chat: var(--radius-container);
+  --radius-full: 9999px;
 
-  /* ---- Radii ---- */
-  --v-radius-xs: 4px;
-  --v-radius-sm: 6px;
-  --v-radius-md: 8px;    /* buttons, inputs */
-  --v-radius-lg: 10px;   /* list rows, alerts, toasts */
-  --v-radius-xl: 14px;   /* hero address card */
-  --v-radius-2xl: 16px;  /* page cards, sheets */
-  --v-radius-full: 999px;
+  /* ---- Motion: duration (defineTheme motion {fast:150, medium:320, slow:800, ratio:.75}) ---- */
+  --duration-fast-min: 110ms;
+  --duration-fast: 150ms;
+  --duration-fast-max: 200ms;
+  --duration-medium-min: 240ms;
+  --duration-medium: 320ms;
+  --duration-medium-max: 425ms;
+  --duration-slow-min: 600ms;
+  --duration-slow: 800ms;
+  --duration-slow-max: 1065ms;
+  --duration-exit: var(--duration-fast);
 
-  /* ---- Sizes ---- */
-  --v-popup-w: 380px;
-  --v-popup-h: 560px;
-  --v-page-max: 720px;
-  --v-control-h: 36px;
-  --v-control-h-sm: 28px;
-  --v-control-h-lg: 40px;
-  --v-icon: 16px;
+  /* ---- Motion: easing (Astryx defaults) ---- */
+  --ease-standard: cubic-bezier(0.24, 1, 0.4, 1);
+  --ease-entrance: cubic-bezier(0.24, 1, 0.4, 1);
+  --ease-move: cubic-bezier(0.24, 1, 0.4, 1);
+  --ease-exit: cubic-bezier(0.3, 0, 0.6, 0.6);
 
-  /* ---- Motion ---- */
-  --v-dur-1: 120ms;   /* hover, colour */
-  --v-dur-2: 180ms;   /* press, toggles, chips */
-  --v-dur-3: 260ms;   /* view / toast / sheet enter */
-  --v-dur-4: 420ms;   /* success check draw */
-  --v-ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
-  --v-ease-in: cubic-bezier(0.4, 0, 1, 1);
-  --v-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
-  --v-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* ---- Typography: families (system stacks, nothing bundled) ---- */
+  --font-family-body: -apple-system, BlinkMacSystemFont, "Segoe UI Variable", "Segoe UI", Inter, Roboto, system-ui, sans-serif;
+  --font-family-heading: -apple-system, BlinkMacSystemFont, "Segoe UI Variable", "Segoe UI", Inter, Roboto, system-ui, sans-serif;
+  --font-family-code: ui-monospace, "SF Mono", SFMono-Regular, "Cascadia Code", "Segoe UI Mono", "Roboto Mono", Menlo, Consolas, monospace;
 
-  /* ---- Z-index ---- */
-  --v-z-sticky: 5;
-  --v-z-scrim: 10;
-  --v-z-sheet: 11;
-  --v-z-toast: 20;
+  /* ---- Typography: raw sizes (Astryx default scale, base 14 x 1.2^step) ---- */
+  --font-size-4xs: 0.375rem;
+  --font-size-3xs: 0.4375rem;
+  --font-size-2xs: 0.5rem;
+  --font-size-xs: 0.625rem;    /* 10px */
+  --font-size-sm: 0.75rem;     /* 12px */
+  --font-size-base: 0.875rem;  /* 14px */
+  --font-size-lg: 1.0625rem;   /* 17px */
+  --font-size-xl: 1.25rem;     /* 20px */
+  --font-size-2xl: 1.5rem;     /* 24px */
+  --font-size-3xl: 1.8125rem;  /* 29px */
+  --font-size-4xl: 2.1875rem;  /* 35px */
+  --font-size-5xl: 2.625rem;   /* 42px */
 
-  /* ---- Theme-independent colours ---- */
-  --v-on-accent: #ffffff;
-  --v-danger-solid: #d1344b;
-  --v-danger-solid-hover: #bd2b41;
-  --v-brand-from: #8f7dff;   /* logo tile gradient */
-  --v-brand-to: #4b3bd0;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* ---- Typography: roles ---- */
+  --text-heading-1-size: var(--font-size-2xl); --text-heading-1-weight: var(--font-weight-semibold); --text-heading-1-leading: 1.3333;
+  --text-heading-2-size: var(--font-size-xl);  --text-heading-2-weight: var(--font-weight-semibold); --text-heading-2-leading: 1.4;
+  --text-heading-3-size: var(--font-size-lg);  --text-heading-3-weight: var(--font-weight-semibold); --text-heading-3-leading: 1.4118;
+  --text-heading-4-size: var(--font-size-base); --text-heading-4-weight: var(--font-weight-semibold); --text-heading-4-leading: 1.4286;
+  --text-heading-5-size: var(--font-size-sm);  --text-heading-5-weight: var(--font-weight-semibold); --text-heading-5-leading: 1.3333;
+  --text-heading-6-size: var(--font-size-xs);  --text-heading-6-weight: var(--font-weight-semibold); --text-heading-6-leading: 1.6;
+  --text-body-size: var(--font-size-base);     --text-body-weight: var(--font-weight-normal);   --text-body-leading: 1.4286;
+  --text-large-size: var(--font-size-lg);      --text-large-weight: var(--font-weight-semibold); --text-large-leading: 1.4118;
+  --text-label-size: var(--font-size-base);    --text-label-weight: var(--font-weight-medium);  --text-label-leading: 1.4286;
+  --text-code-size: var(--font-size-base);     --text-code-weight: var(--font-weight-normal);   --text-code-leading: 1.4286;
+  /* Moonveil: supporting text sits on a 16px line (Astryx default is 20px) for the dense popup */
+  --text-supporting-size: var(--font-size-sm); --text-supporting-weight: var(--font-weight-normal); --text-supporting-leading: 1.3333;
+  --text-display-1-size: var(--font-size-5xl); --text-display-1-weight: var(--font-weight-semibold); --text-display-1-leading: 1.1429;
+  --text-display-2-size: var(--font-size-4xl); --text-display-2-weight: var(--font-weight-semibold); --text-display-2-leading: 1.1429;
+  --text-display-3-size: var(--font-size-3xl); --text-display-3-weight: var(--font-weight-semibold); --text-display-3-leading: 1.2414;
+
+  /* ---- Status roles that follow other tokens (Astryx defaults) ---- */
+  --color-icon-info: var(--color-text-info);
+  --color-icon-success: var(--color-text-success);
+  --color-icon-warning: var(--color-text-warning);
+  --color-icon-error: var(--color-text-error);
+  --color-border-info: var(--color-text-info);
+  --color-border-success: var(--color-text-success);
+  --color-border-warning: var(--color-text-warning);
+  --color-border-error: var(--color-text-error);
+  --color-on-info-muted: var(--color-text-info);
+  --color-on-success-muted: var(--color-text-success);
+  --color-on-warning-muted: var(--color-text-warning);
+  --color-on-error-muted: var(--color-text-error);
+
+  /* ---- Moonveil local tokens (mode-independent) ---- */
+  --astryx-theme-moonveil-brand-gradient: linear-gradient(145deg, #9483FF 0%, #5B4AE6 55%, #3B2BB8 100%);
+
+  /* ---- Veil app constants (not Astryx tokens) ---- */
+  --veil-popup-width: 380px;
+  --veil-popup-height: 560px;
+  --veil-page-max-width: 720px;
+  --veil-z-scrim: 10;
+  --veil-z-sheet: 11;
+  --veil-z-toast: 20;
 }
 
 /* ------------------------------- Light ---------------------------------- */
@@ -89,57 +147,93 @@
 [data-theme="light"] {
   color-scheme: light;
 
-  --v-bg: #f5f5f8;              /* popup / page ground */
-  --v-surface: #ffffff;         /* cards, bars */
-  --v-surface-2: #eeeef3;       /* wells, segmented track */
-  --v-surface-3: #e3e3ea;       /* neutral badges, toggle off */
-  --v-field: #ffffff;           /* input background */
-  --v-hover: rgba(17, 18, 28, 0.05);
-  --v-pressed: rgba(17, 18, 28, 0.09);
-  --v-scrim: rgba(17, 18, 28, 0.32);
+  /* Core semantic */
+  --color-accent: #5746E0;
+  --color-accent-muted: #5746E029;
+  --color-on-accent: #FFFFFF;
+  --color-neutral: #1E205014;
+  --color-background-surface: #FFFFFF;
+  --color-background-body: #F3F3FA;
+  --color-overlay: #0E0F2373;
+  --color-overlay-hover: #1E20500D;
+  --color-overlay-pressed: #1E20501A;
+  --color-background-muted: #1E20500A;
 
-  --v-border: rgba(17, 18, 28, 0.10);
-  --v-border-strong: rgba(17, 18, 28, 0.18);
+  /* Text */
+  --color-text-primary: #13142A;
+  --color-text-secondary: #51546E;
+  --color-text-disabled: #A3A6BC;
+  --color-text-accent: #4A39CC;
+  --color-on-dark: #FFFFFF;
+  --color-on-light: #0B0C14;
 
-  --v-text: #14151c;
-  --v-text-2: #474a57;
-  --v-text-3: #666a77;          /* 4.6:1 on --v-surface-2 */
+  /* Icon */
+  --color-icon-accent: #5746E0;
+  --color-icon-primary: #13142A;
+  --color-icon-secondary: #5D6079;
+  --color-icon-disabled: #A3A6BC;
 
-  --v-accent: #5546d6;                       /* accent text / icons */
-  --v-accent-solid: #5b4be0;                 /* primary button fill (white text 5.9:1) */
-  --v-accent-solid-hover: #4f3fd4;
-  --v-accent-solid-active: #4536c2;
-  --v-accent-soft: rgba(91, 75, 224, 0.09);
-  --v-accent-soft-hover: rgba(91, 75, 224, 0.15);
-  --v-accent-border: rgba(91, 75, 224, 0.32);
-  --v-accent-ring: rgba(91, 75, 224, 0.22);  /* input focus halo */
-  --v-accent-glow: rgba(91, 75, 224, 0.30);  /* primary button glow */
-  --v-focus: #5b4be0;
+  /* Surface variants */
+  --color-background-card: #FFFFFF;
+  --color-background-popover: #FFFFFF;
+  --color-background-inverted: #17182B;
+  --color-background-error-inverted: #B3202F;
 
-  --v-success: #0b7d55;
-  --v-success-soft: rgba(11, 125, 85, 0.09);
-  --v-success-border: rgba(11, 125, 85, 0.30);
-  --v-warning: #8a5100;
-  --v-warning-soft: rgba(214, 140, 0, 0.13);
-  --v-warning-border: rgba(170, 105, 0, 0.32);
-  --v-danger: #c42b43;
-  --v-danger-soft: rgba(209, 52, 75, 0.08);
-  --v-danger-border: rgba(209, 52, 75, 0.32);
+  /* Status fills: strong fill + content on it, pale fill + content on it */
+  --color-info: #2F6BE0;
+  --color-info-muted: #2F6BE024;
+  --color-on-info: #FFFFFF;
+  --color-success: #0B7D55;
+  --color-success-muted: #0B7D5524;
+  --color-on-success: #FFFFFF;
+  --color-error: #D1344B;
+  --color-error-muted: #D1344B1F;
+  --color-on-error: #FFFFFF;
+  --color-warning: #F0B429;
+  --color-warning-muted: #E2A40033;
+  --color-on-warning: #1A1205;
 
-  --v-toast-bg: #1b1c24;
-  --v-toast-fg: #f3f3f6;
-  --v-toast-border: rgba(255, 255, 255, 0.08);
-  --v-toast-success: #4fd6a0;
-  --v-toast-danger: #ff8090;
+  /* Status text on page and card surfaces (>= 4.5:1) */
+  --color-text-info: #1D4BA8;
+  --color-text-success: #0A5C40;
+  --color-text-warning: #6E4200;
+  --color-text-error: #9E1B30;
 
-  --v-skeleton: rgba(17, 18, 28, 0.07);
-  --v-skeleton-hi: rgba(17, 18, 28, 0.13);
+  /* Border */
+  --color-border: #1E205017;
+  --color-border-emphasized: #CDCFE0;
 
-  --v-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  --v-shadow-xs: 0 1px 2px rgba(17, 18, 28, 0.06);
-  --v-shadow-sm: 0 1px 2px rgba(17, 18, 28, 0.05), 0 2px 8px rgba(17, 18, 28, 0.05);
-  --v-shadow-md: 0 1px 3px rgba(17, 18, 28, 0.06), 0 6px 18px rgba(17, 18, 28, 0.09);
-  --v-shadow-lg: 0 2px 8px rgba(17, 18, 28, 0.08), 0 18px 44px rgba(17, 18, 28, 0.16);
+  /* Effects */
+  --color-skeleton: #C4C6DB;
+  --color-track: #D5D7E6;
+  --color-shadow: #1E20501F;
+  --color-tint-hover: black;
+
+  /* Categorical (Astryx defaults, purple and gray tuned to the theme) */
+  --color-background-blue: #0171E333;   --color-border-blue: #0064E0;   --color-icon-blue: #0064E0;   --color-text-blue: #042F97;
+  --color-background-cyan: #03A7D733;   --color-border-cyan: #089DD0;   --color-icon-cyan: #00ACC1;   --color-text-cyan: #014975;
+  --color-background-gray: #1E205033;   --color-border-gray: #6A6E8C;   --color-icon-gray: #51546E;   --color-text-gray: #13142A;
+  --color-background-green: #24BB5E33;  --color-border-green: #0D8626;  --color-icon-green: #0D8626;  --color-text-green: #09441F;
+  --color-background-orange: #F2790233; --color-border-orange: #EB6E00; --color-icon-orange: #E9690B; --color-text-orange: #6B2203;
+  --color-background-pink: #E638B333;   --color-border-pink: #F351C0;   --color-icon-pink: #C2185B;   --color-text-pink: #650053;
+  --color-background-purple: #5746E026; --color-border-purple: #8E80F5; --color-icon-purple: #5746E0; --color-text-purple: #3A2BB0;
+  --color-background-red: #E3193B33;    --color-border-red: #E3193B;    --color-icon-red: #D31130;    --color-text-red: #7B0210;
+  --color-background-teal: #0DB7AF33;   --color-border-teal: #08A3A3;   --color-icon-teal: #009688;   --color-text-teal: #083943;
+  --color-background-yellow: #E2A40033; --color-border-yellow: #C58600; --color-icon-yellow: #B47700; --color-text-yellow: #753F07;
+
+  /* Shadows (ascending elevation) + inset input rings */
+  --shadow-low: 0px 1px 1px #1E205014, 0px 2px 8px #1E205014;
+  --shadow-med: 0px 1px 2px #1E20501A, 0px 4px 14px #1E20501F;
+  --shadow-high: 0px 2px 2px #1E20501A, 0px 12px 32px #1E205033;
+  --shadow-inset-hover: inset 0px 0px 0px 2px #1E205026;
+  --shadow-inset-selected: inset 0px 0px 0px 2px #5746E080;
+  --shadow-inset-success: inset 0px 0px 0px 2px #0B7D554D;
+  --shadow-inset-warning: inset 0px 0px 0px 2px #E2A4004D;
+  --shadow-inset-error: inset 0px 0px 0px 2px #D1344B4D;
+
+  /* Moonveil local tokens */
+  --astryx-theme-moonveil-aura: radial-gradient(120% 100% at 50% 0%, #5746E01F, transparent 70%);
+  --astryx-theme-moonveil-accent-glow: #5746E04D;
 }
 
 /* -------------------------------- Dark ---------------------------------- */
@@ -147,113 +241,185 @@
   :root:not([data-theme]) {
     color-scheme: dark;
 
-    --v-bg: #0d0e12;
-    --v-surface: #15161c;
-    --v-surface-2: #1c1d25;
-    --v-surface-3: #282a35;
-    --v-field: #0f1015;
-    --v-hover: rgba(255, 255, 255, 0.06);
-    --v-pressed: rgba(255, 255, 255, 0.10);
-    --v-scrim: rgba(0, 0, 0, 0.56);
+    /* Core semantic */
+    --color-accent: #6C5BEF;
+    --color-accent-muted: #7C6CFF3D;
+    --color-on-accent: #FFFFFF;
+    --color-neutral: #C4C8FF1F;
+    --color-background-surface: #141624;
+    --color-background-body: #0B0C14;
+    --color-overlay: #04050CA8;
+    --color-overlay-hover: #FFFFFF0F;
+    --color-overlay-pressed: #FFFFFF1C;
+    --color-background-muted: #A0AAFF0F;
 
-    --v-border: rgba(255, 255, 255, 0.08);
-    --v-border-strong: rgba(255, 255, 255, 0.15);
+    /* Text */
+    --color-text-primary: #ECEDF7;
+    --color-text-secondary: #B1B4C8;
+    --color-text-disabled: #6B6F85;
+    --color-text-accent: #B0A5FF;
+    --color-on-dark: #FFFFFF;
+    --color-on-light: #0B0C14;
 
-    --v-text: #edeef2;
-    --v-text-2: #b4b7c3;
-    --v-text-3: #8d91a0;
+    /* Icon */
+    --color-icon-accent: #A093FF;
+    --color-icon-primary: #ECEDF7;
+    --color-icon-secondary: #A9ACC1;
+    --color-icon-disabled: #6B6F85;
 
-    --v-accent: #ab9eff;
-    --v-accent-solid: #6c5bef;
-    --v-accent-solid-hover: #7a6af5;
-    --v-accent-solid-active: #5f4ee3;
-    --v-accent-soft: rgba(140, 124, 255, 0.15);
-    --v-accent-soft-hover: rgba(140, 124, 255, 0.22);
-    --v-accent-border: rgba(150, 136, 255, 0.42);
-    --v-accent-ring: rgba(140, 124, 255, 0.30);
-    --v-accent-glow: rgba(116, 98, 255, 0.45);
-    --v-focus: #ab9eff;
+    /* Surface variants */
+    --color-background-card: #141624;
+    --color-background-popover: #1B1E30;
+    --color-background-inverted: #F2F2FA;
+    --color-background-error-inverted: #CF3349;
 
-    --v-success: #4fd6a0;
-    --v-success-soft: rgba(79, 214, 160, 0.13);
-    --v-success-border: rgba(79, 214, 160, 0.34);
-    --v-warning: #f2bb55;
-    --v-warning-soft: rgba(242, 187, 85, 0.13);
-    --v-warning-border: rgba(242, 187, 85, 0.32);
-    --v-danger: #ff7f8f;
-    --v-danger-soft: rgba(255, 122, 138, 0.13);
-    --v-danger-border: rgba(255, 122, 138, 0.36);
+    /* Status fills: strong fill + content on it, pale fill + content on it */
+    --color-info: #7FA8FF;
+    --color-info-muted: #7FA8FF2E;
+    --color-on-info: #06102A;
+    --color-success: #4FD6A0;
+    --color-success-muted: #4FD6A029;
+    --color-on-success: #06140E;
+    --color-error: #FF7386;
+    --color-error-muted: #FF73862E;
+    --color-on-error: #1F0409;
+    --color-warning: #F2BB55;
+    --color-warning-muted: #F2BB552B;
+    --color-on-warning: #1A1205;
 
-    --v-toast-bg: #2a2c38;
-    --v-toast-fg: #f3f3f6;
-    --v-toast-border: rgba(255, 255, 255, 0.12);
-    --v-toast-success: #4fd6a0;
-    --v-toast-danger: #ff8090;
+    /* Status text on page and card surfaces (>= 4.5:1) */
+    --color-text-info: #A9C4FF;
+    --color-text-success: #7BE3B8;
+    --color-text-warning: #F5C76E;
+    --color-text-error: #FF9AA6;
 
-    --v-skeleton: rgba(255, 255, 255, 0.06);
-    --v-skeleton-hi: rgba(255, 255, 255, 0.12);
+    /* Border */
+    --color-border: #FFFFFF17;
+    --color-border-emphasized: #3A3E57;
 
-    --v-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.05);
-    --v-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4);
-    --v-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.28);
-    --v-shadow-md: 0 1px 3px rgba(0, 0, 0, 0.4), 0 8px 22px rgba(0, 0, 0, 0.4);
-    --v-shadow-lg: 0 2px 8px rgba(0, 0, 0, 0.4), 0 20px 48px rgba(0, 0, 0, 0.6);
+    /* Effects */
+    --color-skeleton: #6A6F94;
+    --color-track: #3A3E57;
+    --color-shadow: #0000004D;
+    --color-tint-hover: white;
+
+    /* Categorical (Astryx defaults, purple and gray tuned to the theme) */
+    --color-background-blue: #0171E333;   --color-border-blue: #2694FE;   --color-icon-blue: #2694FE;   --color-text-blue: #AFD7FF;
+    --color-background-cyan: #03A7D733;   --color-border-cyan: #0171A4;   --color-icon-cyan: #26C6DA;   --color-text-cyan: #A1EEF9;
+    --color-background-gray: #8C90B470;   --color-border-gray: #7A7FA0;   --color-icon-gray: #A9ACC1;   --color-text-gray: #E7E8F4;
+    --color-background-green: #24BB5E33;  --color-border-green: #0B991F;  --color-icon-green: #26A756;  --color-text-green: #A5F690;
+    --color-background-orange: #F2790233; --color-border-orange: #B34A01; --color-icon-orange: #FB8C00; --color-text-orange: #FDB876;
+    --color-background-pink: #E638B333;   --color-border-pink: #C02294;   --color-icon-pink: #EC407A;   --color-text-pink: #FEADE3;
+    --color-background-purple: #7C6CFF38; --color-border-purple: #7E6DF5; --color-icon-purple: #A093FF; --color-text-purple: #C3BBFF;
+    --color-background-red: #E3193B33;    --color-border-red: #F5394F;    --color-icon-red: #E3193B;    --color-text-red: #FFB2B8;
+    --color-background-teal: #0DB7AF33;   --color-border-teal: #08767D;   --color-icon-teal: #26A69A;   --color-text-teal: #40DCCD;
+    --color-background-yellow: #E2A40033; --color-border-yellow: #B47700; --color-icon-yellow: #FFEE58; --color-text-yellow: #FBCE03;
+
+    /* Shadows (ascending elevation) + inset input rings */
+    --shadow-low: 0px 1px 1px #00000033, 0px 2px 8px #00000033;
+    --shadow-med: 0px 1px 2px #00000040, 0px 4px 14px #0000004D;
+    --shadow-high: 0px 2px 2px #00000040, 0px 12px 32px #00000080;
+    --shadow-inset-hover: inset 0px 0px 0px 2px #C4C8FF33;
+    --shadow-inset-selected: inset 0px 0px 0px 2px #7C6CFF80;
+    --shadow-inset-success: inset 0px 0px 0px 2px #4FD6A04D;
+    --shadow-inset-warning: inset 0px 0px 0px 2px #F2BB554D;
+    --shadow-inset-error: inset 0px 0px 0px 2px #FF73864D;
+
+    /* Moonveil local tokens */
+    --astryx-theme-moonveil-aura: radial-gradient(120% 100% at 50% 0%, #7C6CFF2E, transparent 70%);
+    --astryx-theme-moonveil-accent-glow: #7462FF73;
   }
 }
 
-/* Keep this block identical to the media-query block above. */
+/* Same values as the media-query block above. */
 [data-theme="dark"] {
   color-scheme: dark;
 
-  --v-bg: #0d0e12;
-  --v-surface: #15161c;
-  --v-surface-2: #1c1d25;
-  --v-surface-3: #282a35;
-  --v-field: #0f1015;
-  --v-hover: rgba(255, 255, 255, 0.06);
-  --v-pressed: rgba(255, 255, 255, 0.10);
-  --v-scrim: rgba(0, 0, 0, 0.56);
+  /* Core semantic */
+  --color-accent: #6C5BEF;
+  --color-accent-muted: #7C6CFF3D;
+  --color-on-accent: #FFFFFF;
+  --color-neutral: #C4C8FF1F;
+  --color-background-surface: #141624;
+  --color-background-body: #0B0C14;
+  --color-overlay: #04050CA8;
+  --color-overlay-hover: #FFFFFF0F;
+  --color-overlay-pressed: #FFFFFF1C;
+  --color-background-muted: #A0AAFF0F;
 
-  --v-border: rgba(255, 255, 255, 0.08);
-  --v-border-strong: rgba(255, 255, 255, 0.15);
+  /* Text */
+  --color-text-primary: #ECEDF7;
+  --color-text-secondary: #B1B4C8;
+  --color-text-disabled: #6B6F85;
+  --color-text-accent: #B0A5FF;
+  --color-on-dark: #FFFFFF;
+  --color-on-light: #0B0C14;
 
-  --v-text: #edeef2;
-  --v-text-2: #b4b7c3;
-  --v-text-3: #8d91a0;
+  /* Icon */
+  --color-icon-accent: #A093FF;
+  --color-icon-primary: #ECEDF7;
+  --color-icon-secondary: #A9ACC1;
+  --color-icon-disabled: #6B6F85;
 
-  --v-accent: #ab9eff;
-  --v-accent-solid: #6c5bef;
-  --v-accent-solid-hover: #7a6af5;
-  --v-accent-solid-active: #5f4ee3;
-  --v-accent-soft: rgba(140, 124, 255, 0.15);
-  --v-accent-soft-hover: rgba(140, 124, 255, 0.22);
-  --v-accent-border: rgba(150, 136, 255, 0.42);
-  --v-accent-ring: rgba(140, 124, 255, 0.30);
-  --v-accent-glow: rgba(116, 98, 255, 0.45);
-  --v-focus: #ab9eff;
+  /* Surface variants */
+  --color-background-card: #141624;
+  --color-background-popover: #1B1E30;
+  --color-background-inverted: #F2F2FA;
+  --color-background-error-inverted: #CF3349;
 
-  --v-success: #4fd6a0;
-  --v-success-soft: rgba(79, 214, 160, 0.13);
-  --v-success-border: rgba(79, 214, 160, 0.34);
-  --v-warning: #f2bb55;
-  --v-warning-soft: rgba(242, 187, 85, 0.13);
-  --v-warning-border: rgba(242, 187, 85, 0.32);
-  --v-danger: #ff7f8f;
-  --v-danger-soft: rgba(255, 122, 138, 0.13);
-  --v-danger-border: rgba(255, 122, 138, 0.36);
+  /* Status fills: strong fill + content on it, pale fill + content on it */
+  --color-info: #7FA8FF;
+  --color-info-muted: #7FA8FF2E;
+  --color-on-info: #06102A;
+  --color-success: #4FD6A0;
+  --color-success-muted: #4FD6A029;
+  --color-on-success: #06140E;
+  --color-error: #FF7386;
+  --color-error-muted: #FF73862E;
+  --color-on-error: #1F0409;
+  --color-warning: #F2BB55;
+  --color-warning-muted: #F2BB552B;
+  --color-on-warning: #1A1205;
 
-  --v-toast-bg: #2a2c38;
-  --v-toast-fg: #f3f3f6;
-  --v-toast-border: rgba(255, 255, 255, 0.12);
-  --v-toast-success: #4fd6a0;
-  --v-toast-danger: #ff8090;
+  /* Status text on page and card surfaces (>= 4.5:1) */
+  --color-text-info: #A9C4FF;
+  --color-text-success: #7BE3B8;
+  --color-text-warning: #F5C76E;
+  --color-text-error: #FF9AA6;
 
-  --v-skeleton: rgba(255, 255, 255, 0.06);
-  --v-skeleton-hi: rgba(255, 255, 255, 0.12);
+  /* Border */
+  --color-border: #FFFFFF17;
+  --color-border-emphasized: #3A3E57;
 
-  --v-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  --v-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4);
-  --v-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.28);
-  --v-shadow-md: 0 1px 3px rgba(0, 0, 0, 0.4), 0 8px 22px rgba(0, 0, 0, 0.4);
-  --v-shadow-lg: 0 2px 8px rgba(0, 0, 0, 0.4), 0 20px 48px rgba(0, 0, 0, 0.6);
+  /* Effects */
+  --color-skeleton: #6A6F94;
+  --color-track: #3A3E57;
+  --color-shadow: #0000004D;
+  --color-tint-hover: white;
+
+  /* Categorical (Astryx defaults, purple and gray tuned to the theme) */
+  --color-background-blue: #0171E333;   --color-border-blue: #2694FE;   --color-icon-blue: #2694FE;   --color-text-blue: #AFD7FF;
+  --color-background-cyan: #03A7D733;   --color-border-cyan: #0171A4;   --color-icon-cyan: #26C6DA;   --color-text-cyan: #A1EEF9;
+  --color-background-gray: #8C90B470;   --color-border-gray: #7A7FA0;   --color-icon-gray: #A9ACC1;   --color-text-gray: #E7E8F4;
+  --color-background-green: #24BB5E33;  --color-border-green: #0B991F;  --color-icon-green: #26A756;  --color-text-green: #A5F690;
+  --color-background-orange: #F2790233; --color-border-orange: #B34A01; --color-icon-orange: #FB8C00; --color-text-orange: #FDB876;
+  --color-background-pink: #E638B333;   --color-border-pink: #C02294;   --color-icon-pink: #EC407A;   --color-text-pink: #FEADE3;
+  --color-background-purple: #7C6CFF38; --color-border-purple: #7E6DF5; --color-icon-purple: #A093FF; --color-text-purple: #C3BBFF;
+  --color-background-red: #E3193B33;    --color-border-red: #F5394F;    --color-icon-red: #E3193B;    --color-text-red: #FFB2B8;
+  --color-background-teal: #0DB7AF33;   --color-border-teal: #08767D;   --color-icon-teal: #26A69A;   --color-text-teal: #40DCCD;
+  --color-background-yellow: #E2A40033; --color-border-yellow: #B47700; --color-icon-yellow: #FFEE58; --color-text-yellow: #FBCE03;
+
+  /* Shadows (ascending elevation) + inset input rings */
+  --shadow-low: 0px 1px 1px #00000033, 0px 2px 8px #00000033;
+  --shadow-med: 0px 1px 2px #00000040, 0px 4px 14px #0000004D;
+  --shadow-high: 0px 2px 2px #00000040, 0px 12px 32px #00000080;
+  --shadow-inset-hover: inset 0px 0px 0px 2px #C4C8FF33;
+  --shadow-inset-selected: inset 0px 0px 0px 2px #7C6CFF80;
+  --shadow-inset-success: inset 0px 0px 0px 2px #4FD6A04D;
+  --shadow-inset-warning: inset 0px 0px 0px 2px #F2BB554D;
+  --shadow-inset-error: inset 0px 0px 0px 2px #FF73864D;
+
+  /* Moonveil local tokens */
+  --astryx-theme-moonveil-aura: radial-gradient(120% 100% at 50% 0%, #7C6CFF2E, transparent 70%);
+  --astryx-theme-moonveil-accent-glow: #7462FF73;
 }

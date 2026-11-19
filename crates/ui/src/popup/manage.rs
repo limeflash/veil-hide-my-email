@@ -77,26 +77,28 @@ fn AddressList(back: RwSignal<bool>) -> impl IntoView {
     };
     let loading = move || matches!(p.list.get(), ListState::Loading);
 
-    let chip = move |f: Filter, key: T| {
+    let segment = move |f: Filter, key: T| {
         view! {
-            <button
-                class="v-chip"
-                class:is-active=move || filter.get() == f
-                type="button"
-                aria-pressed=move || (filter.get() == f).to_string()
-                disabled=loading
-                on:click=move |_| filter.set(f)
-            >
-                {tr(key)}
-                {move || (!loading()).then(|| view! { <span class="v-chip__count">{count(f)}</span> })}
-            </button>
+            <label class="v-segmented__item">
+                <input
+                    type="radio"
+                    name="manage-filter"
+                    prop:checked=move || filter.get() == f
+                    disabled=loading
+                    on:change=move |_| filter.set(f)
+                />
+                <span>
+                    {tr(key)}
+                    {move || (!loading()).then(|| view! { <span class="v-segmented__count">{count(f)}</span> })}
+                </span>
+            </label>
         }
     };
 
     let toolbar = move || {
         view! {
             <div class="v-toolbar">
-                <div class="v-input-group" class:v-input-group--end=move || !query.get().is_empty()>
+                <div class="v-input-group">
                     <Icon icon=I::Search/>
                     <input
                         class="v-input"
@@ -119,10 +121,10 @@ fn AddressList(back: RwSignal<bool>) -> impl IntoView {
                         </button>
                     })}
                 </div>
-                <div class="v-chips" role="group" aria-label=tr(T::FilterAria)>
-                    {chip(Filter::All, T::FilterAll)}
-                    {chip(Filter::Active, T::FilterActive)}
-                    {chip(Filter::Inactive, T::FilterInactive)}
+                <div class="v-segmented v-segmented--fill" role="radiogroup" aria-label=tr(T::FilterAria)>
+                    {segment(Filter::All, T::FilterAll)}
+                    {segment(Filter::Active, T::FilterActive)}
+                    {segment(Filter::Inactive, T::FilterInactive)}
                 </div>
             </div>
         }
@@ -316,7 +318,7 @@ fn Details() -> impl IntoView {
             <section class="v-address-card v-address-card--neutral" class:is-inactive=!active>
                 <div class="v-address-card__eyebrow">
                     {if active {
-                        view! { <span class="v-badge v-badge--success"><span class="v-badge__dot"></span>{tr(T::Active)}</span> }.into_any()
+                        view! { <span class="v-badge v-badge--green"><span class="v-badge__dot"></span>{tr(T::Active)}</span> }.into_any()
                     } else {
                         view! { <span class="v-badge"><span class="v-badge__dot"></span>{tr(T::Inactive)}</span> }.into_any()
                     }}
@@ -385,7 +387,11 @@ fn Details() -> impl IntoView {
                         aria-busy=move || busy.get().to_string() on:click=move |_| set_active(true, false)>
                         <Icon icon=I::Refresh/>{tr(T::Reactivate)}
                     </button>
-                    <button class="v-btn v-btn--danger" type="button" disabled=move || busy.get() on:click=move |_| confirm.set(true)>
+                    <button class="v-btn v-btn--danger" type="button" disabled=move || busy.get() on:click=move |_| {
+                        // A pending "Undo" toast would sit on top of the sheet.
+                        c.dismiss_toasts();
+                        confirm.set(true);
+                    }>
                         <Icon icon=I::Trash/>{tr(T::Delete)}
                     </button>
                 </div>
@@ -491,14 +497,14 @@ fn Details() -> impl IntoView {
             view! {
                 <div class="v-scrim" on:click=move |_| if !busy.get_untracked() { confirm.set(false) }></div>
                 <div class="v-sheet" role="alertdialog" aria-modal="true" aria-labelledby="del-title" aria-describedby="del-text">
-                    <span class="v-sheet__icon"><Icon icon=I::Trash class="v-icon--lg"/></span>
+                    <span class="v-sheet__handle" aria-hidden="true"></span>
                     <h2 class="v-sheet__title" id="del-title">{tr(T::DeleteConfirmTitle)}</h2>
                     <p class="v-sheet__text" id="del-text">{before}<span class="v-mono">{hme}</span>{after}</p>
                     <div class="v-sheet__actions">
                         <button class="v-btn v-btn--secondary" type="button" disabled=move || busy.get() on:click=move |_| confirm.set(false)>
                             {tr(T::Cancel)}
                         </button>
-                        <button class="v-btn v-btn--danger-solid" type="button" aria-busy=move || busy.get().to_string()
+                        <button class="v-btn v-btn--danger" type="button" aria-busy=move || busy.get().to_string()
                             disabled=move || busy.get() on:click=move |_| delete()>
                             {move || busy.get().then(|| view! { <span class="v-spinner"></span> })}
                             {tr(T::Delete)}

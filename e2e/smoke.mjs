@@ -230,11 +230,11 @@ if (mock.signedIn) {
   check(titles.length >= 2 && titles[0].startsWith('GitHub'), `fuzzy search "git": ${titles.join(', ')}`);
   check((await popup.locator('mark.v-mark').count()) > 0, 'search hits are highlighted');
   await shot(popup, 'popup-search-dark');
-  await popup.click('.v-chip >> nth=2'); // inactive
+  await popup.click('.v-segmented__item >> nth=2'); // inactive
   await popup.fill('input[type=search]', '');
   const inactive = await popup.locator('.v-list .v-list-item').count();
   check(inactive === mock.emails.filter((e) => !e.isActive).length, `inactive filter: ${inactive}`);
-  await popup.click('.v-chip >> nth=0');
+  await popup.click('.v-segmented__item >> nth=0');
 
   // details → edit
   await popup.click('.v-list-item:has-text("GitHub")');
@@ -254,15 +254,17 @@ if (mock.signedIn) {
   await popup.waitForSelector('.v-address-card:not(.is-inactive)');
   check(mock.emails.find((e) => e.hme.startsWith('quiet_plover')).isActive, 'undo reactivated');
   await popup.click('.v-btn--block:has(svg)');
-  await popup.waitForSelector('.v-btn--danger');
-  await popup.click('.v-btn--danger');
+  await popup.waitForSelector('.v-actions .v-btn--danger');
+  await popup.click('.v-actions .v-btn--danger');
   await popup.waitForSelector('.v-sheet');
+  await pause(300);
   await shot(popup, 'popup-delete-confirm-dark');
-  await popup.click('.v-btn--danger-solid');
+  await popup.click('.v-sheet .v-btn--danger');
   await popup.waitForSelector('.v-list');
   check(!mock.emails.some((e) => e.hme.startsWith('quiet_plover')), 'deleted');
 
   await popup.emulateMedia({ colorScheme: 'light' });
+  await pause(600);
   await shot(popup, 'popup-manage-light');
 
   // ---- options

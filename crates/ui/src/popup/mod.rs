@@ -287,15 +287,20 @@ fn Header() -> impl IntoView {
         }
         None => {
             let show_site = move || p.screen.get() == Screen::Generate && p.site.get().is_some();
+            let managing = move || p.screen.get() == Screen::Manage;
             view! {
                 <header class="v-popup__header">
                     <div class="v-brand">
                         <span class="v-logo"><Icon icon=I::Logo/></span>
                         <div class="v-brand__text">
-                            <span class="v-brand__title">{tr(T::AppName)}</span>
+                            <span class="v-brand__title">
+                                {move || if managing() { c.t(T::ManageAddresses) } else { c.t(T::AppName) }}
+                            </span>
                             <span class="v-brand__sub">
                                 {move || if show_site() {
                                     templ(c.t(T::GenerateFor), p.site.get().unwrap_or_default()).into_any()
+                                } else if let Some(f) = managing().then(|| p.forward_to.get()).flatten().filter(|f| !f.is_empty()) {
+                                    templ(c.t(T::ForwardsTo), f).into_any()
                                 } else {
                                     c.t(T::AppTagline).into_any()
                                 }}
@@ -390,7 +395,7 @@ pub fn FooterNav(primary: Screen) -> impl IntoView {
     let p = pctx();
     let (icon, label, class) = match primary {
         Screen::Manage => (I::List, T::ManageAddresses, "v-btn v-btn--ghost v-btn--sm"),
-        _ => (I::Plus, T::NewAddress, "v-btn v-btn--soft v-btn--sm"),
+        _ => (I::Plus, T::NewAddress, "v-btn v-btn--secondary v-btn--sm"),
     };
     view! {
         <footer class="v-popup__footer">

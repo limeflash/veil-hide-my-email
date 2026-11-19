@@ -71,17 +71,15 @@ fn PageHeader(session: RwSignal<Option<ClientState>>, forward: RwSignal<Forward>
                 let region = if s.is_china() { T::RegionChina } else { T::RegionGlobal };
                 let account = s.account.map(|a| a.apple_id).filter(|a| !a.is_empty());
                 view! {
-                    <span class="v-status v-status--on" title=account>
-                        <span class="v-status__dot"></span>
-                        {tr(T::SignedIn)}
-                        <span class="v-status__sep">"·"</span>
-                        {tr(region)}
+                    <span class="v-badge v-badge--green" title=account>
+                        <span class="v-badge__dot"></span>
+                        {tr(T::SignedIn)}" · "{tr(region)}
                     </span>
                 }
                 .into_any()
             }
             None => view! {
-                <span class="v-status v-status--off"><span class="v-status__dot"></span>{tr(T::SignedOut)}</span>
+                <span class="v-badge v-badge--yellow"><span class="v-badge__dot"></span>{tr(T::SignedOut)}</span>
             }
             .into_any(),
         }
@@ -118,6 +116,7 @@ fn ForwardSection(session: RwSignal<Option<ClientState>>, forward: RwSignal<Forw
     let c = ctx();
     let selected = RwSignal::new(String::new());
     let saving = RwSignal::new(false);
+    let saved = RwSignal::new(false);
     let error = RwSignal::new(None::<String>);
 
     Effect::new(move |_| {
@@ -146,6 +145,7 @@ fn ForwardSection(session: RwSignal<Option<ClientState>>, forward: RwSignal<Forw
                             *current = email.clone();
                         }
                     });
+                    saved.set(true);
                     c.toast(ToastKind::Success, T::FwdSaved.get(lang));
                 }
                 Err(e) => error.set(Some(hme_web::describe_error(&e, lang))),
@@ -199,12 +199,15 @@ fn ForwardSection(session: RwSignal<Option<ClientState>>, forward: RwSignal<Forw
                                 disabled=move || saving.get()
                                 on:change={
                                     let email = email.clone();
-                                    move |_| selected.set(email.clone())
+                                    move |_| {
+                                        selected.set(email.clone());
+                                        saved.set(false);
+                                    }
                                 }
                             />
                             <span class="v-radio__mark"></span>
                             <span class="v-radio__label">{email.clone()}</span>
-                            {is_current.then(|| view! { <span class="v-badge v-badge--accent">{tr(T::FwdCurrent)}</span> })}
+                            {is_current.then(|| view! { <span class="v-badge v-badge--purple">{tr(T::FwdCurrent)}</span> })}
                         </label>
                     }
                 })
@@ -220,7 +223,15 @@ fn ForwardSection(session: RwSignal<Option<ClientState>>, forward: RwSignal<Forw
                         </div>
                     })}
                     <div class="v-card__footer">
-                        <span class="v-card__footer-status">{tr(T::FwdHint)}</span>
+                        {move || if saved.get() {
+                            view! {
+                                <span class="v-card__footer-status v-card__footer-status--success" role="status">
+                                    <Icon icon=I::Check/>{tr(T::Saved)}
+                                </span>
+                            }.into_any()
+                        } else {
+                            view! { <span class="v-card__footer-status">{tr(T::FwdHint)}</span> }.into_any()
+                        }}
                         <button
                             class="v-btn v-btn--primary"
                             type="button"

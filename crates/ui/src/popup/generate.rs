@@ -104,7 +104,7 @@ pub fn Generate() -> impl IntoView {
                         _ => view! { <Address value=address_text/> }.into_any(),
                     }}
                     <button
-                        class="v-icon-btn v-icon-btn--outline"
+                        class="v-icon-btn v-icon-btn--secondary"
                         class:is-spinning=move || generating.get()
                         type="button"
                         aria-label=move || if generating.get() { c.t(T::Generating) } else { c.t(T::Regenerate) }
@@ -122,7 +122,7 @@ pub fn Generate() -> impl IntoView {
             {move || gen_error.get().map(|m| view! { <ErrorAlert title=c.t(T::GenerateFailed) message=m/> })}
             {move || reserve_error.get().map(|m| view! { <ErrorAlert title=c.t(T::ReserveFailed) message=m/> })}
 
-            <form class="v-form" on:submit=on_submit aria-busy=move || reserving.get().to_string() novalidate>
+            <form class="v-form v-form--fill" on:submit=on_submit aria-busy=move || reserving.get().to_string() novalidate>
                 <div class="v-field">
                     <label class="v-label" for="gen-label">{tr(T::Label)}</label>
                     <input
@@ -144,7 +144,7 @@ pub fn Generate() -> impl IntoView {
                         <span class="v-field__error" id="gen-label-msg">{tr(T::LabelRequired)}</span>
                     })}
                 </div>
-                <div class="v-field">
+                <div class="v-field v-field--grow">
                     <label class="v-label" for="gen-note">
                         {tr(T::Note)}" "<span class="v-label__hint">{tr(T::NoteOptional)}</span>
                     </label>

@@ -1,11 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128" role="img" aria-label="Veil">
   <defs>
-    <linearGradient id="veil-bg" x1="20" y1="8" x2="108" y2="124" gradientUnits="userSpaceOnUse">
+    <!-- Moonveil brand gradient, same stops as the theme token astryx-theme-moonveil-brand-gradient -->
+    <linearGradient id="veil-bg" x1="18" y1="6" x2="110" y2="124" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#9483FF"/>
-      <stop offset="1" stop-color="#4534C8"/>
+      <stop offset="0.55" stop-color="#5B4AE6"/>
+      <stop offset="1" stop-color="#3B2BB8"/>
     </linearGradient>
-    <linearGradient id="veil-sheen" x1="64" y1="4" x2="64" y2="70" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.28"/>
+    <linearGradient id="veil-sheen" x1="64" y1="4" x2="64" y2="68" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.30"/>
       <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
     </linearGradient>
     <clipPath id="veil-env">
@@ -17,10 +19,10 @@
   <rect x="4" y="4" width="120" height="120" rx="30" fill="url(#veil-sheen)"/>
   <!-- envelope -->
   <rect x="22" y="36" width="84" height="58" rx="13" fill="#FFFFFF"/>
-  <!-- the veil: a translucent fold drawn over the lower half of the envelope -->
+  <!-- the veil: a translucent fold over the lower half of the envelope -->
   <g clip-path="url(#veil-env)">
-    <path d="M22 94 L22 78 L64 62 L106 78 L106 94 Z" fill="#5B4BE0" fill-opacity="0.16"/>
+    <path d="M22 94 L22 78 L64 62 L106 78 L106 94 Z" fill="#5746E0" fill-opacity="0.18"/>
   </g>
   <!-- flap, doubles as the letter V -->
-  <path d="M35 50 L64 73 L93 50" fill="none" stroke="#5140D6" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M35 50 L64 73 L93 50" fill="none" stroke="#4A39CC" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

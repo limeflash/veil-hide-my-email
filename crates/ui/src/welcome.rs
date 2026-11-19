@@ -42,7 +42,7 @@ pub fn WelcomePage() -> impl IntoView {
     let faq = move |q: T, a: T, open: bool| {
         view! {
             <details class="v-faq__item" open=open>
-                <summary>{tr(q)}<Icon icon=I::ChevronRight/></summary>
+                <summary>{tr(q)}<Icon icon=I::ChevronDown/></summary>
                 <div class="v-faq__body">{move || rich(c.t(a))}</div>
             </details>
         }
@@ -67,18 +67,19 @@ pub fn WelcomePage() -> impl IntoView {
                     {step(3, T::Step3Title, T::Step3Body, None)}
                 </ol>
                 {firefox.then(|| view! {
-                    <section class="v-card v-card--accent v-callout" aria-labelledby="wel-ff">
-                        <div class="v-callout__body">
-                            <h2 class="v-callout__title" id="wel-ff">
-                                {tr(T::GrantTitle)}
+                    <section class="v-alert v-alert--accent" aria-labelledby="wel-ff">
+                        <Icon icon=I::Shield/>
+                        <div class="v-alert__body">
+                            <span class="v-alert__title" id="wel-ff">
+                                {tr(T::GrantTitle)}" "
                                 <span class="v-badge v-badge--warning">{tr(T::FirefoxOnly)}</span>
-                            </h2>
-                            <p class="v-callout__text">{tr(T::GrantBody)}</p>
+                            </span>
+                            {tr(T::GrantBody)}
                         </div>
                         {move || if granted.get() {
-                            view! { <span class="v-badge v-badge--success"><Icon icon=I::Check class="v-icon--sm"/>{tr(T::Granted)}</span> }.into_any()
+                            view! { <span class="v-badge v-badge--green v-alert__action"><Icon icon=I::Check class="v-icon--sm"/>{tr(T::Granted)}</span> }.into_any()
                         } else {
-                            view! { <button class="v-btn v-btn--primary" type="button" on:click=grant><Icon icon=I::Shield/>{tr(T::GrantButton)}</button> }.into_any()
+                            view! { <button class="v-btn v-btn--primary v-alert__action" type="button" on:click=grant>{tr(T::GrantButton)}</button> }.into_any()
                         }}
                     </section>
                 })}

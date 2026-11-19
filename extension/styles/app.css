@@ -1,4 +1,4 @@
 /* Page glue around the design-system CSS (tokens.css + components.css). */
-html, body { margin: 0; background: var(--v-bg); }
-body.page-popup { width: var(--v-popup-w); height: var(--v-popup-h); overflow: hidden; }
+html, body { margin: 0; background: var(--color-background-body); }
+body.page-popup { width: var(--veil-popup-width); height: var(--veil-popup-height); overflow: hidden; }
 body.page-options, body.page-welcome { min-height: 100vh; }

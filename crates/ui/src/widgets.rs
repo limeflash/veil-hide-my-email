@@ -100,7 +100,7 @@ pub fn Toasts(#[prop(optional)] page: bool) -> impl IntoView {
                     view! {
                         <div class=kind_class class:is-leaving=move || leaving.get()>
                             <Icon icon=icon/>
-                            {toast.text.clone()}
+                            <span class="v-toast__content">{toast.text.clone()}</span>
                             {action}
                         </div>
                     }

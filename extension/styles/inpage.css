@@ -1,104 +1,113 @@
 /* ==========================================================================
-   Veil — in-page autofill button + tooltip
-   Self-contained: lives in a Shadow DOM on third-party pages, so it does NOT
-   use tokens.css. Attach the shadow root to a host element that the content
-   script positions over the focused email input (right edge, vertically
-   centred, 6px inset), and put this markup inside:
+   Veil — in-page autofill button + tooltip (Astryx IconButton + Tooltip look,
+   theme "Moonveil"). Self-contained: it lives in a Shadow DOM on third-party
+   pages, so it does NOT use tokens.css; the values below are copies of the
+   Moonveil tokens named in the comments.
+
+   Attach the shadow root to a host element that the content script positions
+   over the focused email input (right edge, vertically centred, 6-8px inset):
 
      <span class="veil-root">
-       <button class="veil-btn" type="button" data-state="ready" aria-describedby="veil-tip">…</button>
+       <button class="veil-btn" type="button" data-state="ready" aria-describedby="veil-tip">
+         <svg class="veil-icon veil-icon--logo">…</svg>
+         <svg class="veil-icon veil-icon--check">…</svg>
+         <svg class="veil-icon veil-icon--alert">…</svg>
+         <span class="veil-spinner"></span>
+       </button>
        <span class="veil-tip" id="veil-tip" role="tooltip">…</span>
      </span>
 
    States (data-state on .veil-btn): loading | ready | reserving | success | error
-   Scheme: follows the page's prefers-color-scheme; force with
-   data-scheme="light|dark" on .veil-root (e.g. when the page background
-   luminance disagrees with the OS setting).
+   Scheme: follows the page's prefers-color-scheme; force it with
+   data-scheme="light|dark" on .veil-root.
    ========================================================================== */
 
 :host { all: initial; }
 
+/* light: --color-accent, --color-background-surface, --color-border-emphasized,
+   --color-text-accent, --color-track, --color-success, --color-text-error,
+   --shadow-med, tooltip = --color-background-inverted */
 :host,
 .veil-root {
-  --veil-accent: #5b4be0;
-  --veil-accent-hover: #4f3fd4;
-  --veil-accent-glow: rgba(91, 75, 224, 0.35);
-  --veil-surface: #ffffff;
-  --veil-surface-hover: #f3f3f7;
-  --veil-border: rgba(17, 18, 28, 0.16);
-  --veil-glyph: #5546d6;
-  --veil-muted: #666a77;
-  --veil-success: #0e8a5e;
-  --veil-danger: #c42b43;
-  --veil-shadow: 0 1px 2px rgba(17, 18, 28, 0.10), 0 3px 10px rgba(17, 18, 28, 0.10);
-  --veil-tip-bg: #1b1c24;
-  --veil-tip-fg: #f3f3f6;
-  --veil-tip-muted: #b4b7c3;
-  --veil-tip-border: rgba(255, 255, 255, 0.08);
-  --veil-tip-danger: #ff8090;
-  --veil-focus: #5b4be0;
+  --veil-accent: #5746E0;
+  --veil-on-accent: #FFFFFF;
+  --veil-accent-glow: #5746E059;
+  --veil-overlay-hover: #1E20500D;
+  --veil-surface: #FFFFFF;
+  --veil-border: #CDCFE0;
+  --veil-glyph: #4A39CC;
+  --veil-track: #D5D7E6;
+  --veil-success: #0B7D55;
+  --veil-on-success: #FFFFFF;
+  --veil-danger: #9E1B30;
+  --veil-shadow: 0px 1px 2px #1E20501A, 0px 4px 14px #1E20501F;
+  --veil-tip-bg: #17182B;
+  --veil-tip-fg: #FFFFFF;
+  --veil-tip-muted: #B1B4C8;
+  --veil-tip-danger: #FF9AA6;
+  --veil-focus: #4A39CC;
 }
 
 @media (prefers-color-scheme: dark) {
   :host,
   .veil-root {
-    --veil-accent: #6c5bef;
-    --veil-accent-hover: #7a6af5;
-    --veil-accent-glow: rgba(116, 98, 255, 0.5);
-    --veil-surface: #23242e;
-    --veil-surface-hover: #2c2e3a;
-    --veil-border: rgba(255, 255, 255, 0.18);
-    --veil-glyph: #b3a7ff;
-    --veil-muted: #9a9eac;
-    --veil-success: #1f9d6e;
-    --veil-danger: #ff7f8f;
-    --veil-shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.45);
-    --veil-tip-bg: #f3f3f6;
-    --veil-tip-fg: #14151c;
-    --veil-tip-muted: #474a57;
-    --veil-tip-border: rgba(17, 18, 28, 0.10);
-    --veil-tip-danger: #c42b43;
-    --veil-focus: #b3a7ff;
+    --veil-accent: #6C5BEF;
+    --veil-on-accent: #FFFFFF;
+    --veil-accent-glow: #7462FF80;
+    --veil-overlay-hover: #FFFFFF0F;
+    --veil-surface: #1B1E30;
+    --veil-border: #3A3E57;
+    --veil-glyph: #B0A5FF;
+    --veil-track: #3A3E57;
+    --veil-success: #4FD6A0;
+    --veil-on-success: #06140E;
+    --veil-danger: #FF9AA6;
+    --veil-shadow: 0px 1px 2px #00000040, 0px 4px 14px #0000004D;
+    --veil-tip-bg: #F2F2FA;
+    --veil-tip-fg: #141624;
+    --veil-tip-muted: #51546E;
+    --veil-tip-danger: #9E1B30;
+    --veil-focus: #B0A5FF;
   }
 }
 
 .veil-root[data-scheme="light"] {
-  --veil-accent: #5b4be0;
-  --veil-accent-hover: #4f3fd4;
-  --veil-accent-glow: rgba(91, 75, 224, 0.35);
-  --veil-surface: #ffffff;
-  --veil-surface-hover: #f3f3f7;
-  --veil-border: rgba(17, 18, 28, 0.16);
-  --veil-glyph: #5546d6;
-  --veil-muted: #666a77;
-  --veil-success: #0e8a5e;
-  --veil-danger: #c42b43;
-  --veil-shadow: 0 1px 2px rgba(17, 18, 28, 0.10), 0 3px 10px rgba(17, 18, 28, 0.10);
-  --veil-tip-bg: #1b1c24;
-  --veil-tip-fg: #f3f3f6;
-  --veil-tip-muted: #b4b7c3;
-  --veil-tip-border: rgba(255, 255, 255, 0.08);
-  --veil-tip-danger: #ff8090;
-  --veil-focus: #5b4be0;
+  --veil-accent: #5746E0;
+  --veil-on-accent: #FFFFFF;
+  --veil-accent-glow: #5746E059;
+  --veil-overlay-hover: #1E20500D;
+  --veil-surface: #FFFFFF;
+  --veil-border: #CDCFE0;
+  --veil-glyph: #4A39CC;
+  --veil-track: #D5D7E6;
+  --veil-success: #0B7D55;
+  --veil-on-success: #FFFFFF;
+  --veil-danger: #9E1B30;
+  --veil-shadow: 0px 1px 2px #1E20501A, 0px 4px 14px #1E20501F;
+  --veil-tip-bg: #17182B;
+  --veil-tip-fg: #FFFFFF;
+  --veil-tip-muted: #B1B4C8;
+  --veil-tip-danger: #FF9AA6;
+  --veil-focus: #4A39CC;
 }
 .veil-root[data-scheme="dark"] {
-  --veil-accent: #6c5bef;
-  --veil-accent-hover: #7a6af5;
-  --veil-accent-glow: rgba(116, 98, 255, 0.5);
-  --veil-surface: #23242e;
-  --veil-surface-hover: #2c2e3a;
-  --veil-border: rgba(255, 255, 255, 0.18);
-  --veil-glyph: #b3a7ff;
-  --veil-muted: #9a9eac;
-  --veil-success: #1f9d6e;
-  --veil-danger: #ff7f8f;
-  --veil-shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.45);
-  --veil-tip-bg: #f3f3f6;
-  --veil-tip-fg: #14151c;
-  --veil-tip-muted: #474a57;
-  --veil-tip-border: rgba(17, 18, 28, 0.10);
-  --veil-tip-danger: #c42b43;
-  --veil-focus: #b3a7ff;
+  --veil-accent: #6C5BEF;
+  --veil-on-accent: #FFFFFF;
+  --veil-accent-glow: #7462FF80;
+  --veil-overlay-hover: #FFFFFF0F;
+  --veil-surface: #1B1E30;
+  --veil-border: #3A3E57;
+  --veil-glyph: #B0A5FF;
+  --veil-track: #3A3E57;
+  --veil-success: #4FD6A0;
+  --veil-on-success: #06140E;
+  --veil-danger: #FF9AA6;
+  --veil-shadow: 0px 1px 2px #00000040, 0px 4px 14px #0000004D;
+  --veil-tip-bg: #F2F2FA;
+  --veil-tip-fg: #141624;
+  --veil-tip-muted: #51546E;
+  --veil-tip-danger: #9E1B30;
+  --veil-focus: #B0A5FF;
 }
 
 .veil-root {
@@ -117,12 +126,12 @@
   position: relative;
   width: 28px; height: 28px; margin: 0; padding: 0;
   display: grid; place-items: center;
-  border: 1px solid var(--veil-border); border-radius: 50%;
-  background: var(--veil-surface); color: var(--veil-glyph);
+  border: 1px solid var(--veil-border); border-radius: 9999px;
+  background-color: var(--veil-surface); color: var(--veil-glyph);
   box-shadow: var(--veil-shadow);
   cursor: pointer; appearance: none; -webkit-appearance: none;
-  animation: veil-pop 200ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
-  transition: background-color 120ms cubic-bezier(0.2, 0.8, 0.2, 1), border-color 120ms cubic-bezier(0.2, 0.8, 0.2, 1), color 120ms cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 180ms cubic-bezier(0.2, 0.8, 0.2, 1), transform 120ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  animation: veil-pop 200ms cubic-bezier(0.24, 1, 0.4, 1) both;
+  transition: background-color 150ms cubic-bezier(0.24, 1, 0.4, 1), border-color 150ms cubic-bezier(0.24, 1, 0.4, 1), color 150ms cubic-bezier(0.24, 1, 0.4, 1), box-shadow 150ms cubic-bezier(0.24, 1, 0.4, 1), transform 150ms cubic-bezier(0.24, 1, 0.4, 1);
 }
 .veil-btn:focus { outline: none; }
 .veil-btn:focus-visible { outline: 2px solid var(--veil-focus); outline-offset: 2px; }
@@ -132,14 +141,14 @@
   grid-area: 1 / 1; width: 16px; height: 16px;
   fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
   opacity: 0; transform: scale(0.6);
-  transition: opacity 160ms cubic-bezier(0.2, 0.8, 0.2, 1), transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: opacity 150ms cubic-bezier(0.24, 1, 0.4, 1), transform 200ms cubic-bezier(0.24, 1, 0.4, 1);
 }
 .veil-spinner {
   grid-area: 1 / 1; width: 14px; height: 14px; border-radius: 50%;
-  border: 2px solid currentColor; border-right-color: transparent;
+  border: 3px solid var(--veil-track); border-top-color: currentColor;
   opacity: 0;
-  animation: veil-spin 700ms linear infinite;
-  transition: opacity 160ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  animation: veil-spin 800ms linear infinite;
+  transition: opacity 150ms cubic-bezier(0.24, 1, 0.4, 1);
 }
 
 /* loading — generating an address: neutral chip, accent spinner */
@@ -148,31 +157,31 @@
 
 /* ready — filled accent, logo glyph */
 .veil-btn[data-state="ready"] {
-  border-color: transparent; color: #fff;
+  border-color: transparent; color: var(--veil-on-accent);
   background-color: var(--veil-accent);
-  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0) 62%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 1px 2px rgba(24, 16, 96, 0.35), 0 3px 10px var(--veil-accent-glow);
+  box-shadow: 0 1px 2px rgba(20, 16, 80, 0.3), 0 3px 12px var(--veil-accent-glow);
 }
-.veil-btn[data-state="ready"]:hover { background-color: var(--veil-accent-hover); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 1px 2px rgba(24, 16, 96, 0.35), 0 4px 16px var(--veil-accent-glow); }
+.veil-btn[data-state="ready"]:hover { background-image: linear-gradient(var(--veil-overlay-hover), var(--veil-overlay-hover)); }
 .veil-btn[data-state="ready"] .veil-icon--logo { opacity: 1; transform: none; }
 
 /* reserving — filled accent, white spinner */
 .veil-btn[data-state="reserving"] {
-  cursor: progress; border-color: transparent; color: #fff;
+  cursor: progress; border-color: transparent; color: var(--veil-on-accent);
   background-color: var(--veil-accent);
 }
+.veil-btn[data-state="reserving"] .veil-spinner { border-color: color-mix(in srgb, currentColor 28%, transparent); border-top-color: currentColor; }
 .veil-btn[data-state="reserving"] .veil-spinner { opacity: 1; }
 
 /* success — green flash, check; the content script removes the button ~900ms later */
 .veil-btn[data-state="success"] {
-  border-color: transparent; color: #fff; background-color: var(--veil-success);
-  animation: veil-flash 600ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  border-color: transparent; color: var(--veil-on-success); background-color: var(--veil-success);
+  animation: veil-flash 600ms cubic-bezier(0.24, 1, 0.4, 1) both;
 }
 .veil-btn[data-state="success"] .veil-icon--check { opacity: 1; transform: none; }
 
 /* error — neutral chip, danger glyph */
 .veil-btn[data-state="error"] { color: var(--veil-danger); }
-.veil-btn[data-state="error"]:hover { background: var(--veil-surface-hover); }
+.veil-btn[data-state="error"]:hover { background-image: linear-gradient(var(--veil-overlay-hover), var(--veil-overlay-hover)); }
 .veil-btn[data-state="error"] .veil-icon--alert { opacity: 1; transform: none; }
 
 /* ------------------------------------------------------------- Tooltip -- */
@@ -180,21 +189,20 @@
   position: absolute; right: -6px; bottom: calc(100% + 9px); z-index: 1;
   display: flex; flex-direction: column; gap: 1px;
   width: max-content; max-width: 280px;
-  padding: 7px 10px;
-  border: 1px solid var(--veil-tip-border); border-radius: 9px;
+  padding: 6px 10px;
+  border: 0; border-radius: 10px;
   background: var(--veil-tip-bg); color: var(--veil-tip-fg);
   font-size: 12px; line-height: 16px; font-weight: 500;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18), 0 12px 32px rgba(0, 0, 0, 0.22);
+  box-shadow: var(--veil-shadow);
   pointer-events: none;
   opacity: 0; transform: translateY(4px) scale(0.98); transform-origin: calc(100% - 20px) 100%;
-  transition: opacity 140ms cubic-bezier(0.2, 0.8, 0.2, 1), transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: opacity 150ms cubic-bezier(0.24, 1, 0.4, 1), transform 150ms cubic-bezier(0.24, 1, 0.4, 1);
 }
 /* arrow */
 .veil-tip::after {
   content: ""; position: absolute; right: 15px; bottom: -5px;
   width: 9px; height: 9px; transform: rotate(45deg);
   background: var(--veil-tip-bg);
-  border-right: 1px solid var(--veil-tip-border); border-bottom: 1px solid var(--veil-tip-border);
   border-bottom-right-radius: 2px;
 }
 /* place below the field when there is no room above */
@@ -219,9 +227,9 @@
 @keyframes veil-spin { to { transform: rotate(360deg); } }
 @keyframes veil-pop { from { opacity: 0; transform: scale(0.6); } to { opacity: 1; transform: none; } }
 @keyframes veil-flash {
-  0% { box-shadow: 0 0 0 0 rgba(31, 157, 110, 0.55); transform: scale(0.9); }
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--veil-success) 55%, transparent); transform: scale(0.9); }
   40% { transform: scale(1.08); }
-  100% { box-shadow: 0 0 0 10px rgba(31, 157, 110, 0); transform: none; }
+  100% { box-shadow: 0 0 0 10px transparent; transform: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
