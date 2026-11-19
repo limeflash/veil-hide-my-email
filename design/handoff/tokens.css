@@ -1,0 +1,418 @@
+/* ==========================================================================
+   Veil — design tokens: Astryx theme "Postmark"
+   --------------------------------------------------------------------------
+   Token NAMES are Astryx's own (github.com/meta/astryx, MIT —
+   packages/core/src/theme/tokens.stylex.ts). VALUES are the Postmark theme:
+   graphite neutrals, ink as the accent (the way Astryx's Neutral theme does
+   it), and one coloured object — the manila address label.
+   Astryx themes write colours as light-dark(); here each mode is a plain
+   block so the extension can force a mode with an attribute:
+
+     <html data-theme="light">  -> light
+     <html data-theme="dark">   -> dark
+     no data-theme              -> follows prefers-color-scheme
+
+   [data-theme] also works on any subtree (the design previews use that).
+   Theme-local tokens follow Astryx's convention: --astryx-theme-<name>-*.
+   App layout constants that are not Astryx tokens are prefixed --veil-*.
+   ========================================================================== */
+
+:root {
+  /* ---- Spacing (Astryx scale, 4px x step, rem) ---- */
+  --spacing-0: 0rem;
+  --spacing-0-5: 0.125rem;
+  --spacing-1: 0.25rem;
+  --spacing-1-5: 0.375rem;
+  --spacing-2: 0.5rem;
+  --spacing-3: 0.75rem;
+  --spacing-4: 1rem;
+  --spacing-5: 1.25rem;
+  --spacing-6: 1.5rem;
+  --spacing-7: 1.75rem;
+  --spacing-8: 2rem;
+  --spacing-9: 2.25rem;
+  --spacing-10: 2.5rem;
+  --spacing-11: 2.75rem;
+  --spacing-12: 3rem;
+
+  /* ---- Element sizes (control heights) ---- */
+  --size-element-sm: 28px;
+  --size-element-md: 32px;
+  --size-element-lg: 36px;
+
+  /* ---- Border ---- */
+  --border-width: 1px;
+
+  /* ---- Focus ring (Astryx default offset is 3px; 2px keeps it inside the popup) ---- */
+  --focus-outline-width: 2px;
+  --focus-outline-style: solid;
+  --focus-outline-color: var(--color-accent);
+  --focus-outline-offset: 2px;
+
+  /* ---- Radius (Astryx 8/12; inner 6 so nested corners add up) ---- */
+  --radius-none: 0px;
+  --radius-inner: 6px;
+  --radius-element: 8px;
+  --radius-container: 12px;
+  --radius-page: 20px;
+  --radius-chat: var(--radius-container);
+  --radius-full: 9999px;
+
+  /* ---- Motion: duration (defineTheme motion {fast:150, medium:320, slow:800, ratio:.75}) ---- */
+  --duration-fast-min: 110ms;
+  --duration-fast: 150ms;
+  --duration-fast-max: 200ms;
+  --duration-medium-min: 240ms;
+  --duration-medium: 320ms;
+  --duration-medium-max: 425ms;
+  --duration-slow-min: 600ms;
+  --duration-slow: 800ms;
+  --duration-slow-max: 1065ms;
+  --duration-exit: var(--duration-fast);
+
+  /* ---- Motion: easing (one curve for everything) ---- */
+  --ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-entrance: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-move: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-exit: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* ---- Typography: families (system stacks, nothing bundled) ---- */
+  --font-family-body: -apple-system, BlinkMacSystemFont, "Segoe UI Variable", "Segoe UI", Inter, Roboto, system-ui, sans-serif;
+  --font-family-heading: -apple-system, BlinkMacSystemFont, "Segoe UI Variable", "Segoe UI", Inter, Roboto, system-ui, sans-serif;
+  --font-family-code: ui-monospace, "SF Mono", SFMono-Regular, "Cascadia Code", "Segoe UI Mono", "Roboto Mono", Menlo, Consolas, monospace;
+
+  /* ---- Typography: raw sizes (Astryx default scale, base 14 x 1.2^step) ---- */
+  --font-size-4xs: 0.375rem;
+  --font-size-3xs: 0.4375rem;
+  --font-size-2xs: 0.5rem;
+  --font-size-xs: 0.625rem;    /* 10px */
+  --font-size-sm: 0.75rem;     /* 12px */
+  --font-size-base: 0.875rem;  /* 14px */
+  --font-size-lg: 1.0625rem;   /* 17px */
+  --font-size-xl: 1.25rem;     /* 20px */
+  --font-size-2xl: 1.5rem;     /* 24px */
+  --font-size-3xl: 1.8125rem;  /* 29px */
+  --font-size-4xl: 2.1875rem;  /* 35px */
+  --font-size-5xl: 2.625rem;   /* 42px */
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* ---- Typography: roles ---- */
+  --text-heading-1-size: var(--font-size-2xl); --text-heading-1-weight: var(--font-weight-medium); --text-heading-1-leading: 1.3333;
+  --text-heading-2-size: var(--font-size-xl);  --text-heading-2-weight: var(--font-weight-medium); --text-heading-2-leading: 1.4;
+  --text-heading-3-size: var(--font-size-lg);  --text-heading-3-weight: var(--font-weight-medium); --text-heading-3-leading: 1.4118;
+  --text-heading-4-size: var(--font-size-base); --text-heading-4-weight: var(--font-weight-medium); --text-heading-4-leading: 1.4286;
+  --text-heading-5-size: var(--font-size-sm);  --text-heading-5-weight: var(--font-weight-medium); --text-heading-5-leading: 1.3333;
+  --text-heading-6-size: var(--font-size-xs);  --text-heading-6-weight: var(--font-weight-medium); --text-heading-6-leading: 1.6;
+  --text-body-size: var(--font-size-base);     --text-body-weight: var(--font-weight-normal);   --text-body-leading: 1.4286;
+  --text-large-size: var(--font-size-lg);      --text-large-weight: var(--font-weight-medium); --text-large-leading: 1.4118;
+  --text-label-size: var(--font-size-base);    --text-label-weight: var(--font-weight-medium);  --text-label-leading: 1.4286;
+  --text-code-size: var(--font-size-base);     --text-code-weight: var(--font-weight-normal);   --text-code-leading: 1.4286;
+  /* Postmark: supporting text sits on a 16px line (Astryx default is 20px) for the dense popup */
+  --text-supporting-size: var(--font-size-sm); --text-supporting-weight: var(--font-weight-normal); --text-supporting-leading: 1.3333;
+  --text-display-1-size: var(--font-size-5xl); --text-display-1-weight: var(--font-weight-medium); --text-display-1-leading: 1.1429;
+  --text-display-2-size: var(--font-size-4xl); --text-display-2-weight: var(--font-weight-medium); --text-display-2-leading: 1.1429;
+  --text-display-3-size: var(--font-size-3xl); --text-display-3-weight: var(--font-weight-medium); --text-display-3-leading: 1.2414;
+
+  /* ---- Status roles that follow other tokens (Astryx defaults) ---- */
+  --color-icon-info: var(--color-text-info);
+  --color-icon-success: var(--color-text-success);
+  --color-icon-warning: var(--color-text-warning);
+  --color-icon-error: var(--color-text-error);
+  --color-border-info: var(--color-text-info);
+  --color-border-success: var(--color-text-success);
+  --color-border-warning: var(--color-text-warning);
+  --color-border-error: var(--color-text-error);
+  --color-on-info-muted: var(--color-text-info);
+  --color-on-success-muted: var(--color-text-success);
+  --color-on-warning-muted: var(--color-text-warning);
+  --color-on-error-muted: var(--color-text-error);
+
+  /* ---- Postmark local tokens: the address label (same in both modes, it is an object) ---- */
+  --astryx-theme-postmark-label-paper: #E9D8B4;
+  --astryx-theme-postmark-label-ink: #221C12;
+  --astryx-theme-postmark-label-ink-secondary: #5C5140;
+  --astryx-theme-postmark-label-hairline: #221C1233;
+  --astryx-theme-postmark-label-fill: #221C1214;
+
+  /* ---- Veil app constants (not Astryx tokens) ---- */
+  --veil-popup-width: 380px;
+  --veil-popup-height: 560px;
+  --veil-page-max-width: 720px;
+  --veil-z-scrim: 10;
+  --veil-z-sheet: 11;
+  --veil-z-toast: 20;
+}
+
+/* ------------------------------- Light ---------------------------------- */
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+
+  /* Core semantic */
+  --color-accent: #171717;
+  --color-accent-muted: #17171724;
+  --color-on-accent: #FFFFFF;
+  --color-neutral: #17171712;
+  --color-background-surface: #FFFFFF;
+  --color-background-body: #FAFAFA;
+  --color-overlay: #17171766;
+  --color-overlay-hover: #1717170D;
+  --color-overlay-pressed: #1717171A;
+  --color-background-muted: #F4F4F5;
+
+  /* Text */
+  --color-text-primary: #171717;
+  --color-text-secondary: #525252;
+  --color-text-disabled: #A3A3A3;
+  --color-text-accent: #171717;
+  --color-on-dark: #FFFFFF;
+  --color-on-light: #171717;
+
+  /* Icon */
+  --color-icon-accent: #171717;
+  --color-icon-primary: #171717;
+  --color-icon-secondary: #737373;
+  --color-icon-disabled: #A3A3A3;
+
+  /* Surface variants */
+  --color-background-card: #FFFFFF;
+  --color-background-popover: #FFFFFF;
+  --color-background-inverted: #171717;
+  --color-background-error-inverted: #B42318;
+
+  /* Status fills: strong fill + content on it, pale fill + content on it */
+  --color-info: #2F5FC4;
+  --color-info-muted: #2F5FC41F;
+  --color-on-info: #FFFFFF;
+  --color-success: #15803D;
+  --color-success-muted: #16A34A1F;
+  --color-on-success: #FFFFFF;
+  --color-error: #DC2626;
+  --color-error-muted: #DC26261A;
+  --color-on-error: #FFFFFF;
+  --color-warning: #E9AF08;
+  --color-warning-muted: #E2A40029;
+  --color-on-warning: #1A1205;
+
+  /* Status text on page and card surfaces (>= 4.5:1) */
+  --color-text-info: #1E40AF;
+  --color-text-success: #166534;
+  --color-text-warning: #713F12;
+  --color-text-error: #991B1B;
+
+  /* Border */
+  --color-border: #17171714;
+  --color-border-emphasized: #D4D4D8;
+
+  /* Effects */
+  --color-skeleton: #C8C8CC;
+  --color-track: #D4D4D8;
+  --color-shadow: #0000000D;
+  --color-tint-hover: black;
+
+  /* Categorical (Astryx defaults; gray follows the neutral ramp) */
+  --color-background-blue: #0171E333;   --color-border-blue: #0064E0;   --color-icon-blue: #0064E0;   --color-text-blue: #042F97;
+  --color-background-cyan: #03A7D733;   --color-border-cyan: #089DD0;   --color-icon-cyan: #00ACC1;   --color-text-cyan: #014975;
+  --color-background-gray: #17171733;   --color-border-gray: #737373;   --color-icon-gray: #525252;   --color-text-gray: #171717;
+  --color-background-green: #24BB5E33;  --color-border-green: #0D8626;  --color-icon-green: #0D8626;  --color-text-green: #09441F;
+  --color-background-orange: #F2790233; --color-border-orange: #EB6E00; --color-icon-orange: #E9690B; --color-text-orange: #6B2203;
+  --color-background-pink: #E638B333;   --color-border-pink: #F351C0;   --color-icon-pink: #C2185B;   --color-text-pink: #650053;
+  --color-background-purple: #7952FF33; --color-border-purple: #9081FF; --color-icon-purple: #5B08D8; --color-text-purple: #3E0697;
+  --color-background-red: #E3193B33;    --color-border-red: #E3193B;    --color-icon-red: #D31130;    --color-text-red: #7B0210;
+  --color-background-teal: #0DB7AF33;   --color-border-teal: #08A3A3;   --color-icon-teal: #009688;   --color-text-teal: #083943;
+  --color-background-yellow: #E2A40033; --color-border-yellow: #C58600; --color-icon-yellow: #B47700; --color-text-yellow: #753F07;
+
+  /* Shadows (ascending elevation) + inset input rings */
+  --shadow-low: 0px 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-med: 0px 1px 2px rgba(0, 0, 0, 0.05), 0px 8px 24px rgba(0, 0, 0, 0.06);
+  --shadow-high: 0px 2px 4px rgba(0, 0, 0, 0.06), 0px 16px 40px rgba(0, 0, 0, 0.12);
+  --shadow-inset-hover: inset 0px 0px 0px 2px #17171726;
+  --shadow-inset-selected: inset 0px 0px 0px 2px #1717174D;
+  --shadow-inset-success: inset 0px 0px 0px 2px #16A34A4D;
+  --shadow-inset-warning: inset 0px 0px 0px 2px #E2A4004D;
+  --shadow-inset-error: inset 0px 0px 0px 2px #DC26264D;
+}
+
+/* -------------------------------- Dark ---------------------------------- */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+
+    /* Core semantic */
+    --color-accent: #EDEDED;
+    --color-accent-muted: #EDEDED29;
+    --color-on-accent: #141415;
+    --color-neutral: #EDEDED17;
+    --color-background-surface: #19191B;
+    --color-background-body: #141415;
+    --color-overlay: #000000A8;
+    --color-overlay-hover: #EDEDED0F;
+    --color-overlay-pressed: #EDEDED1C;
+    --color-background-muted: #0F0F10;
+
+    /* Text */
+    --color-text-primary: #EDEDED;
+    --color-text-secondary: #A1A1A6;
+    --color-text-disabled: #6B6B70;
+    --color-text-accent: #EDEDED;
+    --color-on-dark: #FFFFFF;
+    --color-on-light: #141415;
+
+    /* Icon */
+    --color-icon-accent: #EDEDED;
+    --color-icon-primary: #EDEDED;
+    --color-icon-secondary: #85858B;
+    --color-icon-disabled: #6B6B70;
+
+    /* Surface variants */
+    --color-background-card: #19191B;
+    --color-background-popover: #232325;
+    --color-background-inverted: #EDEDED;
+    --color-background-error-inverted: #C4373C;
+
+    /* Status fills: strong fill + content on it, pale fill + content on it */
+    --color-info: #7FA8FF;
+    --color-info-muted: #7FA8FF29;
+    --color-on-info: #06102A;
+    --color-success: #4CC38A;
+    --color-success-muted: #4CC38A24;
+    --color-on-success: #06140E;
+    --color-error: #E5484D;
+    --color-error-muted: #E5484D29;
+    --color-on-error: #1A0506;
+    --color-warning: #F2BB55;
+    --color-warning-muted: #F2BB5526;
+    --color-on-warning: #1A1205;
+
+    /* Status text on page and card surfaces (>= 4.5:1) */
+    --color-text-info: #A9C4FF;
+    --color-text-success: #7ADFAE;
+    --color-text-warning: #F5C76E;
+    --color-text-error: #FF9592;
+
+    /* Border */
+    --color-border: #EDEDED14;
+    --color-border-emphasized: #38383C;
+
+    /* Effects */
+    --color-skeleton: #5A5A60;
+    --color-track: #3A3A3E;
+    --color-shadow: #00000066;
+    --color-tint-hover: white;
+
+    /* Categorical (Astryx defaults; gray follows the neutral ramp) */
+    --color-background-blue: #0171E333;   --color-border-blue: #2694FE;   --color-icon-blue: #2694FE;   --color-text-blue: #AFD7FF;
+    --color-background-cyan: #03A7D733;   --color-border-cyan: #0171A4;   --color-icon-cyan: #26C6DA;   --color-text-cyan: #A1EEF9;
+    --color-background-gray: #EDEDED40;   --color-border-gray: #85858B;   --color-icon-gray: #A1A1A6;   --color-text-gray: #EDEDED;
+    --color-background-green: #24BB5E33;  --color-border-green: #0B991F;  --color-icon-green: #26A756;  --color-text-green: #A5F690;
+    --color-background-orange: #F2790233; --color-border-orange: #B34A01; --color-icon-orange: #FB8C00; --color-text-orange: #FDB876;
+    --color-background-pink: #E638B333;   --color-border-pink: #C02294;   --color-icon-pink: #EC407A;   --color-text-pink: #FEADE3;
+    --color-background-purple: #7952FF33; --color-border-purple: #7340FE; --color-icon-purple: #7952FF; --color-text-purple: #B3B0FE;
+    --color-background-red: #E3193B33;    --color-border-red: #F5394F;    --color-icon-red: #E3193B;    --color-text-red: #FFB2B8;
+    --color-background-teal: #0DB7AF33;   --color-border-teal: #08767D;   --color-icon-teal: #26A69A;   --color-text-teal: #40DCCD;
+    --color-background-yellow: #E2A40033; --color-border-yellow: #B47700; --color-icon-yellow: #FFEE58; --color-text-yellow: #FBCE03;
+
+    /* Shadows (ascending elevation) + inset input rings */
+    --shadow-low: 0px 0px 0px 1px #EDEDED14;
+    --shadow-med: 0px 0px 0px 1px #EDEDED14, 0px 8px 24px rgba(0, 0, 0, 0.4);
+    --shadow-high: 0px 0px 0px 1px #EDEDED1F, 0px 16px 40px rgba(0, 0, 0, 0.55);
+    --shadow-inset-hover: inset 0px 0px 0px 2px #EDEDED26;
+    --shadow-inset-selected: inset 0px 0px 0px 2px #EDEDED4D;
+    --shadow-inset-success: inset 0px 0px 0px 2px #4CC38A4D;
+    --shadow-inset-warning: inset 0px 0px 0px 2px #F2BB554D;
+    --shadow-inset-error: inset 0px 0px 0px 2px #E5484D4D;
+  }
+}
+
+/* Same values as the media-query block above. */
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* Core semantic */
+  --color-accent: #EDEDED;
+  --color-accent-muted: #EDEDED29;
+  --color-on-accent: #141415;
+  --color-neutral: #EDEDED17;
+  --color-background-surface: #19191B;
+  --color-background-body: #141415;
+  --color-overlay: #000000A8;
+  --color-overlay-hover: #EDEDED0F;
+  --color-overlay-pressed: #EDEDED1C;
+  --color-background-muted: #0F0F10;
+
+  /* Text */
+  --color-text-primary: #EDEDED;
+  --color-text-secondary: #A1A1A6;
+  --color-text-disabled: #6B6B70;
+  --color-text-accent: #EDEDED;
+  --color-on-dark: #FFFFFF;
+  --color-on-light: #141415;
+
+  /* Icon */
+  --color-icon-accent: #EDEDED;
+  --color-icon-primary: #EDEDED;
+  --color-icon-secondary: #85858B;
+  --color-icon-disabled: #6B6B70;
+
+  /* Surface variants */
+  --color-background-card: #19191B;
+  --color-background-popover: #232325;
+  --color-background-inverted: #EDEDED;
+  --color-background-error-inverted: #C4373C;
+
+  /* Status fills: strong fill + content on it, pale fill + content on it */
+  --color-info: #7FA8FF;
+  --color-info-muted: #7FA8FF29;
+  --color-on-info: #06102A;
+  --color-success: #4CC38A;
+  --color-success-muted: #4CC38A24;
+  --color-on-success: #06140E;
+  --color-error: #E5484D;
+  --color-error-muted: #E5484D29;
+  --color-on-error: #1A0506;
+  --color-warning: #F2BB55;
+  --color-warning-muted: #F2BB5526;
+  --color-on-warning: #1A1205;
+
+  /* Status text on page and card surfaces (>= 4.5:1) */
+  --color-text-info: #A9C4FF;
+  --color-text-success: #7ADFAE;
+  --color-text-warning: #F5C76E;
+  --color-text-error: #FF9592;
+
+  /* Border */
+  --color-border: #EDEDED14;
+  --color-border-emphasized: #38383C;
+
+  /* Effects */
+  --color-skeleton: #5A5A60;
+  --color-track: #3A3A3E;
+  --color-shadow: #00000066;
+  --color-tint-hover: white;
+
+  /* Categorical (Astryx defaults; gray follows the neutral ramp) */
+  --color-background-blue: #0171E333;   --color-border-blue: #2694FE;   --color-icon-blue: #2694FE;   --color-text-blue: #AFD7FF;
+  --color-background-cyan: #03A7D733;   --color-border-cyan: #0171A4;   --color-icon-cyan: #26C6DA;   --color-text-cyan: #A1EEF9;
+  --color-background-gray: #EDEDED40;   --color-border-gray: #85858B;   --color-icon-gray: #A1A1A6;   --color-text-gray: #EDEDED;
+  --color-background-green: #24BB5E33;  --color-border-green: #0B991F;  --color-icon-green: #26A756;  --color-text-green: #A5F690;
+  --color-background-orange: #F2790233; --color-border-orange: #B34A01; --color-icon-orange: #FB8C00; --color-text-orange: #FDB876;
+  --color-background-pink: #E638B333;   --color-border-pink: #C02294;   --color-icon-pink: #EC407A;   --color-text-pink: #FEADE3;
+  --color-background-purple: #7952FF33; --color-border-purple: #7340FE; --color-icon-purple: #7952FF; --color-text-purple: #B3B0FE;
+  --color-background-red: #E3193B33;    --color-border-red: #F5394F;    --color-icon-red: #E3193B;    --color-text-red: #FFB2B8;
+  --color-background-teal: #0DB7AF33;   --color-border-teal: #08767D;   --color-icon-teal: #26A69A;   --color-text-teal: #40DCCD;
+  --color-background-yellow: #E2A40033; --color-border-yellow: #B47700; --color-icon-yellow: #FFEE58; --color-text-yellow: #FBCE03;
+
+  /* Shadows (ascending elevation) + inset input rings */
+  --shadow-low: 0px 0px 0px 1px #EDEDED14;
+  --shadow-med: 0px 0px 0px 1px #EDEDED14, 0px 8px 24px rgba(0, 0, 0, 0.4);
+  --shadow-high: 0px 0px 0px 1px #EDEDED1F, 0px 16px 40px rgba(0, 0, 0, 0.55);
+  --shadow-inset-hover: inset 0px 0px 0px 2px #EDEDED26;
+  --shadow-inset-selected: inset 0px 0px 0px 2px #EDEDED4D;
+  --shadow-inset-success: inset 0px 0px 0px 2px #4CC38A4D;
+  --shadow-inset-warning: inset 0px 0px 0px 2px #F2BB554D;
+  --shadow-inset-error: inset 0px 0px 0px 2px #E5484D4D;
+}

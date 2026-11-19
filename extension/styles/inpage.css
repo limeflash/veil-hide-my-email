@@ -160,6 +160,8 @@
 }
 .veil-btn[data-state="ready"]:hover { background-image: linear-gradient(#221C1214, #221C1214); }
 .veil-btn[data-state="ready"] .veil-icon--logo { opacity: 1; transform: none; }
+/* the logo glyph is a filled mark */
+.veil-icon--logo { width: 18px; height: 18px; fill: currentColor; stroke: none; }
 
 /* reserving — filled accent, white spinner */
 .veil-btn[data-state="reserving"] {

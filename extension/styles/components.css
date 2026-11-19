@@ -66,7 +66,8 @@
 .v-link:hover { text-decoration-color: currentColor; }
 
 /* ------------------------------------------------------- Brand / logo -- */
-/* Flat mark: the manila label colour with the envelope glyph in ink. No gradient, sheen or glow. */
+/* Flat tile in the label paper with the filled Veil mark in ink: an envelope whose flap
+   and body are two solid shapes, the gap between them reading as a V. No gradient or glow. */
 .v-logo {
   width: 28px; height: 28px; flex: none;
   display: inline-grid; place-items: center;
@@ -74,11 +75,14 @@
   background: var(--astryx-theme-postmark-label-paper);
   color: var(--astryx-theme-postmark-label-ink);
 }
-.v-logo .v-icon { width: 18px; height: 18px; stroke-width: 1.75; }
+/* the logo glyph is a filled mark: two solid shapes, no stroke */
+.v-logo .v-icon,
+.v-icon--filled { fill: currentColor; stroke: none; }
+.v-logo .v-icon { width: 20px; height: 20px; }
 .v-logo--lg { width: 40px; height: 40px; border-radius: var(--radius-element); }
-.v-logo--lg .v-icon { width: 24px; height: 24px; }
+.v-logo--lg .v-icon { width: 28px; height: 28px; }
 .v-logo--xl { width: 64px; height: 64px; border-radius: var(--radius-container); }
-.v-logo--xl .v-icon { width: 36px; height: 36px; }
+.v-logo--xl .v-icon { width: 44px; height: 44px; }
 .v-logo--pulse { animation: none; }   /* kept for the markup contract; the Spinner next to it is the only motion */
 
 .v-brand { display: flex; align-items: center; gap: var(--spacing-2); min-width: 0; flex: 1; }
@@ -292,8 +296,7 @@
    It is a physical thing, so paper and ink are the same in light and dark.
    Inside it the Astryx colour tokens are re-pointed at ink-on-paper, so nested
    IconButton, Badge and Skeleton need no special cases.
-   Signature: a postmark. It is absent while the address is only a draft and is
-   stamped on once the address exists (--success, --neutral). */
+   There is no stamp or other decoration on it: the label itself is the moment. */
 .v-address-card {
   position: relative; overflow: clip;
   padding: var(--spacing-3) var(--spacing-3) var(--spacing-3) var(--spacing-4);

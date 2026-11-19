@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Veil — options page</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="components.css">
+<link rel="stylesheet" href="preview.css">
+</head>
+<body class="v-root" style="margin:0">
+<!--
+  Static reference markup. Every state is a <section class="h-state" data-state="…">
+  with an .h-state__label; port what is INSIDE the section (the .v-* / .veil-* tree).
+  .h-* classes and preview.css are preview chrome only.
+  Theme: follows the OS; force with <html data-theme="light|dark">.
+-->
+<div class="h-board v-root">
+
+<!-- ============================ Options page ========================== -->
+<section class="h-state" data-state="options">
+<h2 class="h-state__label"><b>B1</b> Options page — signed in, forward-to loaded</h2>
+<div class="h-frame h-frame--page">
+<div class="v-page">
+  <div class="v-page__container">
+    <header class="v-page-header">
+      <div class="v-brand v-brand--lg">
+        <span class="v-logo v-logo--lg"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14a3 3 0 0 1 2.6 1.5L12 13.2 2.4 6.5A3 3 0 0 1 5 5z"></path><path d="M2 9.3l8.9 6.2a1.9 1.9 0 0 0 2.2 0L22 9.3V16a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3z"></path></svg></span>
+        <div class="v-brand__text"><span class="v-brand__title">Veil</span><span class="v-brand__sub">Hide My Email для iCloud</span></div>
+      </div>
+      <span class="v-badge v-badge--green"><span class="v-badge__dot"></span>Вход выполнен · iCloud.com</span>
+    </header>
+
+    <section class="v-section" aria-labelledby="opt-forward">
+      <div class="v-section__head">
+        <h2 class="v-section__title" id="opt-forward">Пересылка</h2>
+        <p class="v-section__desc">Куда приходят письма с новых адресов</p>
+      </div>
+      <div class="v-card">
+        <div class="v-card__body">
+          <div class="v-radio-list" role="radiogroup" aria-labelledby="opt-forward">
+            <label class="v-radio is-active"><input type="radio" name="forward" checked="checked"><span class="v-radio__mark"></span><span class="v-radio__label">me@example.com</span><span class="v-badge">Сейчас</span></label>
+            <label class="v-radio"><input type="radio" name="forward"><span class="v-radio__mark"></span><span class="v-radio__label">work@example.com</span></label>
+            <label class="v-radio"><input type="radio" name="forward"><span class="v-radio__mark"></span><span class="v-radio__label">me@icloud.com</span></label>
+          </div>
+        </div>
+        <div class="v-card__footer">
+          <span class="v-card__footer-status">Уже созданные адреса не изменятся</span>
+          <button class="v-btn v-btn--primary" type="button" disabled="disabled">Сохранить</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="v-section" aria-labelledby="opt-autofill">
+      <div class="v-section__head">
+        <h2 class="v-section__title" id="opt-autofill">Автозаполнение</h2>
+        <p class="v-section__desc">Как Veil предлагает адрес на сайтах</p>
+      </div>
+      <div class="v-card">
+        <label class="v-setting">
+          <span class="v-setting__body"><span class="v-setting__title">Кнопка в полях email</span><span class="v-setting__desc">Появляется в поле, когда оно в фокусе</span></span>
+          <input class="v-toggle" type="checkbox" role="switch" checked="checked">
+        </label>
+        <label class="v-setting">
+          <span class="v-setting__body"><span class="v-setting__title">Пункт в контекстном меню</span><span class="v-setting__desc">Правый клик по полю → «Вставить адрес Veil»</span></span>
+          <input class="v-toggle" type="checkbox" role="switch">
+        </label>
+      </div>
+    </section>
+
+    <section class="v-section" aria-labelledby="opt-look">
+      <div class="v-section__head">
+        <h2 class="v-section__title" id="opt-look">Оформление</h2>
+      </div>
+      <div class="v-card">
+        <div class="v-setting v-setting--wrap">
+          <span class="v-setting__body"><span class="v-setting__title" id="opt-theme">Тема</span><span class="v-setting__desc">Для окна расширения и этих страниц</span></span>
+          <div class="v-segmented" role="radiogroup" aria-labelledby="opt-theme">
+            <label class="v-segmented__item"><input type="radio" name="theme" checked="checked"><span><svg class="v-icon v-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg>Системная</span></label>
+            <label class="v-segmented__item"><input type="radio" name="theme"><span><svg class="v-icon v-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>Светлая</span></label>
+            <label class="v-segmented__item"><input type="radio" name="theme"><span><svg class="v-icon v-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path></svg>Тёмная</span></label>
+          </div>
+        </div>
+        <div class="v-setting v-setting--wrap">
+          <span class="v-setting__body"><span class="v-setting__title" id="opt-lang">Язык</span><span class="v-setting__desc">«Авто» берёт язык браузера</span></span>
+          <div class="v-segmented" role="radiogroup" aria-labelledby="opt-lang">
+            <label class="v-segmented__item"><input type="radio" name="lang" checked="checked"><span>Авто</span></label>
+            <label class="v-segmented__item"><input type="radio" name="lang"><span>Русский</span></label>
+            <label class="v-segmented__item"><input type="radio" name="lang"><span>English</span></label>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="v-section" aria-labelledby="opt-about">
+      <div class="v-section__head">
+        <h2 class="v-section__title" id="opt-about">О расширении</h2>
+      </div>
+      <div class="v-card">
+        <div class="v-card__body">
+          <p class="v-prose"><strong>Veil — независимый проект.</strong> Он не связан с Apple Inc. и не одобрен ею. iCloud и Hide My Email — товарные знаки Apple Inc.</p>
+          <p class="v-prose">Основан на оригинальном расширении Dimitrios Dedoussis и форке <a class="v-link" href="https://github.com/imNebula/icloud-hide-my-email-browser-extension" target="_blank" rel="noreferrer">imNebula</a>.</p>
+        </div>
+        <div class="v-card__footer">
+          <span class="v-card__footer-status"><span class="v-badge">MIT</span>Открытый исходный код</span>
+          <a class="v-btn v-btn--secondary v-btn--sm" href="#source">Исходный код<svg class="v-icon v-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg></a>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+</div>
+</section>
+
+<!-- ======================= Forward-to card variants =================== -->
+<div class="h-col">
+
+<section class="h-state" data-state="options-status-pills">
+<h2 class="h-state__label"><b>B2</b> Header status badge — variants</h2>
+<div class="h-row">
+  <span class="v-badge v-badge--green"><span class="v-badge__dot"></span>Вход выполнен · iCloud.com</span>
+  <span class="v-badge v-badge--green"><span class="v-badge__dot"></span>Вход выполнен · iCloud.com.cn</span>
+  <span class="v-badge v-badge--yellow"><span class="v-badge__dot"></span>Вход не выполнен</span>
+</div>
+</section>
+
+<section class="h-state" data-state="options-forward-loading">
+<h2 class="h-state__label"><b>B3</b> Forward to — loading</h2>
+<div class="h-frame h-frame--card">
+<div class="v-card" aria-busy="true">
+  <div class="v-card__body">
+    <div class="v-radio-list" aria-hidden="true">
+      <span class="v-skeleton v-skeleton--block"></span>
+      <span class="v-skeleton v-skeleton--block"></span>
+      <span class="v-skeleton v-skeleton--block"></span>
+    </div>
+  </div>
+  <div class="v-card__footer">
+    <span class="v-card__footer-status" role="status"><span class="v-spinner v-spinner--sm"></span>Загружаем адреса из iCloud…</span>
+    <button class="v-btn v-btn--primary" type="button" disabled="disabled">Сохранить</button>
+  </div>
+</div>
+</div>
+</section>
+
+<section class="h-state" data-state="options-forward-dirty">
+<h2 class="h-state__label"><b>B4</b> Forward to — changed, saving</h2>
+<div class="h-frame h-frame--card">
+<div class="v-card">
+  <div class="v-card__body">
+    <div class="v-radio-list" role="radiogroup" aria-label="Пересылка">
+      <label class="v-radio"><input type="radio" name="forward-b4"><span class="v-radio__mark"></span><span class="v-radio__label">me@example.com</span><span class="v-badge">Сейчас</span></label>
+      <label class="v-radio is-active"><input type="radio" name="forward-b4" checked="checked"><span class="v-radio__mark"></span><span class="v-radio__label">work@example.com</span></label>
+      <label class="v-radio"><input type="radio" name="forward-b4"><span class="v-radio__mark"></span><span class="v-radio__label">me@icloud.com</span></label>
+    </div>
+  </div>
+  <div class="v-card__footer">
+    <span class="v-card__footer-status">Уже созданные адреса не изменятся</span>
+    <button class="v-btn v-btn--primary" type="button" aria-busy="true"><span class="v-spinner"></span>Использовать адрес</button>
+  </div>
+</div>
+</div>
+</section>
+
+<section class="h-state" data-state="options-forward-saved">
+<h2 class="h-state__label"><b>B5</b> Forward to — saved</h2>
+<div class="h-frame h-frame--card">
+<div class="v-card">
+  <div class="v-card__body">
+    <div class="v-radio-list" role="radiogroup" aria-label="Пересылка">
+      <label class="v-radio"><input type="radio" name="forward-b5"><span class="v-radio__mark"></span><span class="v-radio__label">me@example.com</span></label>
+      <label class="v-radio is-active"><input type="radio" name="forward-b5" checked="checked"><span class="v-radio__mark"></span><span class="v-radio__label">work@example.com</span><span class="v-badge">Сейчас</span></label>
+      <label class="v-radio"><input type="radio" name="forward-b5"><span class="v-radio__mark"></span><span class="v-radio__label">me@icloud.com</span></label>
+    </div>
+  </div>
+  <div class="v-card__footer">
+    <span class="v-card__footer-status v-card__footer-status--success" role="status"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path class="v-check-draw" d="M20 6 9 17l-5-5"></path></svg>Сохранено</span>
+    <button class="v-btn v-btn--primary" type="button" disabled="disabled">Сохранить</button>
+  </div>
+</div>
+</div>
+</section>
+
+<section class="h-state" data-state="options-forward-error">
+<h2 class="h-state__label"><b>B6</b> Forward to — error</h2>
+<div class="h-frame h-frame--card">
+<div class="v-card">
+  <div class="v-card__body">
+    <div class="v-alert v-alert--error" role="alert">
+      <svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4M12 16h.01"></path></svg>
+      <div class="v-alert__body"><span class="v-alert__title">Не удалось сохранить</span>iCloud не ответил. Выбор не изменён.</div>
+      <button class="v-btn v-btn--secondary v-btn--sm v-alert__action" type="button">Повторить</button>
+    </div>
+    <div class="v-radio-list" role="radiogroup" aria-label="Пересылка">
+      <label class="v-radio"><input type="radio" name="forward-b6"><span class="v-radio__mark"></span><span class="v-radio__label">me@example.com</span><span class="v-badge">Сейчас</span></label>
+      <label class="v-radio is-active"><input type="radio" name="forward-b6" checked="checked"><span class="v-radio__mark"></span><span class="v-radio__label">work@example.com</span></label>
+      <label class="v-radio"><input type="radio" name="forward-b6"><span class="v-radio__mark"></span><span class="v-radio__label">me@icloud.com</span></label>
+    </div>
+  </div>
+  <div class="v-card__footer">
+    <span class="v-card__footer-status">Уже созданные адреса не изменятся</span>
+    <button class="v-btn v-btn--primary" type="button">Сохранить</button>
+  </div>
+</div>
+</div>
+</section>
+
+<section class="h-state" data-state="options-forward-signed-out">
+<h2 class="h-state__label"><b>B7</b> Forward to — signed out</h2>
+<div class="h-frame h-frame--card">
+<div class="v-card">
+  <div class="v-empty v-empty--compact">
+    <span class="v-empty__icon"><svg class="v-icon v-icon--xl" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span>
+    <h3 class="v-empty__title">Войдите в iCloud</h3>
+    <p class="v-empty__text">Адреса для пересылки появятся после входа на iCloud.com</p>
+    <a class="v-btn v-btn--primary v-empty__action" href="https://www.icloud.com/" target="_blank" rel="noreferrer">Открыть iCloud.com<svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg></a>
+  </div>
+</div>
+</div>
+</section>
+
+</div>
+
+</div>
+</body>
+</html>

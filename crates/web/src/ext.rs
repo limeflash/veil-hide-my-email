@@ -19,6 +19,10 @@ extern "C" {
     fn storage_get_raw(key: &str) -> Promise;
     #[wasm_bindgen(js_name = storageSet)]
     fn storage_set_raw(key: &str, value: JsValue) -> Promise;
+    #[wasm_bindgen(js_name = sessionGet)]
+    fn session_get_raw(key: &str) -> Promise;
+    #[wasm_bindgen(js_name = sessionSet)]
+    fn session_set_raw(key: &str, value: JsValue) -> Promise;
     #[wasm_bindgen(js_name = onStorageChanged)]
     pub fn on_storage_changed(cb: &Function);
 
@@ -84,6 +88,20 @@ pub async fn storage_get<T: DeserializeOwned>(key: &str) -> Option<T> {
 pub async fn storage_set<T: Serialize>(key: &str, value: Option<&T>) -> Result<(), String> {
     let v = value.map(to_js).unwrap_or(JsValue::NULL);
     wait(storage_set_raw(key, v)).await.map(|_| ())
+}
+
+/// `storage.session`: in-memory, per browser session. Used for caches.
+pub async fn session_get<T: DeserializeOwned>(key: &str) -> Option<T> {
+    let v = wait(session_get_raw(key)).await.ok()?;
+    if v.is_null() || v.is_undefined() {
+        return None;
+    }
+    from_js(v).ok()
+}
+
+pub async fn session_set<T: Serialize>(key: &str, value: Option<&T>) {
+    let v = value.map(to_js).unwrap_or(JsValue::NULL);
+    let _ = wait(session_set_raw(key, v)).await;
 }
 
 pub async fn send_message<Req: Serialize, Res: DeserializeOwned>(req: &Req) -> Result<Res, String> {

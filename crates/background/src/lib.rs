@@ -79,6 +79,8 @@ async fn run_sync(setup_url: Option<String>) -> SyncResult {
 
 async fn deauth() {
     let _ = hme_web::save_client_state(None).await;
+    ext::session_set::<()>(hme_core::storage_keys::LIST_CACHE, None).await;
+    ext::session_set::<()>(hme_core::storage_keys::CANDIDATE_CACHE, None).await;
     refresh_menu().await;
 }
 

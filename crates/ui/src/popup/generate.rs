@@ -35,13 +35,20 @@ pub fn Generate() -> impl IntoView {
         reserve_error.set(None);
         spawn_local(async move {
             match client.generate().await {
-                Ok(a) => address.set(Some(a)),
+                Ok(a) => {
+                    p.save_candidate(Some(a.clone()));
+                    address.set(Some(a));
+                }
                 Err(e) => gen_error.set(Some(p.error_text(&e))),
             }
             generating.set(false);
         });
     };
-    regenerate();
+    // Reopening the popup shows the same proposal instead of a new one.
+    match p.candidate.get_untracked() {
+        Some(a) => address.set(Some(a)),
+        None => regenerate(),
+    }
 
     let on_submit = move |ev: SubmitEvent| {
         ev.prevent_default();
@@ -63,6 +70,8 @@ pub fn Generate() -> impl IntoView {
                         }
                     });
                     reserved.set(Some(r));
+                    p.candidate.set(None);
+                    p.save_candidate(None);
                     p.count.update(|n| *n = n.map(|n| n + 1));
                 }
                 Err(e) => reserve_error.set(Some(p.error_text(&e))),

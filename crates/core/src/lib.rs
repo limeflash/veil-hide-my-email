@@ -16,6 +16,12 @@ pub mod urls;
 pub mod storage_keys {
     pub const OPTIONS: &str = "options";
     pub const CLIENT_STATE: &str = "clientState";
+    /// `storage.session` (memory-only) cache of the address list, so the
+    /// popup can render it before iCloud answers.
+    pub const LIST_CACHE: &str = "listCache";
+    /// `storage.session` cache of the proposed-but-unreserved address, so
+    /// reopening the popup shows the same proposal instantly.
+    pub const CANDIDATE_CACHE: &str = "candidate";
 }
 
 /// Id of the right-click menu item.

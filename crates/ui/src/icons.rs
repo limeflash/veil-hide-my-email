@@ -40,7 +40,7 @@ pub enum I {
 impl I {
     fn paths(self) -> &'static str {
         match self {
-            I::Logo => r#"<rect x="3.5" y="6" width="17" height="12.5" rx="3"/><path d="m7.5 10 4.5 4 4.5-4"/>"#,
+            I::Logo => r#"<path d="M5 5h14a3 3 0 0 1 2.6 1.5L12 13.2 2.4 6.5A3 3 0 0 1 5 5z"/><path d="M2 9.3l8.9 6.2a1.9 1.9 0 0 0 2.2 0L22 9.3V16a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3z"/>"#,
             I::Settings => r#"<circle cx="12" cy="12" r="6.5"/><circle cx="12" cy="12" r="2.5"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/>"#,
             I::Lock => r#"<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>"#,
             I::Clock => r#"<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>"#,

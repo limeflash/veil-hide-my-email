@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Veil — приветствие и быстрый старт</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="components.css">
+<link rel="stylesheet" href="preview.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="h-board v-root" data-theme="{{theme}}" style="width: 1040px; height: 1220px; flex-wrap: nowrap">
+
+<section class="h-state" data-state="welcome">
+<h2 class="h-state__label"><b>C1</b> Welcome / quick start (the «Только Firefox» banner renders in Firefox only)</h2>
+<div class="h-frame h-frame--page">
+<div class="v-page">
+  <div class="v-page__container">
+
+    <header class="v-hero">
+      <div class="v-hero__text">
+        <div class="v-brand">
+          <span class="v-logo"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14a3 3 0 0 1 2.6 1.5L12 13.2 2.4 6.5A3 3 0 0 1 5 5z"></path><path d="M2 9.3l8.9 6.2a1.9 1.9 0 0 0 2.2 0L22 9.3V16a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3z"></path></svg></span>
+          <div class="v-brand__text"><span class="v-brand__title">Veil</span><span class="v-brand__sub">Hide My Email для iCloud</span></div>
+        </div>
+        <h1 class="v-hero__title">Свой адрес для каждого сайта</h1>
+        <p class="v-hero__lead">Veil установлен. Он создаёт адреса Hide My Email для iCloud прямо в браузере. Осталось три шага.</p>
+      </div>
+      <div class="v-hero__visual" aria-hidden="true">
+        <div class="v-address-card v-address-card--neutral">
+          <div class="v-address-card__eyebrow"><span>github.com</span></div>
+          <div class="v-address-card__row"><span class="v-address">quiet_plover.4k<span class="v-address__domain">@icloud.com</span></span></div>
+          <div class="v-address-card__meta"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 14 5-5-5-5"></path><path d="M4 20v-7a4 4 0 0 1 4-4h12"></path></svg><span>Пересылка на <b>me@example.com</b></span></div>
+        </div>
+      </div>
+    </header>
+
+    <ol class="v-card v-steps">
+      <li class="v-step">
+        <span class="v-step__num">1</span>
+        <div class="v-step__body">
+          <h2 class="v-step__title">Войдите на iCloud.com</h2>
+          <p class="v-step__text">С паролем и кодом 2FA. Отметьте «Оставаться в системе».</p>
+        </div>
+        <a class="v-btn v-btn--primary v-step__action" href="https://www.icloud.com/" target="_blank" rel="noreferrer">Открыть iCloud.com<svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg></a>
+      </li>
+      <li class="v-step">
+        <span class="v-step__num">2</span>
+        <div class="v-step__body">
+          <h2 class="v-step__title">Закрепите Veil на панели</h2>
+          <p class="v-step__text">Откройте меню расширений в панели браузера и нажмите на булавку рядом с Veil</p>
+        </div>
+      </li>
+      <li class="v-step">
+        <span class="v-step__num">3</span>
+        <div class="v-step__body">
+          <h2 class="v-step__title">Создавайте адреса</h2>
+          <p class="v-step__text">Из окна расширения, кнопкой в поле email или через правый клик по полю</p>
+        </div>
+      </li>
+    </ol>
+
+    <section class="v-alert v-alert--accent" aria-labelledby="wel-ff">
+      <svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path><path d="m9 12 2 2 4-4"></path></svg>
+      <div class="v-alert__body"><span class="v-alert__title" id="wel-ff">Разрешите доступ к icloud.com <span class="v-badge">Только Firefox</span></span>Firefox не выдаёт расширениям доступ к сайтам автоматически. Без него Veil не увидит вашу сессию.</div>
+      <button class="v-btn v-btn--secondary v-alert__action" type="button">Разрешить доступ</button>
+    </section>
+
+    <section class="v-section" aria-labelledby="wel-faq">
+      <div class="v-section__head">
+        <h2 class="v-section__title" id="wel-faq">Если что-то не работает</h2>
+      </div>
+      <div class="v-card v-faq">
+        <details class="v-faq__item" open="open">
+          <summary>Уже вошли в iCloud?<svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></summary>
+          <div class="v-faq__body">Ничего делать не нужно — откройте Veil, он подхватит текущую сессию.</div>
+        </details>
+        <details class="v-faq__item" open="open">
+          <summary>Нужна ли галочка «Оставаться в системе»?<svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></summary>
+          <div class="v-faq__body">Да. Без неё iCloud быстро завершает сессию, и Veil снова попросит войти. При входе также выберите <strong>«Доверять этому браузеру»</strong>.</div>
+        </details>
+        <details class="v-faq__item">
+          <summary>Не входите через Passkey<svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></summary>
+          <div class="v-faq__body">Сессию после входа по Passkey расширение не видит. Войдите с паролем и кодом двухфакторной аутентификации.</div>
+        </details>
+        <details class="v-faq__item">
+          <summary>Расширенная защита данных<svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></summary>
+          <div class="v-faq__body">Если она включена, разрешите в настройках iCloud на устройстве <strong>«Доступ к данным iCloud в интернете»</strong>.</div>
+        </details>
+        <details class="v-faq__item">
+          <summary>Контейнеры в Firefox<svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></summary>
+          <div class="v-faq__body">С Multi-Account Containers входите в iCloud в контейнере по умолчанию — сессии из других контейнеров Veil не видит.</div>
+        </details>
+      </div>
+    </section>
+
+    <p class="v-footnote">Veil — независимый проект с открытым исходным кодом. Не связан с Apple Inc. · <a class="v-link" href="#options">Настройки</a></p>
+  </div>
+</div>
+</div>
+</section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["dark","light"],"default":"dark"},"$preview":{"width":1040,"height":1220}}'>
+class Component extends DCLogic {
+renderVals() {
+return { theme: this.props.theme ?? 'dark' };
+}
+}
+</script>
+</body>
+</html>

@@ -22,6 +22,16 @@ Veil creates random `@icloud.com` forwarding addresses right in the browser, so 
 - **Session sync**: Veil picks up your iCloud.com sign-in automatically, follows sign-outs, and supports iCloud.com.cn.
 - **Welcome page** with a quick start and troubleshooting tips (passkeys, Advanced Data Protection, Firefox containers). In Firefox it also has a button to grant host access.
 
+## Speed
+
+The UI and the background logic are Rust compiled to WebAssembly (`hme_ui.wasm` ≈ 600 KB, `hme_background.wasm` ≈ 210 KB, compiled by the browser in a few milliseconds). The popup never waits for the network before it draws. It renders from the stored session and a memory-only `storage.session` cache, then refreshes from iCloud in parallel. Measured with `e2e/perf.mjs`, iCloud mocked at 300 ms latency:
+
+| popup | WASM ready | usable (address shown) | list + count |
+| --- | --- | --- | --- |
+| before caching | 31 ms | 664 ms | 664 ms |
+| now, repeat open | 23 ms | **44 ms** | **44 ms** |
+| now, first open per browser session | — | ≈ 330 ms (one round-trip) | ≈ 330 ms |
+
 ## How it works
 
 ```
@@ -39,7 +49,7 @@ extension/
   styles/      design tokens + components (Astryx-based "Postmark" theme)
 xtask/         `cargo xtask build|package`: wasm-bindgen, wasm-opt,
                manifests for Chrome and Firefox, icons, zips
-e2e/           Playwright smoke test with a mocked iCloud API
+e2e/           Playwright smoke test and startup benchmark (mocked iCloud)
 ```
 
 Veil talks to the same endpoints as icloud.com (`setup.icloud.com/setup/ws/1/validate`, then `premiummailsettings` `/v2/hme/list` and `/v1/hme/{generate,reserve,updateMetaData,deactivate,reactivate,delete,updateForwardTo}`). It uses the cookies of your signed-in iCloud.com session. A `declarativeNetRequest` rule sets the `Origin`/`Referer` headers that iCloud expects. There is no server: nothing leaves your browser except the requests to Apple.

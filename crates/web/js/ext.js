@@ -36,6 +36,26 @@ export async function storageSet(key, value) {
   }
 }
 
+// ---- storage.session (memory only; cleared when the browser closes) --------
+
+const memory = new Map();
+
+export async function sessionGet(key) {
+  if (!api.storage.session) return memory.get(key) ?? null;
+  const result = await api.storage.session.get(key);
+  return result[key] ?? null;
+}
+
+export async function sessionSet(key, value) {
+  if (!api.storage.session) {
+    value === undefined || value === null ? memory.delete(key) : memory.set(key, value);
+  } else if (value === undefined || value === null) {
+    await api.storage.session.remove(key);
+  } else {
+    await api.storage.session.set({ [key]: value });
+  }
+}
+
 /// Calls `cb(key, newValue)` for every change in storage.local.
 export function onStorageChanged(cb) {
   api.storage.onChanged.addListener((changes, area) => {

@@ -1,0 +1,233 @@
+/* ==========================================================================
+   Veil — in-page autofill button + tooltip (Astryx IconButton + Tooltip look,
+   theme "Postmark"). Self-contained: it lives in a Shadow DOM on third-party
+   pages, so it does NOT use tokens.css; the values below are copies of the
+   Postmark tokens named in the comments.
+
+   Attach the shadow root to a host element that the content script positions
+   over the focused email input (right edge, vertically centred, 6-8px inset):
+
+     <span class="veil-root">
+       <button class="veil-btn" type="button" data-state="ready" aria-describedby="veil-tip">
+         <svg class="veil-icon veil-icon--logo">…</svg>
+         <svg class="veil-icon veil-icon--check">…</svg>
+         <svg class="veil-icon veil-icon--alert">…</svg>
+         <span class="veil-spinner"></span>
+       </button>
+       <span class="veil-tip" id="veil-tip" role="tooltip">…</span>
+     </span>
+
+   States (data-state on .veil-btn): loading | ready | reserving | success | error
+   Scheme: follows the page's prefers-color-scheme; force it with
+   data-scheme="light|dark" on .veil-root.
+   ========================================================================== */
+
+:host { all: initial; }
+
+/* ready fill = the label paper (--astryx-theme-postmark-label-paper) with ink;
+   everything else is the graphite ramp: --color-background-surface,
+   --color-border-emphasized, --color-track, --color-success, --color-text-error,
+   tooltip = --color-background-inverted */
+:host,
+.veil-root {
+  --veil-accent: #E9D8B4;
+  --veil-on-accent: #221C12;
+  --veil-overlay-hover: #1717170D;
+  --veil-surface: #FFFFFF;
+  --veil-border: #D4D4D8;
+  --veil-glyph: #525252;
+  --veil-track: #D4D4D8;
+  --veil-success: #15803D;
+  --veil-on-success: #FFFFFF;
+  --veil-danger: #991B1B;
+  --veil-shadow: 0px 1px 2px rgba(0, 0, 0, 0.08), 0px 4px 12px rgba(0, 0, 0, 0.08);
+  --veil-tip-bg: #171717;
+  --veil-tip-fg: #FFFFFF;
+  --veil-tip-muted: #A1A1A6;
+  --veil-tip-danger: #FF9592;
+  --veil-focus: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :host,
+  .veil-root {
+    --veil-accent: #E9D8B4;
+    --veil-on-accent: #221C12;
+    --veil-overlay-hover: #EDEDED0F;
+    --veil-surface: #232325;
+    --veil-border: #38383C;
+    --veil-glyph: #A1A1A6;
+    --veil-track: #3A3A3E;
+    --veil-success: #4CC38A;
+    --veil-on-success: #06140E;
+    --veil-danger: #FF9592;
+    --veil-shadow: 0px 0px 0px 1px #EDEDED14, 0px 4px 12px rgba(0, 0, 0, 0.4);
+    --veil-tip-bg: #EDEDED;
+    --veil-tip-fg: #141415;
+    --veil-tip-muted: #525252;
+    --veil-tip-danger: #991B1B;
+    --veil-focus: #EDEDED;
+  }
+}
+
+.veil-root[data-scheme="light"] {
+  --veil-accent: #E9D8B4;
+  --veil-on-accent: #221C12;
+  --veil-overlay-hover: #1717170D;
+  --veil-surface: #FFFFFF;
+  --veil-border: #D4D4D8;
+  --veil-glyph: #525252;
+  --veil-track: #D4D4D8;
+  --veil-success: #15803D;
+  --veil-on-success: #FFFFFF;
+  --veil-danger: #991B1B;
+  --veil-shadow: 0px 1px 2px rgba(0, 0, 0, 0.08), 0px 4px 12px rgba(0, 0, 0, 0.08);
+  --veil-tip-bg: #171717;
+  --veil-tip-fg: #FFFFFF;
+  --veil-tip-muted: #A1A1A6;
+  --veil-tip-danger: #FF9592;
+  --veil-focus: #171717;
+}
+.veil-root[data-scheme="dark"] {
+  --veil-accent: #E9D8B4;
+  --veil-on-accent: #221C12;
+  --veil-overlay-hover: #EDEDED0F;
+  --veil-surface: #232325;
+  --veil-border: #38383C;
+  --veil-glyph: #A1A1A6;
+  --veil-track: #3A3A3E;
+  --veil-success: #4CC38A;
+  --veil-on-success: #06140E;
+  --veil-danger: #FF9592;
+  --veil-shadow: 0px 0px 0px 1px #EDEDED14, 0px 4px 12px rgba(0, 0, 0, 0.4);
+  --veil-tip-bg: #EDEDED;
+  --veil-tip-fg: #141415;
+  --veil-tip-muted: #525252;
+  --veil-tip-danger: #991B1B;
+  --veil-focus: #EDEDED;
+}
+
+.veil-root {
+  position: relative;
+  display: inline-block;
+  width: 28px; height: 28px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI Variable", "Segoe UI", Inter, Roboto, system-ui, sans-serif;
+  font-size: 12px; line-height: 16px;
+  text-align: left; direction: ltr;
+  -webkit-font-smoothing: antialiased;
+}
+.veil-root *, .veil-root *::before, .veil-root *::after { box-sizing: border-box; }
+
+/* -------------------------------------------------------------- Button -- */
+.veil-btn {
+  position: relative;
+  width: 28px; height: 28px; margin: 0; padding: 0;
+  display: grid; place-items: center;
+  border: 1px solid var(--veil-border); border-radius: 9999px;
+  background-color: var(--veil-surface); color: var(--veil-glyph);
+  box-shadow: var(--veil-shadow);
+  cursor: pointer; appearance: none; -webkit-appearance: none;
+  animation: veil-pop 200ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  transition: background-color 150ms cubic-bezier(0.22, 1, 0.36, 1), border-color 150ms cubic-bezier(0.22, 1, 0.36, 1), color 150ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 150ms cubic-bezier(0.22, 1, 0.36, 1), transform 150ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.veil-btn:focus { outline: none; }
+.veil-btn:focus-visible { outline: 2px solid var(--veil-focus); outline-offset: 2px; }
+.veil-btn:active { transform: scale(0.92); }
+
+.veil-icon {
+  grid-area: 1 / 1; width: 16px; height: 16px;
+  fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;
+  opacity: 0; transform: scale(0.6);
+  transition: opacity 150ms cubic-bezier(0.22, 1, 0.36, 1), transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.veil-spinner {
+  grid-area: 1 / 1; width: 14px; height: 14px; border-radius: 50%;
+  border: 3px solid var(--veil-track); border-top-color: currentColor;
+  opacity: 0;
+  animation: veil-spin 800ms linear infinite;
+  transition: opacity 150ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* loading — generating an address: neutral chip, accent spinner */
+.veil-btn[data-state="loading"] { cursor: progress; }
+.veil-btn[data-state="loading"] .veil-spinner { opacity: 1; }
+
+/* ready — filled accent, logo glyph */
+.veil-btn[data-state="ready"] {
+  border-color: #221C1233; color: var(--veil-on-accent);
+  background-color: var(--veil-accent);
+  box-shadow: var(--veil-shadow);
+}
+.veil-btn[data-state="ready"]:hover { background-image: linear-gradient(#221C1214, #221C1214); }
+.veil-btn[data-state="ready"] .veil-icon--logo { opacity: 1; transform: none; }
+/* the logo glyph is a filled mark */
+.veil-icon--logo { width: 18px; height: 18px; fill: currentColor; stroke: none; }
+
+/* reserving — filled accent, white spinner */
+.veil-btn[data-state="reserving"] {
+  cursor: progress; border-color: transparent; color: var(--veil-on-accent);
+  background-color: var(--veil-accent);
+}
+.veil-btn[data-state="reserving"] .veil-spinner { border-color: color-mix(in srgb, currentColor 28%, transparent); border-top-color: currentColor; }
+.veil-btn[data-state="reserving"] .veil-spinner { opacity: 1; }
+
+/* success — green flash, check; the content script removes the button ~900ms later */
+.veil-btn[data-state="success"] {
+  border-color: transparent; color: var(--veil-on-success); background-color: var(--veil-success);
+}
+.veil-btn[data-state="success"] .veil-icon--check { opacity: 1; transform: none; }
+
+/* error — neutral chip, danger glyph */
+.veil-btn[data-state="error"] { color: var(--veil-danger); }
+.veil-btn[data-state="error"]:hover { background-image: linear-gradient(var(--veil-overlay-hover), var(--veil-overlay-hover)); }
+.veil-btn[data-state="error"] .veil-icon--alert { opacity: 1; transform: none; }
+
+/* ------------------------------------------------------------- Tooltip -- */
+.veil-tip {
+  position: absolute; right: -6px; bottom: calc(100% + 9px); z-index: 1;
+  display: flex; flex-direction: column; gap: 1px;
+  width: max-content; max-width: 280px;
+  padding: 6px 10px;
+  border: 0; border-radius: 10px;
+  background: var(--veil-tip-bg); color: var(--veil-tip-fg);
+  font-size: 12px; line-height: 16px; font-weight: 500;
+  box-shadow: var(--veil-shadow);
+  pointer-events: none;
+  opacity: 0; transform: translateY(4px) scale(0.98); transform-origin: calc(100% - 20px) 100%;
+  transition: opacity 150ms cubic-bezier(0.22, 1, 0.36, 1), transform 150ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+/* arrow */
+.veil-tip::after {
+  content: ""; position: absolute; right: 15px; bottom: -5px;
+  width: 9px; height: 9px; transform: rotate(45deg);
+  background: var(--veil-tip-bg);
+  border-bottom-right-radius: 2px;
+}
+/* place below the field when there is no room above */
+.veil-tip--below { bottom: auto; top: calc(100% + 9px); transform-origin: calc(100% - 20px) 0; }
+.veil-tip--below::after { bottom: auto; top: -5px; transform: rotate(225deg); }
+
+.veil-btn:hover + .veil-tip,
+.veil-btn:focus-visible + .veil-tip,
+.veil-tip.is-open { opacity: 1; transform: none; transition-delay: 250ms; }
+.veil-tip.is-open { transition-delay: 0ms; }
+
+.veil-tip__title { color: var(--veil-tip-muted); font-weight: 500; }
+.veil-tip__addr {
+  font-family: ui-monospace, "SF Mono", SFMono-Regular, "Cascadia Code", "Segoe UI Mono", "Roboto Mono", Menlo, Consolas, monospace;
+  font-size: 12px; font-weight: 500;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.veil-tip--error .veil-tip__title { color: var(--veil-tip-danger); font-weight: 500; }
+.veil-tip--error .veil-tip__text { color: var(--veil-tip-fg); font-weight: 400; }
+
+/* ----------------------------------------------------------- Keyframes -- */
+@keyframes veil-spin { to { transform: rotate(360deg); } }
+@keyframes veil-pop { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .veil-btn, .veil-icon, .veil-tip { animation: none !important; transition-duration: 0.01ms !important; }
+  .veil-btn:active { transform: none; }
+  .veil-spinner { animation: veil-fade 1.2s ease-in-out infinite; }
+}
+@keyframes veil-fade { 50% { opacity: 0.35; } }

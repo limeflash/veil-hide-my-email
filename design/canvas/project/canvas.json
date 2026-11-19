@@ -1,0 +1,41 @@
+{
+  "v": 3,
+  "createdOnFiles": {"v": 1, "at": "2026-11-19T15:10:00Z"},
+  "title": "Veil — Hide My Email UI",
+  "launch": {"view": "canvas"},
+  "pages": [],
+  "boards": {
+    "Main.dc.html": {"x": 0, "y": 0, "w": 2932, "h": 680, "title": "Popup · Generate · Dark (Astryx · Postmark)"},
+    "MainLight.dc.html": {"x": 0, "y": 800, "w": 2932, "h": 680, "title": "Popup · Generate · Light (Astryx · Postmark)"},
+    "PopupManage.dc.html": {"x": 0, "y": 1900, "w": 4168, "h": 680, "title": "Popup · Manage · Dark"},
+    "PopupManageLight.dc.html": {"x": 0, "y": 2700, "w": 4168, "h": 680, "title": "Popup · Manage · Light"},
+    "Options.dc.html": {"x": 0, "y": 3800, "w": 1592, "h": 1400, "title": "Options page · Dark"},
+    "OptionsLight.dc.html": {"x": 1672, "y": 3800, "w": 1592, "h": 1400, "title": "Options page · Light"},
+    "Welcome.dc.html": {"x": 0, "y": 5740, "w": 1040, "h": 1220, "title": "Welcome page · Dark"},
+    "WelcomeLight.dc.html": {"x": 1120, "y": 5740, "w": 1040, "h": 1220, "title": "Welcome page · Light"},
+    "Inpage.dc.html": {"x": 2240, "y": 5740, "w": 1232, "h": 900, "title": "In-page button · light and dark sites"},
+    "Brand.dc.html": {"x": 0, "y": 7460, "w": 1400, "h": 1140, "title": "Postmark theme, icon, Astryx components · Dark"},
+    "BrandLight.dc.html": {"x": 1480, "y": 7460, "w": 1400, "h": 1140, "title": "Postmark theme, icon, Astryx components · Light"}
+  },
+  "order": [
+    "Main.dc.html",
+    "MainLight.dc.html",
+    "PopupManage.dc.html",
+    "PopupManageLight.dc.html",
+    "Options.dc.html",
+    "OptionsLight.dc.html",
+    "Welcome.dc.html",
+    "WelcomeLight.dc.html",
+    "Inpage.dc.html",
+    "Brand.dc.html",
+    "BrandLight.dc.html"
+  ],
+  "notes": {
+    "t-generate": {"x": 0, "y": -300, "text": "A · Popup — создание адреса · Astryx, тема Postmark", "kind": "title1", "maxW": 2932},
+    "t-manage": {"x": 0, "y": 1600, "text": "A · Popup — управление адресами", "kind": "title1", "maxW": 4168},
+    "t-options": {"x": 0, "y": 3500, "text": "B · Страница настроек", "kind": "title1", "maxW": 3264},
+    "t-welcome": {"x": 0, "y": 5440, "text": "C · Приветствие  ·  D · Кнопка в поле", "kind": "title1", "maxW": 3472},
+    "t-brand": {"x": 0, "y": 7160, "text": "E · Тема Postmark для Astryx: иконка, токены, компоненты", "kind": "title1", "maxW": 2880}
+  },
+  "designSystems": []
+}

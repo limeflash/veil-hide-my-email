@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128" role="img" aria-label="Veil">
+  <!-- Flat tile in the label paper. The mark is two solid ink shapes: the envelope's flap and
+       its body. The gap between them reads as the letter V. Plain paths only. -->
+  <rect x="4" y="4" width="120" height="120" rx="28" fill="#E9D8B4"/>
+  <path d="M 36 36h 56a 12 12 0 0 1 10.4 6L 64 68.8 25.6 42A 12 12 0 0 1 36 36z" fill="#221C12"/>
+  <path d="M 24 53.2l 35.6 24.8a 7.6 7.6 0 0 0 8.8 0L 104 53.2V 80a 12 12 0 0 1 -12 12H 36a 12 12 0 0 1 -12 -12z" fill="#221C12"/>
+</svg>

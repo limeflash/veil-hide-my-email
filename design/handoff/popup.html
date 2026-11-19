@@ -1,0 +1,699 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Veil — popup: all screens and states</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="components.css">
+<link rel="stylesheet" href="preview.css">
+</head>
+<body class="v-root" style="margin:0">
+<!--
+  Static reference markup. Every state is a <section class="h-state" data-state="…">
+  with an .h-state__label; port what is INSIDE the section (the .v-* / .veil-* tree).
+  .h-* classes and preview.css are preview chrome only.
+  Theme: follows the OS; force with <html data-theme="light|dark">.
+-->
+<div class="h-board v-root">
+
+<!-- ============================ 01 Loading ============================ -->
+<section class="h-state" data-state="loading">
+<h2 class="h-state__label"><b>01</b> Loading / syncing</h2>
+<div class="h-frame">
+<div class="v-popup" aria-busy="true">
+  <header class="v-popup__header">
+    <div class="v-brand">
+      <span class="v-logo"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14a3 3 0 0 1 2.6 1.5L12 13.2 2.4 6.5A3 3 0 0 1 5 5z"></path><path d="M2 9.3l8.9 6.2a1.9 1.9 0 0 0 2.2 0L22 9.3V16a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3z"></path></svg></span>
+      <div class="v-brand__text"><span class="v-brand__title">Veil</span><span class="v-brand__sub">Hide My Email для iCloud</span></div>
+    </div>
+    <button class="v-icon-btn" type="button" aria-label="Настройки"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+  </header>
+  <main class="v-popup__body">
+    <div class="v-loading" role="status" aria-live="polite">
+      <span class="v-logo v-logo--xl v-logo--pulse"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14a3 3 0 0 1 2.6 1.5L12 13.2 2.4 6.5A3 3 0 0 1 5 5z"></path><path d="M2 9.3l8.9 6.2a1.9 1.9 0 0 0 2.2 0L22 9.3V16a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3z"></path></svg></span>
+      <p class="v-loading__title"><span class="v-spinner v-spinner--sm"></span>Проверяем сессию iCloud</p>
+    </div>
+  </main>
+</div>
+</div>
+</section>
+
+<!-- =========================== 02 Signed out ========================== -->
+<section class="h-state" data-state="signed-out">
+<h2 class="h-state__label"><b>02</b> Signed out (last tip is Firefox-only)</h2>
+<div class="h-frame">
+<div class="v-popup">
+  <header class="v-popup__header">
+    <div class="v-brand">
+      <span class="v-logo"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14a3 3 0 0 1 2.6 1.5L12 13.2 2.4 6.5A3 3 0 0 1 5 5z"></path><path d="M2 9.3l8.9 6.2a1.9 1.9 0 0 0 2.2 0L22 9.3V16a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3z"></path></svg></span>
+      <div class="v-brand__text"><span class="v-brand__title">Veil</span><span class="v-brand__sub">Hide My Email для iCloud</span></div>
+    </div>
+    <button class="v-icon-btn" type="button" aria-label="Настройки"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+  </header>
+  <main class="v-popup__body v-view">
+    <div class="v-intro">
+      <h1 class="v-intro__title">Войдите в iCloud</h1>
+      <p class="v-intro__text">Veil работает через вашу сессию на iCloud.com. Пароль расширению не нужен.</p>
+    </div>
+    <ul class="v-tips">
+      <li class="v-tip">
+        <span class="v-tip__icon"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span>
+        <span>Войдите с <strong>паролем и кодом 2FA</strong>, затем выберите «Доверять этому браузеру»</span>
+      </li>
+      <li class="v-tip">
+        <span class="v-tip__icon"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg></span>
+        <span>Отметьте <strong>«Оставаться в системе»</strong> — иначе сессия быстро сбросится</span>
+      </li>
+      <li class="v-tip v-tip--danger">
+        <span class="v-tip__icon"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4 0l2.1-2.1a1 1 0 0 0 0-1.4L19 4"></path><path d="m21 2-9.6 9.6"></path><circle cx="7.5" cy="15.5" r="5.5"></circle></svg></span>
+        <span><strong>Не входите через Passkey</strong> — такую сессию расширение не увидит</span>
+      </li>
+      <li class="v-tip">
+        <span class="v-tip__icon"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path><path d="m9 12 2 2 4-4"></path></svg></span>
+        <span>Включена Расширенная защита данных? Разрешите <strong>«Доступ к данным iCloud в интернете»</strong></span>
+      </li>
+      <li class="v-tip v-tip--warn">
+        <span class="v-tip__icon"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><path d="m3.3 7 8.7 5 8.7-5"></path><path d="M12 22V12"></path></svg></span>
+        <span><span class="v-badge">Firefox</span> Multi-Account Containers: входите в <strong>контейнере по умолчанию</strong></span>
+      </li>
+    </ul>
+  </main>
+  <footer class="v-popup__footer v-popup__footer--stack">
+    <a class="v-btn v-btn--primary v-btn--lg v-btn--block" href="https://www.icloud.com/" target="_blank" rel="noreferrer">Открыть iCloud.com<svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg></a>
+    <button class="v-btn v-btn--ghost v-btn--sm v-btn--block" type="button"><svg class="v-icon v-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path><path d="M21 3v5h-5"></path><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path><path d="M8 16H3v5"></path></svg>Я уже вошёл — проверить снова</button>
+  </footer>
+</div>
+</div>
+</section>
+
+<!-- ========================= 03 Generate: ready ======================= -->
+<section class="h-state" data-state="generate">
+<h2 class="h-state__label"><b>03</b> Generate — ready (main screen)</h2>
+<div class="h-frame">
+<div class="v-popup">
+  <header class="v-popup__header">
+    <div class="v-brand">
+      <span class="v-logo"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14a3 3 0 0 1 2.6 1.5L12 13.2 2.4 6.5A3 3 0 0 1 5 5z"></path><path d="M2 9.3l8.9 6.2a1.9 1.9 0 0 0 2.2 0L22 9.3V16a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3z"></path></svg></span>
+      <div class="v-brand__text"><span class="v-brand__title">Veil</span><span class="v-brand__sub">для <b>github.com</b></span></div>
+    </div>
+    <button class="v-icon-btn" type="button" aria-label="Настройки"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+  </header>
+  <main class="v-popup__body v-view">
+    <section class="v-address-card" aria-live="polite">
+      <div class="v-address-card__eyebrow"><span>Новый адрес</span></div>
+      <div class="v-address-card__row">
+        <output class="v-address">quiet_plover.4k<span class="v-address__domain">@icloud.com</span></output>
+        <button class="v-icon-btn v-icon-btn--secondary" type="button" aria-label="Сгенерировать другой адрес"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path><path d="M21 3v5h-5"></path><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path><path d="M8 16H3v5"></path></svg></button>
+      </div>
+      <div class="v-address-card__meta"><svg class="v-icon v-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 14 5-5-5-5"></path><path d="M4 20v-7a4 4 0 0 1 4-4h12"></path></svg><span>Пересылка на <b>me@example.com</b></span></div>
+    </section>
+    <form class="v-form v-form--fill">
+      <div class="v-field">
+        <label class="v-label" for="gen-label">Метка</label>
+        <input class="v-input" id="gen-label" type="text" value="github.com">
+      </div>
+      <div class="v-field v-field--grow">
+        <label class="v-label" for="gen-note">Заметка <span class="v-label__hint">необязательно</span></label>
+        <textarea class="v-textarea" id="gen-note" rows="2" placeholder="Например: рассылки и уведомления"></textarea>
+      </div>
+      <button class="v-btn v-btn--primary v-btn--lg v-btn--block" type="button">Использовать адрес</button>
+    </form>
+  </main>
+  <footer class="v-popup__footer">
+    <button class="v-btn v-btn--ghost v-btn--sm" type="button"><svg class="v-icon v-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"></path></svg>Мои адреса<span class="v-badge">24</span></button>
+    <button class="v-btn v-btn--ghost v-btn--sm" type="button"><svg class="v-icon v-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><path d="m16 17 5-5-5-5"></path><path d="M21 12H9"></path></svg>Выйти</button>
+  </footer>
+</div>
+</div>
+</section>
+
+<!-- ====================== 04 Generate: regenerating =================== -->
+<section class="h-state" data-state="generate-regenerating">
+<h2 class="h-state__label"><b>04</b> Generate — regenerating address</h2>
+<div class="h-frame">
+<div class="v-popup">
+  <header class="v-popup__header">
+    <div class="v-brand">
+      <span class="v-logo"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14a3 3 0 0 1 2.6 1.5L12 13.2 2.4 6.5A3 3 0 0 1 5 5z"></path><path d="M2 9.3l8.9 6.2a1.9 1.9 0 0 0 2.2 0L22 9.3V16a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3z"></path></svg></span>
+      <div class="v-brand__text"><span class="v-brand__title">Veil</span><span class="v-brand__sub">для <b>github.com</b></span></div>
+    </div>
+    <button class="v-icon-btn" type="button" aria-label="Настройки"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+  </header>
+  <main class="v-popup__body">
+    <section class="v-address-card" aria-live="polite" aria-busy="true">
+      <div class="v-address-card__eyebrow"><span>Подбираем адрес</span></div>
+      <div class="v-address-card__row">
+        <output class="v-address">quiet_plover.4k<span class="v-address__domain">@icloud.com</span></output>
+        <button class="v-icon-btn v-icon-btn--secondary is-spinning" type="button" aria-label="Генерируем адрес" aria-busy="true"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path><path d="M21 3v5h-5"></path><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path><path d="M8 16H3v5"></path></svg></button>
+      </div>
+      <div class="v-address-card__meta"><svg class="v-icon v-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 14 5-5-5-5"></path><path d="M4 20v-7a4 4 0 0 1 4-4h12"></path></svg><span>Пересылка на <b>me@example.com</b></span></div>
+    </section>
+    <form class="v-form v-form--fill">
+      <div class="v-field">
+        <label class="v-label" for="regen-label">Метка</label>
+        <input class="v-input" id="regen-label" type="text" value="github.com">
+      </div>
+      <div class="v-field v-field--grow">
+        <label class="v-label" for="regen-note">Заметка <span class="v-label__hint">необязательно</span></label>
+        <textarea class="v-textarea" id="regen-note" rows="2" placeholder="Например: рассылки и уведомления"></textarea>
+      </div>
+      <button class="v-btn v-btn--primary v-btn--lg v-btn--block" type="button" disabled="disabled">Использовать адрес</button>
+    </form>
+  </main>
+  <footer class="v-popup__footer">
+    <button class="v-btn v-btn--ghost v-btn--sm" type="button"><svg class="v-icon v-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"></path></svg>Мои адреса<span class="v-badge">24</span></button>
+    <button class="v-btn v-btn--ghost v-btn--sm" type="button"><svg class="v-icon v-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><path d="m16 17 5-5-5-5"></path><path d="M21 12H9"></path></svg>Выйти</button>
+  </footer>
+</div>
+</div>
+</section>
+
+<!-- ======================= 05 Generate: reserving ===================== -->
+<section class="h-state" data-state="generate-reserving">
+<h2 class="h-state__label"><b>05</b> Generate — reserving (button busy)</h2>
+<div class="h-frame">
+<div class="v-popup">
+  <header class="v-popup__header">
+    <div class="v-brand">
+      <span class="v-logo"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14a3 3 0 0 1 2.6 1.5L12 13.2 2.4 6.5A3 3 0 0 1 5 5z"></path><path d="M2 9.3l8.9 6.2a1.9 1.9 0 0 0 2.2 0L22 9.3V16a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3z"></path></svg></span>
+      <div class="v-brand__text"><span class="v-brand__title">Veil</span><span class="v-brand__sub">для <b>github.com</b></span></div>
+    </div>
+    <button class="v-icon-btn" type="button" aria-label="Настройки"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+  </header>
+  <main class="v-popup__body">
+    <section class="v-address-card">
+      <div class="v-address-card__eyebrow"><span>Новый адрес</span></div>
+      <div class="v-address-card__row">
+        <output class="v-address">quiet_plover.4k<span class="v-address__domain">@icloud.com</span></output>
+        <button class="v-icon-btn v-icon-btn--secondary" type="button" aria-label="Сгенерировать другой адрес" disabled="disabled"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path><path d="M21 3v5h-5"></path><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path><path d="M8 16H3v5"></path></svg></button>
+      </div>
+      <div class="v-address-card__meta"><svg class="v-icon v-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 14 5-5-5-5"></path><path d="M4 20v-7a4 4 0 0 1 4-4h12"></path></svg><span>Пересылка на <b>me@example.com</b></span></div>
+    </section>
+    <form class="v-form v-form--fill" aria-busy="true">
+      <div class="v-field">
+        <label class="v-label" for="res-label">Метка</label>
+        <input class="v-input" id="res-label" type="text" value="github.com" disabled="disabled">
+      </div>
+      <div class="v-field v-field--grow">
+        <label class="v-label" for="res-note">Заметка <span class="v-label__hint">необязательно</span></label>
+        <textarea class="v-textarea" id="res-note" rows="2" disabled="disabled">Аккаунт для опенсорса</textarea>
+      </div>
+      <button class="v-btn v-btn--primary v-btn--lg v-btn--block" type="button" aria-busy="true"><span class="v-spinner"></span>Использовать адрес</button>
+    </form>
+  </main>
+  <footer class="v-popup__footer">
+    <button class="v-btn v-btn--ghost v-btn--sm" type="button"><svg class="v-icon v-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"></path></svg>Мои адреса<span class="v-badge">24</span></button>
+    <button class="v-btn v-btn--ghost v-btn--sm" type="button"><svg class="v-icon v-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><path d="m16 17 5-5-5-5"></path><path d="M21 12H9"></path></svg>Выйти</button>
+  </footer>
+</div>
+</div>
+</section>
+
+<!-- ======================== 06 Generate: success ====================== -->
+<section class="h-state" data-state="generate-success">
+<h2 class="h-state__label"><b>06</b> Generate — reserved (success) + toast</h2>
+<div class="h-frame">
+<div class="v-popup">
+  <header class="v-popup__header">
+    <div class="v-brand">
+      <span class="v-logo"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14a3 3 0 0 1 2.6 1.5L12 13.2 2.4 6.5A3 3 0 0 1 5 5z"></path><path d="M2 9.3l8.9 6.2a1.9 1.9 0 0 0 2.2 0L22 9.3V16a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3z"></path></svg></span>
+      <div class="v-brand__text"><span class="v-brand__title">Veil</span><span class="v-brand__sub">для <b>github.com</b></span></div>
+    </div>
+    <button class="v-icon-btn" type="button" aria-label="Настройки"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+  </header>
+  <main class="v-popup__body v-view">
+    <section class="v-address-card v-address-card--success" aria-live="polite">
+      <div class="v-address-card__eyebrow"><span><svg class="v-icon v-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path class="v-check-draw" d="M20 6 9 17l-5-5"></path></svg>Адрес сохранён</span></div>
+      <div class="v-address-card__row">
+        <output class="v-address">quiet_plover.4k<span class="v-address__domain">@icloud.com</span></output>
+      </div>
+      <div class="v-address-card__meta"><svg class="v-icon v-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 14 5-5-5-5"></path><path d="M4 20v-7a4 4 0 0 1 4-4h12"></path></svg><span>Метка <b>github.com</b> · на <b>me@example.com</b></span></div>
+    </section>
+    <div class="v-actions">
+      <button class="v-btn v-btn--primary v-btn--lg" type="button"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="14" height="14" rx="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>Копировать</button>
+      <button class="v-btn v-btn--secondary v-btn--lg" type="button"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h1a3 3 0 0 1 3 3 3 3 0 0 1 3-3h1"></path><path d="M13 20h-1a3 3 0 0 1-3-3 3 3 0 0 1-3 3H5"></path><path d="M5 16H4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h1"></path><path d="M13 8h7a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-7"></path><path d="M9 7v10"></path></svg>Вставить на сайт</button>
+    </div>
+    <button class="v-btn v-btn--ghost v-btn--block" type="button"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M12 5v14"></path></svg>Создать ещё один</button>
+  </main>
+  <div class="v-toast-region" role="status" aria-live="polite">
+    <div class="v-toast v-toast--success"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span class="v-toast__content">Скопировано</span></div>
+  </div>
+  <footer class="v-popup__footer">
+    <button class="v-btn v-btn--ghost v-btn--sm" type="button"><svg class="v-icon v-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"></path></svg>Мои адреса<span class="v-badge">25</span></button>
+    <button class="v-btn v-btn--ghost v-btn--sm" type="button"><svg class="v-icon v-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><path d="m16 17 5-5-5-5"></path><path d="M21 12H9"></path></svg>Выйти</button>
+  </footer>
+</div>
+</div>
+</section>
+
+<!-- ========================= 07 Generate: error ======================= -->
+<section class="h-state" data-state="generate-error">
+<h2 class="h-state__label"><b>07</b> Generate — inline errors (API + validation)</h2>
+<div class="h-frame">
+<div class="v-popup">
+  <header class="v-popup__header">
+    <div class="v-brand">
+      <span class="v-logo"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14a3 3 0 0 1 2.6 1.5L12 13.2 2.4 6.5A3 3 0 0 1 5 5z"></path><path d="M2 9.3l8.9 6.2a1.9 1.9 0 0 0 2.2 0L22 9.3V16a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3z"></path></svg></span>
+      <div class="v-brand__text"><span class="v-brand__title">Veil</span><span class="v-brand__sub">для <b>github.com</b></span></div>
+    </div>
+    <button class="v-icon-btn" type="button" aria-label="Настройки"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+  </header>
+  <main class="v-popup__body">
+    <section class="v-address-card">
+      <div class="v-address-card__eyebrow"><span>Новый адрес</span></div>
+      <div class="v-address-card__row">
+        <output class="v-address">quiet_plover.4k<span class="v-address__domain">@icloud.com</span></output>
+        <button class="v-icon-btn v-icon-btn--secondary" type="button" aria-label="Сгенерировать другой адрес"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path><path d="M21 3v5h-5"></path><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path><path d="M8 16H3v5"></path></svg></button>
+      </div>
+      <div class="v-address-card__meta"><svg class="v-icon v-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 14 5-5-5-5"></path><path d="M4 20v-7a4 4 0 0 1 4-4h12"></path></svg><span>Пересылка на <b>me@example.com</b></span></div>
+    </section>
+    <div class="v-alert v-alert--error" role="alert">
+      <svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4M12 16h.01"></path></svg>
+      <div class="v-alert__body"><span class="v-alert__title">Не удалось сохранить адрес</span>iCloud не ответил. Проверьте соединение и попробуйте ещё раз.</div>
+    </div>
+    <form class="v-form v-form--fill">
+      <div class="v-field">
+        <label class="v-label" for="err-label">Метка</label>
+        <input class="v-input" id="err-label" type="text" value="" placeholder="Например: github.com" aria-invalid="true" aria-describedby="err-label-msg">
+        <span class="v-field__error" id="err-label-msg"><svg class="v-icon v-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4M12 16h.01"></path></svg>Укажите метку — по ней вы найдёте адрес</span>
+      </div>
+      <button class="v-btn v-btn--primary v-btn--lg v-btn--block" type="button">Попробовать снова</button>
+    </form>
+  </main>
+  <footer class="v-popup__footer">
+    <button class="v-btn v-btn--ghost v-btn--sm" type="button"><svg class="v-icon v-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"></path></svg>Мои адреса<span class="v-badge">24</span></button>
+    <button class="v-btn v-btn--ghost v-btn--sm" type="button"><svg class="v-icon v-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><path d="m16 17 5-5-5-5"></path><path d="M21 12H9"></path></svg>Выйти</button>
+  </footer>
+</div>
+</div>
+</section>
+
+</div>
+
+<div class="h-board v-root">
+
+<!-- ============================ 08 Manage: list ======================= -->
+<section class="h-state" data-state="manage-list">
+<h2 class="h-state__label"><b>08</b> Manage — list</h2>
+<div class="h-frame">
+<div class="v-popup">
+  <header class="v-popup__header">
+    <div class="v-brand">
+      <span class="v-logo"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14a3 3 0 0 1 2.6 1.5L12 13.2 2.4 6.5A3 3 0 0 1 5 5z"></path><path d="M2 9.3l8.9 6.2a1.9 1.9 0 0 0 2.2 0L22 9.3V16a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3z"></path></svg></span>
+      <div class="v-brand__text"><span class="v-brand__title">Мои адреса</span><span class="v-brand__sub">Пересылка на <b>me@example.com</b></span></div>
+    </div>
+    <button class="v-icon-btn" type="button" aria-label="Настройки"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+  </header>
+  <main class="v-popup__body v-view">
+    <div class="v-toolbar">
+      <div class="v-input-group">
+        <svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+        <input class="v-input" type="search" aria-label="Поиск" placeholder="Поиск">
+      </div>
+      <div class="v-segmented v-segmented--fill" role="radiogroup" aria-label="Фильтр">
+        <label class="v-segmented__item"><input type="radio" name="popupmanage-filter-1" checked="checked"><span>Все<span class="v-segmented__count">24</span></span></label>
+        <label class="v-segmented__item"><input type="radio" name="popupmanage-filter-1"><span>Активные<span class="v-segmented__count">21</span></span></label>
+        <label class="v-segmented__item"><input type="radio" name="popupmanage-filter-1"><span>Отключённые<span class="v-segmented__count">3</span></span></label>
+      </div>
+    </div>
+    <ul class="v-list">
+      <li><button class="v-list-item" type="button"><span class="v-list-item__avatar" aria-hidden="true">G</span><span class="v-list-item__body"><span class="v-list-item__title"><span>GitHub</span></span><span class="v-list-item__sub">quiet_plover.4k@icloud.com</span></span><span class="v-list-item__meta">12 нояб.</span></button></li>
+      <li><button class="v-list-item" type="button"><span class="v-list-item__avatar" aria-hidden="true">F</span><span class="v-list-item__body"><span class="v-list-item__title"><span>Figma</span></span><span class="v-list-item__sub">marble.sails_0q@icloud.com</span></span><span class="v-list-item__meta">9 нояб.</span></button></li>
+      <li><button class="v-list-item" type="button"><span class="v-list-item__avatar" aria-hidden="true">O</span><span class="v-list-item__body"><span class="v-list-item__title"><span>Ozon</span></span><span class="v-list-item__sub">tidal-fern.72@icloud.com</span></span><span class="v-list-item__meta">2 нояб.</span></button></li>
+      <li><button class="v-list-item is-inactive" type="button"><span class="v-list-item__avatar" aria-hidden="true">Х</span><span class="v-list-item__body"><span class="v-list-item__title"><span>Рассылка Хабра</span><span class="v-badge">Отключён</span></span><span class="v-list-item__sub">amber_wren.x1@icloud.com</span></span><span class="v-list-item__meta">28 окт.</span></button></li>
+      <li><button class="v-list-item" type="button"><span class="v-list-item__avatar" aria-hidden="true">B</span><span class="v-list-item__body"><span class="v-list-item__title"><span>Booking.com</span></span><span class="v-list-item__sub">north.kite_5d@icloud.com</span></span><span class="v-list-item__meta">14 окт.</span></button></li>
+      <li><button class="v-list-item" type="button"><span class="v-list-item__avatar" aria-hidden="true">S</span><span class="v-list-item__body"><span class="v-list-item__title"><span>Steam</span></span><span class="v-list-item__sub">pale_otter.9m@icloud.com</span></span><span class="v-list-item__meta">30 сент.</span></button></li>
+      <li><button class="v-list-item is-inactive" type="button"><span class="v-list-item__avatar" aria-hidden="true">А</span><span class="v-list-item__body"><span class="v-list-item__title"><span>Авито</span><span class="v-badge">Отключён</span></span><span class="v-list-item__sub">dusk.lark_3h@icloud.com</span></span><span class="v-list-item__meta">11 сент.</span></button></li>
+    </ul>
+  </main>
+  <footer class="v-popup__footer">
+    <button class="v-btn v-btn--secondary v-btn--sm" type="button"><svg class="v-icon v-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M12 5v14"></path></svg>Новый адрес</button>
+    <button class="v-btn v-btn--ghost v-btn--sm" type="button"><svg class="v-icon v-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><path d="m16 17 5-5-5-5"></path><path d="M21 12H9"></path></svg>Выйти</button>
+  </footer>
+</div>
+</div>
+</section>
+
+<!-- ======================= 09 Manage: search results ================== -->
+<section class="h-state" data-state="manage-search">
+<h2 class="h-state__label"><b>09</b> Manage — fuzzy search + filter</h2>
+<div class="h-frame">
+<div class="v-popup">
+  <header class="v-popup__header">
+    <div class="v-brand">
+      <span class="v-logo"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14a3 3 0 0 1 2.6 1.5L12 13.2 2.4 6.5A3 3 0 0 1 5 5z"></path><path d="M2 9.3l8.9 6.2a1.9 1.9 0 0 0 2.2 0L22 9.3V16a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3z"></path></svg></span>
+      <div class="v-brand__text"><span class="v-brand__title">Мои адреса</span><span class="v-brand__sub">Пересылка на <b>me@example.com</b></span></div>
+    </div>
+    <button class="v-icon-btn" type="button" aria-label="Настройки"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+  </header>
+  <main class="v-popup__body">
+    <div class="v-toolbar">
+      <div class="v-input-group">
+        <svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+        <input class="v-input" type="search" aria-label="Поиск" value="git">
+        <button class="v-icon-btn v-icon-btn--sm" type="button" aria-label="Очистить поиск"><svg class="v-icon v-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"></path></svg></button>
+      </div>
+      <div class="v-segmented v-segmented--fill" role="radiogroup" aria-label="Фильтр">
+        <label class="v-segmented__item"><input type="radio" name="popupmanage-filter-2"><span>Все<span class="v-segmented__count">3</span></span></label>
+        <label class="v-segmented__item"><input type="radio" name="popupmanage-filter-2" checked="checked"><span>Активные<span class="v-segmented__count">2</span></span></label>
+        <label class="v-segmented__item"><input type="radio" name="popupmanage-filter-2"><span>Отключённые<span class="v-segmented__count">1</span></span></label>
+      </div>
+    </div>
+    <ul class="v-list">
+      <li><button class="v-list-item" type="button"><span class="v-list-item__avatar" aria-hidden="true">G</span><span class="v-list-item__body"><span class="v-list-item__title"><span><mark class="v-mark">Git</mark>Hub</span></span><span class="v-list-item__sub">quiet_plover.4k@icloud.com</span></span><span class="v-list-item__meta">12 нояб.</span></button></li>
+      <li><button class="v-list-item" type="button"><span class="v-list-item__avatar" aria-hidden="true">D</span><span class="v-list-item__body"><span class="v-list-item__title"><span>Di<mark class="v-mark">git</mark>alOcean</span></span><span class="v-list-item__sub">slate_heron.2c@icloud.com</span></span><span class="v-list-item__meta">3 авг.</span></button></li>
+    </ul>
+  </main>
+  <footer class="v-popup__footer">
+    <button class="v-btn v-btn--secondary v-btn--sm" type="button"><svg class="v-icon v-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M12 5v14"></path></svg>Новый адрес</button>
+    <button class="v-btn v-btn--ghost v-btn--sm" type="button"><svg class="v-icon v-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><path d="m16 17 5-5-5-5"></path><path d="M21 12H9"></path></svg>Выйти</button>
+  </footer>
+</div>
+</div>
+</section>
+
+<!-- ========================== 10 Manage: skeleton ===================== -->
+<section class="h-state" data-state="manage-loading">
+<h2 class="h-state__label"><b>10</b> Manage — list loading (skeleton)</h2>
+<div class="h-frame">
+<div class="v-popup" aria-busy="true">
+  <header class="v-popup__header">
+    <div class="v-brand">
+      <span class="v-logo"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14a3 3 0 0 1 2.6 1.5L12 13.2 2.4 6.5A3 3 0 0 1 5 5z"></path><path d="M2 9.3l8.9 6.2a1.9 1.9 0 0 0 2.2 0L22 9.3V16a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3z"></path></svg></span>
+      <div class="v-brand__text"><span class="v-brand__title">Мои адреса</span><span class="v-brand__sub">Загружаем из iCloud…</span></div>
+    </div>
+    <button class="v-icon-btn" type="button" aria-label="Настройки"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+  </header>
+  <main class="v-popup__body">
+    <div class="v-toolbar">
+      <div class="v-input-group">
+        <svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+        <input class="v-input" type="search" aria-label="Поиск" placeholder="Поиск" disabled="disabled">
+      </div>
+      <div class="v-segmented v-segmented--fill" role="radiogroup" aria-label="Фильтр">
+        <label class="v-segmented__item"><input type="radio" name="popupmanage-filter-3" checked="checked" disabled="disabled"><span>Все</span></label>
+        <label class="v-segmented__item"><input type="radio" name="popupmanage-filter-3" disabled="disabled"><span>Активные</span></label>
+        <label class="v-segmented__item"><input type="radio" name="popupmanage-filter-3" disabled="disabled"><span>Отключённые</span></label>
+      </div>
+    </div>
+    <ul class="v-list" aria-hidden="true">
+      <li class="v-list-item v-list-item--skeleton"><span class="v-skeleton v-skeleton--avatar"></span><span class="v-list-item__body"><span class="v-skeleton" style="width: 38%"></span><span class="v-skeleton v-skeleton--line" style="width: 72%"></span></span></li>
+      <li class="v-list-item v-list-item--skeleton"><span class="v-skeleton v-skeleton--avatar"></span><span class="v-list-item__body"><span class="v-skeleton" style="width: 52%"></span><span class="v-skeleton v-skeleton--line" style="width: 66%"></span></span></li>
+      <li class="v-list-item v-list-item--skeleton"><span class="v-skeleton v-skeleton--avatar"></span><span class="v-list-item__body"><span class="v-skeleton" style="width: 30%"></span><span class="v-skeleton v-skeleton--line" style="width: 70%"></span></span></li>
+      <li class="v-list-item v-list-item--skeleton"><span class="v-skeleton v-skeleton--avatar"></span><span class="v-list-item__body"><span class="v-skeleton" style="width: 46%"></span><span class="v-skeleton v-skeleton--line" style="width: 62%"></span></span></li>
+      <li class="v-list-item v-list-item--skeleton"><span class="v-skeleton v-skeleton--avatar"></span><span class="v-list-item__body"><span class="v-skeleton" style="width: 34%"></span><span class="v-skeleton v-skeleton--line" style="width: 74%"></span></span></li>
+      <li class="v-list-item v-list-item--skeleton"><span class="v-skeleton v-skeleton--avatar"></span><span class="v-list-item__body"><span class="v-skeleton" style="width: 42%"></span><span class="v-skeleton v-skeleton--line" style="width: 64%"></span></span></li>
+    </ul>
+  </main>
+  <footer class="v-popup__footer">
+    <button class="v-btn v-btn--secondary v-btn--sm" type="button"><svg class="v-icon v-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M12 5v14"></path></svg>Новый адрес</button>
+    <button class="v-btn v-btn--ghost v-btn--sm" type="button"><svg class="v-icon v-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><path d="m16 17 5-5-5-5"></path><path d="M21 12H9"></path></svg>Выйти</button>
+  </footer>
+</div>
+</div>
+</section>
+
+<!-- ============================ 11 Manage: empty ====================== -->
+<section class="h-state" data-state="manage-empty">
+<h2 class="h-state__label"><b>11</b> Manage — empty (no addresses yet)</h2>
+<div class="h-frame">
+<div class="v-popup">
+  <header class="v-popup__header">
+    <div class="v-brand">
+      <span class="v-logo"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14a3 3 0 0 1 2.6 1.5L12 13.2 2.4 6.5A3 3 0 0 1 5 5z"></path><path d="M2 9.3l8.9 6.2a1.9 1.9 0 0 0 2.2 0L22 9.3V16a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3z"></path></svg></span>
+      <div class="v-brand__text"><span class="v-brand__title">Мои адреса</span><span class="v-brand__sub">Пересылка на <b>me@example.com</b></span></div>
+    </div>
+    <button class="v-icon-btn" type="button" aria-label="Настройки"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+  </header>
+  <main class="v-popup__body v-view">
+    <div class="v-empty v-empty--accent">
+      <span class="v-empty__icon"><svg class="v-icon v-icon--xl" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 12h-6l-2 3h-4l-2-3H2"></path><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg></span>
+      <h2 class="v-empty__title">Пока нет адресов</h2>
+      <p class="v-empty__text">Создайте первый — он появится здесь</p>
+      <button class="v-btn v-btn--primary v-empty__action" type="button"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M12 5v14"></path></svg>Новый адрес</button>
+    </div>
+  </main>
+  <footer class="v-popup__footer">
+    <button class="v-btn v-btn--secondary v-btn--sm" type="button"><svg class="v-icon v-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M12 5v14"></path></svg>Новый адрес</button>
+    <button class="v-btn v-btn--ghost v-btn--sm" type="button"><svg class="v-icon v-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><path d="m16 17 5-5-5-5"></path><path d="M21 12H9"></path></svg>Выйти</button>
+  </footer>
+</div>
+</div>
+</section>
+
+<!-- ========================= 12 Manage: no results ==================== -->
+<section class="h-state" data-state="manage-no-results">
+<h2 class="h-state__label"><b>12</b> Manage — no search results</h2>
+<div class="h-frame">
+<div class="v-popup">
+  <header class="v-popup__header">
+    <div class="v-brand">
+      <span class="v-logo"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14a3 3 0 0 1 2.6 1.5L12 13.2 2.4 6.5A3 3 0 0 1 5 5z"></path><path d="M2 9.3l8.9 6.2a1.9 1.9 0 0 0 2.2 0L22 9.3V16a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3z"></path></svg></span>
+      <div class="v-brand__text"><span class="v-brand__title">Мои адреса</span><span class="v-brand__sub">Пересылка на <b>me@example.com</b></span></div>
+    </div>
+    <button class="v-icon-btn" type="button" aria-label="Настройки"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+  </header>
+  <main class="v-popup__body">
+    <div class="v-toolbar">
+      <div class="v-input-group">
+        <svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+        <input class="v-input" type="search" aria-label="Поиск" value="nettflix">
+        <button class="v-icon-btn v-icon-btn--sm" type="button" aria-label="Очистить поиск"><svg class="v-icon v-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"></path></svg></button>
+      </div>
+      <div class="v-segmented v-segmented--fill" role="radiogroup" aria-label="Фильтр">
+        <label class="v-segmented__item"><input type="radio" name="popupmanage-filter-4" checked="checked"><span>Все<span class="v-segmented__count">0</span></span></label>
+        <label class="v-segmented__item"><input type="radio" name="popupmanage-filter-4"><span>Активные<span class="v-segmented__count">0</span></span></label>
+        <label class="v-segmented__item"><input type="radio" name="popupmanage-filter-4"><span>Отключённые<span class="v-segmented__count">0</span></span></label>
+      </div>
+    </div>
+    <div class="v-empty" role="status">
+      <span class="v-empty__icon"><svg class="v-icon v-icon--xl" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path><path d="m13.5 8.5-5 5M8.5 8.5l5 5"></path></svg></span>
+      <h2 class="v-empty__title">Ничего не найдено</h2>
+      <p class="v-empty__text">По запросу «nettflix» совпадений нет. Проверьте написание или сбросьте поиск.</p>
+      <button class="v-btn v-btn--secondary v-empty__action" type="button">Сбросить поиск</button>
+    </div>
+  </main>
+  <footer class="v-popup__footer">
+    <button class="v-btn v-btn--secondary v-btn--sm" type="button"><svg class="v-icon v-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M12 5v14"></path></svg>Новый адрес</button>
+    <button class="v-btn v-btn--ghost v-btn--sm" type="button"><svg class="v-icon v-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><path d="m16 17 5-5-5-5"></path><path d="M21 12H9"></path></svg>Выйти</button>
+  </footer>
+</div>
+</div>
+</section>
+
+<!-- ============================ 13 Manage: error ====================== -->
+<section class="h-state" data-state="manage-error">
+<h2 class="h-state__label"><b>13</b> Manage — load error</h2>
+<div class="h-frame">
+<div class="v-popup">
+  <header class="v-popup__header">
+    <div class="v-brand">
+      <span class="v-logo"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14a3 3 0 0 1 2.6 1.5L12 13.2 2.4 6.5A3 3 0 0 1 5 5z"></path><path d="M2 9.3l8.9 6.2a1.9 1.9 0 0 0 2.2 0L22 9.3V16a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3z"></path></svg></span>
+      <div class="v-brand__text"><span class="v-brand__title">Мои адреса</span><span class="v-brand__sub">Нет связи с iCloud</span></div>
+    </div>
+    <button class="v-icon-btn" type="button" aria-label="Настройки"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+  </header>
+  <main class="v-popup__body v-view">
+    <div class="v-empty v-empty--error" role="alert">
+      <span class="v-empty__icon"><svg class="v-icon v-icon--xl" viewBox="0 0 24 24" aria-hidden="true"><path d="m2 2 20 20"></path><path d="M5.78 5.78A7 7 0 0 0 9 19h8.5a4.5 4.5 0 0 0 1.3-.19"></path><path d="M21.53 16.5A4.5 4.5 0 0 0 17.5 10h-1.79A7 7 0 0 0 10 5.07"></path></svg></span>
+      <h2 class="v-empty__title">Не удалось загрузить адреса</h2>
+      <p class="v-empty__text">iCloud не ответил. Проверьте соединение и попробуйте ещё раз.</p>
+      <button class="v-btn v-btn--secondary v-empty__action" type="button"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path><path d="M21 3v5h-5"></path><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path><path d="M8 16H3v5"></path></svg>Повторить</button>
+    </div>
+  </main>
+  <footer class="v-popup__footer">
+    <button class="v-btn v-btn--secondary v-btn--sm" type="button"><svg class="v-icon v-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M12 5v14"></path></svg>Новый адрес</button>
+    <button class="v-btn v-btn--ghost v-btn--sm" type="button"><svg class="v-icon v-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><path d="m16 17 5-5-5-5"></path><path d="M21 12H9"></path></svg>Выйти</button>
+  </footer>
+</div>
+</div>
+</section>
+
+<!-- =========================== 14 Details: active ===================== -->
+<section class="h-state" data-state="details">
+<h2 class="h-state__label"><b>14</b> Details — active address (+ error toast)</h2>
+<div class="h-frame">
+<div class="v-popup">
+  <header class="v-popup__header v-popup__header--nav">
+    <button class="v-icon-btn" type="button" aria-label="Назад к списку"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 19-7-7 7-7"></path><path d="M19 12H5"></path></svg></button>
+    <div class="v-brand">
+      <div class="v-brand__text"><span class="v-brand__title">GitHub</span><span class="v-brand__sub">Создан 12 ноября 2026</span></div>
+    </div>
+    <button class="v-icon-btn" type="button" aria-label="Настройки"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+  </header>
+  <main class="v-popup__body v-view">
+    <section class="v-address-card v-address-card--neutral">
+      <div class="v-address-card__eyebrow"><span class="v-badge v-badge--green"><span class="v-badge__dot"></span>Активен</span></div>
+      <div class="v-address-card__row">
+        <output class="v-address">quiet_plover.4k<span class="v-address__domain">@icloud.com</span></output>
+      </div>
+    </section>
+    <div class="v-actions">
+      <button class="v-btn v-btn--primary" type="button"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="14" height="14" rx="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>Копировать</button>
+      <button class="v-btn v-btn--secondary" type="button"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h1a3 3 0 0 1 3 3 3 3 0 0 1 3-3h1"></path><path d="M13 20h-1a3 3 0 0 1-3-3 3 3 0 0 1-3 3H5"></path><path d="M5 16H4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h1"></path><path d="M13 8h7a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-7"></path><path d="M9 7v10"></path></svg>Вставить на сайт</button>
+    </div>
+    <h2 class="v-section-title">Сведения<button class="v-btn v-btn--ghost v-btn--sm" type="button"><svg class="v-icon v-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M21.17 6.81a1 1 0 0 0-3.98-3.98L3.84 16.17a2 2 0 0 0-.5.83l-1.32 4.35a.5.5 0 0 0 .62.63l4.36-1.32a2 2 0 0 0 .83-.5z"></path><path d="m15 5 4 4"></path></svg>Изменить</button></h2>
+    <dl class="v-kv v-panel">
+      <div class="v-kv__row"><dt class="v-kv__key">Метка</dt><dd class="v-kv__val">GitHub</dd></div>
+      <div class="v-kv__row"><dt class="v-kv__key">Пересылка</dt><dd class="v-kv__val">me@example.com</dd></div>
+      <div class="v-kv__row"><dt class="v-kv__key">Создан</dt><dd class="v-kv__val">12 ноября 2026, 14:32</dd></div>
+      <div class="v-kv__row"><dt class="v-kv__key">Заметка</dt><dd class="v-kv__val">Опенсорс и уведомления о релизах</dd></div>
+    </dl>
+    <button class="v-btn v-btn--secondary v-btn--block" type="button"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v10"></path><path d="M18.4 6.6a9 9 0 1 1-12.77.04"></path></svg>Отключить адрес</button>
+  </main>
+  <div class="v-toast-region" role="alert">
+    <div class="v-toast v-toast--error"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4M12 16h.01"></path></svg><span class="v-toast__content">На странице нет поля для email</span></div>
+  </div>
+  <footer class="v-popup__footer">
+    <button class="v-btn v-btn--secondary v-btn--sm" type="button"><svg class="v-icon v-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M12 5v14"></path></svg>Новый адрес</button>
+    <button class="v-btn v-btn--ghost v-btn--sm" type="button"><svg class="v-icon v-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><path d="m16 17 5-5-5-5"></path><path d="M21 12H9"></path></svg>Выйти</button>
+  </footer>
+</div>
+</div>
+</section>
+
+<!-- ============================ 15 Details: edit ====================== -->
+<section class="h-state" data-state="details-edit">
+<h2 class="h-state__label"><b>15</b> Details — inline edit of label and note</h2>
+<div class="h-frame">
+<div class="v-popup">
+  <header class="v-popup__header v-popup__header--nav">
+    <button class="v-icon-btn" type="button" aria-label="Назад к списку"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 19-7-7 7-7"></path><path d="M19 12H5"></path></svg></button>
+    <div class="v-brand">
+      <div class="v-brand__text"><span class="v-brand__title">GitHub</span><span class="v-brand__sub">Создан 12 ноября 2026</span></div>
+    </div>
+    <button class="v-icon-btn" type="button" aria-label="Настройки"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+  </header>
+  <main class="v-popup__body">
+    <section class="v-address-card v-address-card--neutral">
+      <div class="v-address-card__eyebrow"><span class="v-badge v-badge--green"><span class="v-badge__dot"></span>Активен</span></div>
+      <div class="v-address-card__row">
+        <output class="v-address">quiet_plover.4k<span class="v-address__domain">@icloud.com</span></output>
+      </div>
+    </section>
+    <h2 class="v-section-title">Изменение</h2>
+    <form class="v-panel v-panel--form">
+      <div class="v-field">
+        <label class="v-label" for="edit-label">Метка</label>
+        <input class="v-input" id="edit-label" type="text" value="GitHub — личный">
+      </div>
+      <div class="v-field">
+        <label class="v-label" for="edit-note">Заметка <span class="v-label__hint">необязательно</span></label>
+        <textarea class="v-textarea" id="edit-note" rows="3">Аккаунт для опенсорса и уведомлений о релизах</textarea>
+      </div>
+      <div class="v-actions--end">
+        <button class="v-btn v-btn--ghost" type="button">Отмена</button>
+        <button class="v-btn v-btn--primary" type="button">Сохранить</button>
+      </div>
+    </form>
+    <dl class="v-kv v-panel">
+      <div class="v-kv__row"><dt class="v-kv__key">Пересылка</dt><dd class="v-kv__val">me@example.com</dd></div>
+      <div class="v-kv__row"><dt class="v-kv__key">Создан</dt><dd class="v-kv__val">12 ноября 2026, 14:32</dd></div>
+    </dl>
+  </main>
+  <footer class="v-popup__footer">
+    <button class="v-btn v-btn--secondary v-btn--sm" type="button"><svg class="v-icon v-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M12 5v14"></path></svg>Новый адрес</button>
+    <button class="v-btn v-btn--ghost v-btn--sm" type="button"><svg class="v-icon v-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><path d="m16 17 5-5-5-5"></path><path d="M21 12H9"></path></svg>Выйти</button>
+  </footer>
+</div>
+</div>
+</section>
+
+<!-- ========================== 16 Details: inactive ==================== -->
+<section class="h-state" data-state="details-inactive">
+<h2 class="h-state__label"><b>16</b> Details — inactive (just deactivated, toast with undo)</h2>
+<div class="h-frame">
+<div class="v-popup">
+  <header class="v-popup__header v-popup__header--nav">
+    <button class="v-icon-btn" type="button" aria-label="Назад к списку"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 19-7-7 7-7"></path><path d="M19 12H5"></path></svg></button>
+    <div class="v-brand">
+      <div class="v-brand__text"><span class="v-brand__title">Рассылка Хабра</span><span class="v-brand__sub">Создан 28 октября 2026</span></div>
+    </div>
+    <button class="v-icon-btn" type="button" aria-label="Настройки"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+  </header>
+  <main class="v-popup__body v-view">
+    <section class="v-address-card v-address-card--neutral is-inactive">
+      <div class="v-address-card__eyebrow"><span class="v-badge"><span class="v-badge__dot"></span>Отключён</span></div>
+      <div class="v-address-card__row">
+        <output class="v-address">amber_wren.x1<span class="v-address__domain">@icloud.com</span></output>
+        <button class="v-icon-btn" type="button" aria-label="Копировать адрес"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="14" height="14" rx="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button>
+      </div>
+      <div class="v-address-card__meta"><svg class="v-icon v-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path></svg><span>Письма на этот адрес не пересылаются</span></div>
+    </section>
+    <div class="v-actions">
+      <button class="v-btn v-btn--secondary" type="button"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>Включить снова</button>
+      <button class="v-btn v-btn--danger" type="button"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><path d="M10 11v6M14 11v6"></path></svg>Удалить</button>
+    </div>
+    <h2 class="v-section-title">Сведения<button class="v-btn v-btn--ghost v-btn--sm" type="button"><svg class="v-icon v-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M21.17 6.81a1 1 0 0 0-3.98-3.98L3.84 16.17a2 2 0 0 0-.5.83l-1.32 4.35a.5.5 0 0 0 .62.63l4.36-1.32a2 2 0 0 0 .83-.5z"></path><path d="m15 5 4 4"></path></svg>Изменить</button></h2>
+    <dl class="v-kv v-panel">
+      <div class="v-kv__row"><dt class="v-kv__key">Метка</dt><dd class="v-kv__val">Рассылка Хабра</dd></div>
+      <div class="v-kv__row"><dt class="v-kv__key">Пересылка</dt><dd class="v-kv__val">me@example.com</dd></div>
+      <div class="v-kv__row"><dt class="v-kv__key">Создан</dt><dd class="v-kv__val">28 октября 2026, 09:05</dd></div>
+      <div class="v-kv__row"><dt class="v-kv__key">Заметка</dt><dd class="v-kv__val v-muted">Нет заметки</dd></div>
+    </dl>
+  </main>
+  <div class="v-toast-region" role="status" aria-live="polite">
+    <div class="v-toast v-toast--success"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span class="v-toast__content">Адрес отключён</span><button class="v-toast__action" type="button">Отменить</button></div>
+  </div>
+  <footer class="v-popup__footer">
+    <button class="v-btn v-btn--secondary v-btn--sm" type="button"><svg class="v-icon v-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M12 5v14"></path></svg>Новый адрес</button>
+    <button class="v-btn v-btn--ghost v-btn--sm" type="button"><svg class="v-icon v-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><path d="m16 17 5-5-5-5"></path><path d="M21 12H9"></path></svg>Выйти</button>
+  </footer>
+</div>
+</div>
+</section>
+
+<!-- ======================== 17 Details: delete confirm ================ -->
+<section class="h-state" data-state="details-delete-confirm">
+<h2 class="h-state__label"><b>17</b> Details — delete confirmation (inactive only)</h2>
+<div class="h-frame">
+<div class="v-popup">
+  <header class="v-popup__header v-popup__header--nav">
+    <button class="v-icon-btn" type="button" aria-label="Назад к списку"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 19-7-7 7-7"></path><path d="M19 12H5"></path></svg></button>
+    <div class="v-brand">
+      <div class="v-brand__text"><span class="v-brand__title">Рассылка Хабра</span><span class="v-brand__sub">Создан 28 октября 2026</span></div>
+    </div>
+    <button class="v-icon-btn" type="button" aria-label="Настройки"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+  </header>
+  <main class="v-popup__body">
+    <section class="v-address-card v-address-card--neutral is-inactive">
+      <div class="v-address-card__eyebrow"><span class="v-badge"><span class="v-badge__dot"></span>Отключён</span></div>
+      <div class="v-address-card__row">
+        <output class="v-address">amber_wren.x1<span class="v-address__domain">@icloud.com</span></output>
+        <button class="v-icon-btn" type="button" aria-label="Копировать адрес"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="14" height="14" rx="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button>
+      </div>
+      <div class="v-address-card__meta"><svg class="v-icon v-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path></svg><span>Письма на этот адрес не пересылаются</span></div>
+    </section>
+    <div class="v-actions">
+      <button class="v-btn v-btn--secondary" type="button"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>Включить снова</button>
+      <button class="v-btn v-btn--danger" type="button"><svg class="v-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><path d="M10 11v6M14 11v6"></path></svg>Удалить</button>
+    </div>
+    <h2 class="v-section-title">Сведения</h2>
+    <dl class="v-kv v-panel">
+      <div class="v-kv__row"><dt class="v-kv__key">Метка</dt><dd class="v-kv__val">Рассылка Хабра</dd></div>
+      <div class="v-kv__row"><dt class="v-kv__key">Пересылка</dt><dd class="v-kv__val">me@example.com</dd></div>
+      <div class="v-kv__row"><dt class="v-kv__key">Создан</dt><dd class="v-kv__val">28 октября 2026, 09:05</dd></div>
+    </dl>
+  </main>
+  <footer class="v-popup__footer">
+    <button class="v-btn v-btn--secondary v-btn--sm" type="button"><svg class="v-icon v-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M12 5v14"></path></svg>Новый адрес</button>
+    <button class="v-btn v-btn--ghost v-btn--sm" type="button"><svg class="v-icon v-icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><path d="m16 17 5-5-5-5"></path><path d="M21 12H9"></path></svg>Выйти</button>
+  </footer>
+  <div class="v-scrim"></div>
+  <div class="v-sheet" role="alertdialog" aria-modal="true" aria-labelledby="del-title" aria-describedby="del-text">
+    <span class="v-sheet__handle" aria-hidden="true"></span>
+    <h2 class="v-sheet__title" id="del-title">Удалить адрес навсегда?</h2>
+    <p class="v-sheet__text" id="del-text"><span class="v-mono">amber_wren.x1@icloud.com</span> исчезнет из iCloud. Восстановить его не получится.</p>
+    <div class="v-sheet__actions">
+      <button class="v-btn v-btn--secondary" type="button">Отмена</button>
+      <button class="v-btn v-btn--danger" type="button">Удалить</button>
+    </div>
+  </div>
+</div>
+</div>
+</section>
+
+</div>
+</body>
+</html>

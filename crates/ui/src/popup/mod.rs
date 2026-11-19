@@ -9,6 +9,8 @@ use crate::{ctx, tr};
 use hme_core::api::ApiError;
 use hme_core::i18n::T;
 use hme_core::model::{ClientState, HmeEmail};
+use hme_core::storage_keys::{CANDIDATE_CACHE, LIST_CACHE};
+use serde::{Deserialize, Serialize};
 use hme_core::protocol::{Reply, Request, TabMessage};
 use hme_core::urls;
 use hme_web::client::Hme;
@@ -41,6 +43,28 @@ pub struct PopupCtx {
     pub list: RwSignal<ListState>,
     /// `anonymousId` of the address open in the details view.
     pub selected: RwSignal<Option<String>>,
+    /// Proposed address restored from the session cache.
+    pub candidate: RwSignal<Option<String>>,
+}
+
+/// What the popup keeps in `storage.session` between openings. Tagged with
+/// the account so a different sign-in never sees another account's data.
+#[derive(Serialize, Deserialize)]
+struct ListCache {
+    owner: String,
+    forward_to: String,
+    emails: Vec<HmeEmail>,
+}
+
+#[derive(Serialize, Deserialize)]
+struct CandidateCache {
+    owner: String,
+    hme: String,
+}
+
+fn owner_of(state: &ClientState) -> String {
+    let id = state.account.as_ref().map(|a| a.apple_id.as_str()).unwrap_or_default();
+    format!("{}|{id}", state.pms_url)
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -90,6 +114,55 @@ impl PopupCtx {
                     self.screen.set(Screen::SignedOut);
                 }
             }
+        });
+    }
+
+    /// Checks the session in the background while the UI already shows the
+    /// stored one; only a definite "signed out" changes the screen.
+    fn verify(self) {
+        spawn_local(async move {
+            let req = Request::SyncAuth {
+                deauth_on_failure: true,
+            };
+            let Ok(reply) = ext::send_message::<_, Reply>(&req).await else { return };
+            match reply.client_state.filter(|_| reply.authenticated == Some(true)) {
+                Some(state) => {
+                    if self.session.get_untracked().as_ref() != Some(&state) {
+                        self.session.set(Some(state));
+                    }
+                }
+                // (Offline replies still carry the stored session.)
+                None => {
+                    self.notice.set(reply.error);
+                    self.session.set(None);
+                    self.screen.set(Screen::SignedOut);
+                }
+            }
+        });
+    }
+
+    /// Restores the session caches for `state`.
+    async fn restore_caches(self, state: &ClientState) {
+        let owner = owner_of(state);
+        if let Some(c) = ext::session_get::<ListCache>(LIST_CACHE).await.filter(|c| c.owner == owner) {
+            self.count.set(Some(c.emails.len()));
+            self.forward_to.set(Some(c.forward_to));
+            self.list.set(ListState::Ready(c.emails));
+        }
+        if let Some(c) = ext::session_get::<CandidateCache>(CANDIDATE_CACHE).await.filter(|c| c.owner == owner) {
+            self.candidate.set(Some(c.hme));
+        }
+    }
+
+    /// Remembers (or forgets) the proposed address for the next opening.
+    pub fn save_candidate(self, hme: Option<String>) {
+        let Some(state) = self.session.get_untracked() else { return };
+        spawn_local(async move {
+            let value = hme.map(|hme| CandidateCache {
+                owner: owner_of(&state),
+                hme,
+            });
+            ext::session_set(CANDIDATE_CACHE, value.as_ref()).await;
         });
     }
 
@@ -149,6 +222,9 @@ impl PopupCtx {
         self.screen.set(Screen::Loading);
         spawn_local(async move {
             let _: Result<Reply, _> = ext::send_message(&Request::SignOut).await;
+            ext::session_set::<()>(LIST_CACHE, None).await;
+            ext::session_set::<()>(CANDIDATE_CACHE, None).await;
+            self.candidate.set(None);
             self.session.set(None);
             self.count.set(None);
             self.forward_to.set(None);
@@ -207,9 +283,13 @@ pub fn Popup() -> impl IntoView {
         notice: RwSignal::new(None),
         list: RwSignal::new(ListState::Loading),
         selected: RwSignal::new(None),
+        candidate: RwSignal::new(None),
     };
     provide_context(p);
 
+    // Fast start: everything below reads local storage only (a few ms).
+    // With a stored session the main screen renders immediately and iCloud
+    // is asked in parallel; the network never blocks the first frame.
     spawn_local(async move {
         if let Some(tab) = ext::active_tab().await {
             p.tab_id.set(tab.id);
@@ -220,7 +300,27 @@ pub fn Popup() -> impl IntoView {
                 .filter(|h| !h.is_empty());
             p.site.set(host.map(|h| urls::label_for_host(&h)));
         }
-        p.sync();
+        match hme_web::load_client_state().await {
+            Some(state) => {
+                p.restore_caches(&state).await;
+                p.session.set(Some(state.clone()));
+                p.screen.set(Screen::Generate);
+                p.refresh_summary(state);
+                p.verify();
+            }
+            None => p.sync(),
+        }
+    });
+
+    // Keep the list cache in step with every change (reserve, edit, delete…).
+    Effect::new(move |_| {
+        let (Some(state), ListState::Ready(emails)) = (p.session.get(), p.list.get()) else { return };
+        let cache = ListCache {
+            owner: owner_of(&state),
+            forward_to: p.forward_to.get().unwrap_or_default(),
+            emails,
+        };
+        spawn_local(async move { ext::session_set(LIST_CACHE, Some(&cache)).await });
     });
 
     let busy = move || p.screen.get() == Screen::Loading;
