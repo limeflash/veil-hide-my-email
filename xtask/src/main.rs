@@ -4,10 +4,12 @@
 //! cargo xtask build              release build into dist/chrome and dist/firefox
 //! cargo xtask build --dev        unoptimised, faster to compile
 //! cargo xtask package            build + dist/veil-<browser>-<version>.zip
+//!                                + dist/veil-source-<version>.zip (for AMO review)
 //! ```
 //!
-//! Needs `wasm-bindgen` (same version as the crate, see Cargo.toml) and,
-//! optionally, `wasm-opt` from binaryen.
+//! Needs `wasm-bindgen` (same version as the crate, see Cargo.toml) and, for
+//! release builds, `wasm-opt` from binaryen version 133. Release builds are
+//! reproducible: the same sources and tool versions give byte-identical files.
 
 use anyhow::{bail, Context, Result};
 use serde_json::{json, Value};
@@ -21,6 +23,10 @@ const WASM_CRATES: [&str; 2] = ["hme_background", "hme_ui"];
 const ICON_SIZES: [u32; 4] = [16, 32, 48, 128];
 /// Must equal the `wasm-bindgen` crate version pinned in Cargo.toml.
 const WASM_BINDGEN: &str = "0.2.130";
+/// binaryen release used for published builds (reviewers rebuild with it).
+const WASM_OPT: &str = "133";
+/// Left out of the source archive: not needed to build the extension.
+const SOURCE_EXCLUDE: [&str; 3] = ["design/", "e2e/", "store/"];
 
 #[derive(Clone, Copy, PartialEq)]
 enum Browser {
@@ -49,6 +55,9 @@ fn main() -> Result<()> {
                 zip_dir(&dir, &out)?;
                 println!("📦 {}", out.strip_prefix(root())?.display());
             }
+            let source = root().join(format!("dist/veil-source-{VERSION}.zip"));
+            zip_source(&source)?;
+            println!("📦 {}", source.strip_prefix(root())?.display());
             Ok(())
         }
         _ => {
@@ -70,15 +79,14 @@ fn run(cmd: &mut Command) -> Result<()> {
     Ok(())
 }
 
-fn has_tool(name: &str) -> bool {
-    Command::new(name).arg("--version").output().is_ok_and(|o| o.status.success())
-}
-
 fn build(dev: bool) -> Result<Vec<(Browser, PathBuf)>> {
     let root = root();
     let profile = if dev { "debug" } else { "release" };
 
     // 1. Rust → wasm32
+    if !dev {
+        check_wasm_opt()?;
+    }
     let mut cargo = Command::new(env!("CARGO"));
     cargo
         .current_dir(&root)
@@ -86,6 +94,33 @@ fn build(dev: bool) -> Result<Vec<(Browser, PathBuf)>> {
     if !dev {
         cargo.arg("--release");
     }
+    // Source paths end up in panic messages. Remapping this checkout and the
+    // cargo registry to fixed names makes the WASM identical on any machine.
+    // (These flags replace the ones in .cargo/config.toml, so repeat the cfg.)
+    let cargo_home = std::env::var_os("CARGO_HOME")
+        .map(PathBuf::from)
+        .or_else(|| std::env::var_os("HOME").map(|h| PathBuf::from(h).join(".cargo")))
+        .context("neither CARGO_HOME nor HOME is set")?;
+    // With the rust-src component installed, rustc swaps its virtual
+    // /rustc/<commit> paths for the local copy; map them back.
+    let rustc = |args: &[&str]| -> Result<String> {
+        let out = Command::new("rustc").current_dir(&root).args(args).output().context("rustc")?;
+        Ok(String::from_utf8(out.stdout)?.trim().to_owned())
+    };
+    let sysroot = rustc(&["--print", "sysroot"])?;
+    let version = rustc(&["-vV"])?;
+    let commit = version
+        .lines()
+        .find_map(|l| l.strip_prefix("commit-hash: "))
+        .context("rustc -vV has no commit-hash")?;
+    let rustflags = [
+        "--cfg".to_owned(),
+        r#"getrandom_backend="wasm_js""#.to_owned(),
+        format!("--remap-path-prefix={}=/veil", root.display()),
+        format!("--remap-path-prefix={}=/cargo", cargo_home.display()),
+        format!("--remap-path-prefix={sysroot}/lib/rustlib/src/rust=/rustc/{commit}"),
+    ];
+    cargo.env("CARGO_ENCODED_RUSTFLAGS", rustflags.join("\x1f"));
     run(&mut cargo)?;
 
     // 2. wasm-bindgen (+ wasm-opt) into a staging dir shared by both browsers
@@ -112,7 +147,7 @@ fn build(dev: bool) -> Result<Vec<(Browser, PathBuf)>> {
             .arg(&staging))?;
         let out = staging.join(format!("{krate}_bg.wasm"));
         if !dev {
-            optimize(&out);
+            optimize(&out)?;
         }
         let size = fs::metadata(&out)?.len();
         println!("🦀 {krate}.wasm  {:.0} KB", size as f64 / 1024.0);
@@ -155,16 +190,35 @@ fn build(dev: bool) -> Result<Vec<(Browser, PathBuf)>> {
     Ok(dirs)
 }
 
-fn optimize(wasm: &Path) {
-    if !has_tool("wasm-opt") {
-        println!("ℹ️  wasm-opt not found, skipping size optimisation (brew install binaryen)");
-        return;
+/// Release builds must use the pinned binaryen, or they would not match the
+/// published packages.
+fn check_wasm_opt() -> Result<()> {
+    let found = Command::new("wasm-opt")
+        .arg("--version")
+        .output()
+        .ok()
+        .map(|o| String::from_utf8_lossy(&o.stdout).trim().to_owned())
+        .unwrap_or_default();
+    // "wasm-opt version 133" (some builds append " (version_133)")
+    if found.split_whitespace().nth(2) != Some(WASM_OPT) {
+        bail!(
+            "need wasm-opt {WASM_OPT}, found {found:?}: download binaryen-version_{WASM_OPT} from \
+             https://github.com/WebAssembly/binaryen/releases/tag/version_{WASM_OPT} \
+             (or use --dev for an unoptimised build)"
+        );
     }
+    Ok(())
+}
+
+fn optimize(wasm: &Path) -> Result<()> {
     let tmp = wasm.with_extension("opt.wasm");
     let ok = Command::new("wasm-opt")
         .arg(wasm)
         .args([
             "-Oz",
+            // The producers section names the tool builds (release binaries of
+            // wasm-bindgen add a commit hash); drop it so any build matches.
+            "--strip-producers",
             "--enable-bulk-memory",
             "--enable-nontrapping-float-to-int",
             "--enable-sign-ext",
@@ -176,12 +230,12 @@ fn optimize(wasm: &Path) {
         .arg(&tmp)
         .status()
         .is_ok_and(|s| s.success());
-    if ok {
-        let _ = fs::rename(&tmp, wasm);
-    } else {
+    if !ok {
         let _ = fs::remove_file(&tmp);
-        println!("⚠️  wasm-opt failed on {}, keeping the unoptimised file", wasm.display());
+        bail!("wasm-opt failed on {}", wasm.display());
     }
+    fs::rename(&tmp, wasm)?;
+    Ok(())
 }
 
 fn manifest(browser: Browser) -> Value {
@@ -246,10 +300,16 @@ fn manifest(browser: Browser) -> Value {
             );
             obj.insert(
                 "browser_specific_settings".into(),
+                // 140 is the first release with the built-in data consent
+                // prompt. Declared: addresses, notes and the forwarding email
+                // (personal info) and the site's domain used as a label
+                // (browsing activity) are sent to Apple's iCloud, and only there.
                 json!({ "gecko": {
                     "id": "veil-hide-my-email@limeflash.github.io",
-                    "strict_min_version": "128.0",
-                    "data_collection_permissions": { "required": ["none"] }
+                    "strict_min_version": "140.0",
+                    "data_collection_permissions": {
+                        "required": ["personallyIdentifyingInfo", "browsingActivity"]
+                    }
                 }}),
             );
         }
@@ -287,6 +347,38 @@ fn copy_dir(from: &Path, to: &Path) -> Result<()> {
             fs::copy(entry.path(), target)?;
         }
     }
+    Ok(())
+}
+
+/// Every file git knows about (committed or not, minus ignored ones), except
+/// SOURCE_EXCLUDE: what Mozilla's reviewers need to rebuild dist/firefox.
+fn zip_source(out: &Path) -> Result<()> {
+    use zip::write::SimpleFileOptions;
+    let root = root();
+    let listed = Command::new("git")
+        .current_dir(&root)
+        .args(["ls-files", "-z", "--cached", "--others", "--exclude-standard"])
+        .output()
+        .context("git ls-files")?;
+    if !listed.status.success() {
+        bail!("git ls-files failed: the source archive is built from the git checkout");
+    }
+    let mut files: Vec<String> = String::from_utf8(listed.stdout)?
+        .split('\0')
+        .filter(|f| !f.is_empty() && !SOURCE_EXCLUDE.iter().any(|p| f.starts_with(p)))
+        .filter(|f| root.join(f).is_file())
+        .map(str::to_owned)
+        .collect();
+    files.sort();
+    files.dedup();
+    let mut zip = zip::ZipWriter::new(fs::File::create(out)?);
+    let opts = SimpleFileOptions::default().compression_method(zip::CompressionMethod::Deflated);
+    for f in files {
+        let mode = if f.ends_with(".sh") { 0o755 } else { 0o644 };
+        zip.start_file(f.as_str(), opts.unix_permissions(mode))?;
+        zip.write_all(&fs::read(root.join(&f))?)?;
+    }
+    zip.finish()?;
     Ok(())
 }
 

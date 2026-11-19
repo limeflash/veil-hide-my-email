@@ -1,0 +1,9 @@
+{
+  "name": "veil-hide-my-email",
+  "private": true,
+  "description": "Veil is built with Rust (cargo xtask). This file only provides the build-for-amo script that addons.mozilla.org reviewers run.",
+  "license": "MIT",
+  "scripts": {
+    "build-for-amo": "sh scripts/build-for-amo.sh"
+  }
+}

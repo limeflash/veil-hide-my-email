@@ -1,0 +1,7 @@
+# Pinned so release builds are reproducible (Mozilla's reviewers rebuild
+# the WASM and compare it with the published package).
+[toolchain]
+channel = "1.93.1"
+targets = ["wasm32-unknown-unknown"]
+components = ["rustfmt", "clippy"]
+profile = "minimal"

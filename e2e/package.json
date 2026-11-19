@@ -2,11 +2,13 @@
   "name": "veil-e2e",
   "private": true,
   "type": "module",
-  "description": "End-to-end smoke test: loads dist/chrome into Chromium with a mocked iCloud API.",
+  "description": "End-to-end smoke tests: load dist/chrome into Chromium (Playwright) and dist/firefox into Firefox (WebDriver) with a mocked iCloud API.",
   "scripts": {
-    "test": "node smoke.mjs"
+    "test": "node smoke.mjs",
+    "test:firefox": "node firefox.mjs"
   },
   "devDependencies": {
-    "playwright": "1.56.1"
+    "playwright": "1.56.1",
+    "selenium-webdriver": "4.52.0"
   }
 }
