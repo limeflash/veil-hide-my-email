@@ -19,8 +19,10 @@
   // Replaced with the contents of styles/inpage.css by `cargo xtask build`.
   const INPAGE_CSS = /*__INPAGE_CSS__*/'';
 
-  const BUTTON = 28;
+  const BUTTON = 22;
   const INSET = 6;
+  const GAP = 4; // between our button and another icon in the field
+  const SLOT_CHECK_MS = 250; // how often to look for other extensions' icons
   const SUCCESS_MS = 1200;
   const ERROR_MS = 3500;
   const DWELL_MS = 500; // the button must sit still this long before a click counts
@@ -221,6 +223,7 @@
       this.stableSince = performance.now();
       this.visibleToUser = null; // IntersectionObserver v2 verdict, when available
       this.pos = { top: -1, left: -1, shown: false };
+      this.slot = { at: 0, offset: 0, key: '' }; // shift away from other icons
 
       this.host = make('div');
       if (hasPopover) this.host.setAttribute('popover', 'manual');
@@ -314,7 +317,8 @@
           const r = this.target.getBoundingClientRect();
           const rtl = getComputedStyle(this.target).direction === 'rtl';
           top = Math.round(r.top + (r.height - BUTTON) / 2);
-          left = Math.round(rtl ? r.left + INSET : r.right - BUTTON - INSET);
+          const offset = this.freeSlot(r, rtl, top);
+          left = Math.round(rtl ? r.left + INSET + offset : r.right - BUTTON - INSET - offset);
           this.tip.classList.toggle('veil-tip--below', r.top < 64);
         }
         if (Math.abs(top - this.pos.top) > 2 || Math.abs(left - this.pos.left) > 2 || shown !== this.pos.shown) {
@@ -329,6 +333,45 @@
         this.frame = requestAnimationFrame(step);
       };
       step();
+    }
+
+    /**
+     * How far to move in from the field's end so we don't sit on another
+     * icon (password managers like Bitwarden or 1Password, the site's own
+     * clear/eye buttons, LastPass-style background icons). Re-checked a few
+     * times a second because those icons often appear after focus.
+     */
+    freeSlot(r, rtl, top) {
+      const now = performance.now();
+      const key = `${Math.round(r.left)},${Math.round(r.right)},${top}`;
+      if (key === this.slot.key && now - this.slot.at < SLOT_CHECK_MS) return this.slot.offset;
+      let offset = 0;
+      // An icon painted as the field's background image (no element to find).
+      const bg = getComputedStyle(this.target).backgroundImage;
+      if (bg && bg !== 'none' && /url\(/.test(bg)) offset = BUTTON + GAP;
+      // Elements drawn over the field where we'd go, topmost first.
+      const y = top + BUTTON / 2;
+      for (let i = 0; i < 3; i++) {
+        const x = rtl ? r.left + INSET + offset + BUTTON / 2 : r.right - INSET - offset - BUTTON / 2;
+        const other = this.coveringElement(x, y);
+        if (!other) break;
+        const o = other.getBoundingClientRect();
+        offset = rtl ? o.right - r.left - INSET + GAP : r.right - o.left - INSET + GAP;
+      }
+      // No room left inside the field: give up the shift rather than cover text.
+      if (offset > r.width / 2) offset = 0;
+      this.slot = { at: now, offset, key };
+      return offset;
+    }
+
+    /** The first element above the field at (x, y) that isn't ours. */
+    coveringElement(x, y) {
+      for (const e of D.elementsFromPoint.call(doc, x, y)) {
+        if (e === this.host) continue;
+        if (e === this.target || e.contains(this.target)) return null;
+        return e;
+      }
+      return null;
     }
 
     set(state, { title = '', addr = '', text = '', error = false, open = false } = {}) {

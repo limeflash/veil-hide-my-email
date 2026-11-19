@@ -110,7 +110,7 @@
 .veil-root {
   position: relative;
   display: inline-block;
-  width: 28px; height: 28px;
+  width: 22px; height: 22px;
   font-family: system-ui, sans-serif; /* generic only: page @font-face rules can't probe the text */
   font-size: 12px; line-height: 16px;
   text-align: left; direction: ltr;
@@ -121,7 +121,7 @@
 /* -------------------------------------------------------------- Button -- */
 .veil-btn {
   position: relative;
-  width: 28px; height: 28px; margin: 0; padding: 0;
+  width: 22px; height: 22px; margin: 0; padding: 0;
   display: grid; place-items: center;
   border: 1px solid var(--veil-border); border-radius: 9999px;
   background-color: var(--veil-surface); color: var(--veil-glyph);
@@ -135,13 +135,13 @@
 .veil-btn:active { transform: scale(0.92); }
 
 .veil-icon {
-  grid-area: 1 / 1; width: 16px; height: 16px;
+  grid-area: 1 / 1; width: 13px; height: 13px;
   fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;
   opacity: 0; transform: scale(0.6);
   transition: opacity 150ms cubic-bezier(0.22, 1, 0.36, 1), transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 .veil-spinner {
-  grid-area: 1 / 1; width: 14px; height: 14px; border-radius: 50%;
+  grid-area: 1 / 1; width: 11px; height: 11px; border-radius: 50%;
   border: 3px solid var(--veil-track); border-top-color: currentColor;
   opacity: 0;
   animation: veil-spin 800ms linear infinite;
@@ -161,7 +161,7 @@
 .veil-btn[data-state="ready"]:hover { background-image: linear-gradient(#221C1214, #221C1214); }
 .veil-btn[data-state="ready"] .veil-icon--logo { opacity: 1; transform: none; }
 /* the logo glyph is a filled mark */
-.veil-icon--logo { width: 18px; height: 18px; fill: currentColor; stroke: none; }
+.veil-icon--logo { width: 14px; height: 14px; fill: currentColor; stroke: none; }
 
 /* reserving — filled accent, white spinner */
 .veil-btn[data-state="reserving"] {
@@ -202,7 +202,7 @@
 /* arrow */
 .veil-tip::after {
   box-shadow: none;
-  content: ""; position: absolute; right: 15px; bottom: -5px;
+  content: ""; position: absolute; right: 12px; bottom: -5px;
   width: 9px; height: 9px; transform: rotate(45deg);
   background: var(--veil-tip-bg);
   border-bottom-right-radius: 2px;

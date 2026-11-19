@@ -147,7 +147,19 @@ const SITE_HTML = `<!doctype html><html><head><meta charset="utf-8"><title>Sign 
 </head><body><h1>Create account</h1><form>
 <label>Name<input id="name" name="name"></label>
 <label>Email<input id="email" type="email" name="email" autocomplete="email"></label>
-</form></body></html>`;
+</form>
+<script>
+  // Stand-in for a password manager's in-field icon (Bitwarden, 1Password…):
+  // a clickable 24px element pinned to the field's right edge on focus.
+  document.getElementById('email').addEventListener('focus', (e) => {
+    if (document.getElementById('pm')) return;
+    const r = e.target.getBoundingClientRect();
+    const pm = Object.assign(document.createElement('div'), { id: 'pm' });
+    Object.assign(pm.style, { position: 'fixed', width: '24px', height: '24px', borderRadius: '6px', background: '#175ddc',
+      left: (r.right - 30) + 'px', top: (r.top + (r.height - 24) / 2) + 'px', zIndex: 2147483646, cursor: 'pointer' });
+    document.body.appendChild(pm);
+  });
+</script></body></html>`;
 const site = http.createServer((_req, res) => res.writeHead(200, { 'content-type': 'text/html' }).end(SITE_HTML));
 await new Promise((r) => site.listen(0, '127.0.0.1', r));
 const SITE = `http://127.0.0.1:${site.address().port}/signup`;
@@ -340,12 +352,18 @@ if (mock.signedIn) {
   await pause(1200);
   check(mock.generated === generatedBefore, 'focusing a field makes no iCloud request');
   await page.screenshot({ path: path.join(SHOTS, 'inpage-ready.png') });
-  // The button lives in a closed shadow root; click where it is drawn.
+  // Our host is a light-DOM <div popover> (its shadow root is closed).
+  const placement = await page.evaluate(() => {
+    const host = [...document.documentElement.children].find((e) => e.hasAttribute('popover'));
+    const h = host.getBoundingClientRect();
+    const pm = document.getElementById('pm').getBoundingClientRect();
+    return { x: h.x + h.width / 2, y: h.y + h.height / 2, width: h.width, clear: h.right <= pm.left };
+  });
+  check(placement.width === 22 && placement.clear, `in-field button (22px) sits left of a password-manager icon`);
   // Like a person: hover first (the tooltip opens), then click.
-  const box = await page.locator('#email').boundingBox();
-  await page.mouse.move(box.x + box.width - 6 - 14, box.y + box.height / 2);
+  await page.mouse.move(placement.x, placement.y);
   await pause(900);
-  await page.mouse.click(box.x + box.width - 6 - 14, box.y + box.height / 2);
+  await page.mouse.click(placement.x, placement.y);
   await page.waitForFunction(() => document.querySelector('#email').value.endsWith('@icloud.com'), null, { timeout: 5000 });
   const filled = await page.inputValue('#email');
   check(filled.endsWith('@icloud.com'), `in-field button filled ${filled}`);

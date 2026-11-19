@@ -1,0 +1,55 @@
+/* Veil — Chrome Web Store artwork. Postmark identity: graphite neutrals, ink type,
+   and the manila label (already inside the real UI captures) as the one bright element.
+   Every frame is a fixed-size page; render.mjs screenshots it at deviceScaleFactor 1. */
+:root {
+  --paper: #E9D8B4; --ink: #221C12; --ink-2: #5C5140;
+  --bg: #F4F4F5; --surface: #FFFFFF; --raised: #ECECEE; --text: #171717; --text-2: #525252; --hair: rgba(23, 23, 23, 0.1);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 16px 40px rgba(0, 0, 0, 0.14);
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI Variable", "Segoe UI", Inter, Roboto, system-ui, sans-serif;
+  --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+}
+.dark {
+  --bg: #0F0F10; --surface: #141415; --raised: #232325; --text: #EDEDED; --text-2: #A1A1A6; --hair: rgba(237, 237, 237, 0.1);
+  --shadow: 0 0 0 1px rgba(237, 237, 237, 0.1), 0 16px 40px rgba(0, 0, 0, 0.6);
+}
+.paper { --bg: var(--paper); --text: var(--ink); --text-2: var(--ink-2); --hair: rgba(34, 28, 18, 0.2); }
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { position: relative; overflow: hidden; background: var(--bg); color: var(--text); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+.shot { width: 1280px; height: 800px; }
+.small { width: 440px; height: 280px; }
+.marquee { width: 1400px; height: 560px; }
+
+/* ---- text block ---- */
+.copy { position: absolute; left: 72px; top: 0; bottom: 0; display: flex; flex-direction: column; justify-content: center; gap: 20px; }
+.brand { display: flex; align-items: center; gap: 12px; font-size: 22px; font-weight: 500; }
+.brand svg { width: 36px; height: 36px; display: block; }
+h1 { margin: 0; font-size: 56px; line-height: 60px; font-weight: 500; letter-spacing: -0.025em; text-wrap: balance; }
+.sub { margin: 0; font-size: 22px; line-height: 32px; color: var(--text-2); text-wrap: pretty; }
+.facts { margin: 8px 0 0; padding: 0; display: grid; grid-template-columns: auto 1fr; column-gap: 24px; font-size: 20px; line-height: 28px; }
+.facts dt { font-family: var(--mono); font-size: 16px; color: var(--text-2); padding: 12px 0; border-top: 1px solid var(--hair); }
+.facts dd { margin: 0; padding: 12px 0; border-top: 1px solid var(--hair); }
+
+/* ---- generic browser window (no real browser's branding) ---- */
+.win { position: absolute; top: 72px; right: -24px; bottom: -24px; border-radius: 16px 0 0 0; background: var(--surface); box-shadow: var(--shadow); overflow: hidden; }
+.bar { height: 52px; display: flex; align-items: center; gap: 12px; padding: 0 44px 0 16px; background: var(--raised); border-bottom: 1px solid var(--hair); color: var(--text-2); }
+.bar svg { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.url { flex: 1; height: 32px; display: flex; align-items: center; gap: 8px; padding: 0 14px; border-radius: 16px; background: var(--surface); font-size: 14px; color: var(--text); }
+.url svg { width: 14px; height: 14px; color: var(--text-2); }
+.ext { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 8px; }
+.ext--on { background: var(--hair); }
+.ext img, .ext .mark { width: 20px; height: 20px; display: block; }
+.page { position: absolute; left: 0; right: 0; top: 53px; bottom: 0; overflow: hidden; background: #F3F3F2; }
+.dark .page { background: var(--surface); }
+.page img { position: absolute; display: block; }
+
+/* ---- real UI captures (2x PNGs shown at 1x) ---- */
+.popup { position: absolute; width: 380px; height: 560px; border-radius: 12px; box-shadow: var(--shadow); display: block; }
+.card { position: absolute; border-radius: 14px; background: #fff; box-shadow: var(--shadow); overflow: hidden; }
+.card i { position: absolute; left: 0; top: 0; display: block; background-repeat: no-repeat; }
+.cap { position: absolute; font-family: var(--mono); font-size: 14px; line-height: 20px; color: var(--text-2); }
+
+/* ---- promo tiles ---- */
+.lockup { display: flex; align-items: center; gap: 16px; }
+.lockup svg { display: block; }
+.word { font-weight: 500; letter-spacing: -0.02em; }
