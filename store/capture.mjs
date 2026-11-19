@@ -25,25 +25,26 @@ const day = 86_400_000;
 const now = Date.now();
 
 const LISTS = {
+  // Fictional sites only: no third-party brands in store artwork.
   en: [
-    ['GitHub', 'quiet_plover.4k', true, 1, 'Open source, release notes'],
-    ['Figma', 'marble.sails_0q', true, 4, ''],
-    ['Booking.com', 'north.kite_5d', true, 9, 'Summer trip'],
-    ['The Verge newsletter', 'amber_wren.x1', false, 17, ''],
-    ['Steam', 'pale_otter.9m', true, 30, ''],
-    ['Notion', 'slate_heron.2c', true, 44, ''],
-    ['Coupon site', 'dusk.lark_3h', false, 61, 'Too much spam'],
-    ['Airbnb', 'cedar_finch.7p', true, 75, ''],
+    ['paperboat.news', 'quiet_plover.4k', true, 1, 'Weekly digest'],
+    ['kettle.app', 'marble.sails_0q', true, 4, ''],
+    ['bramble.travel', 'north.kite_5d', true, 9, 'Summer trip'],
+    ['saltmarsh.cafe newsletter', 'amber_wren.x1', false, 17, ''],
+    ['lumen.games', 'pale_otter.9m', true, 30, ''],
+    ['tinyforge.dev', 'slate_heron.2c', true, 44, ''],
+    ['coupon-hub.shop', 'dusk.lark_3h', false, 61, 'Too much spam'],
+    ['quietroom.co', 'cedar_finch.7p', true, 75, ''],
   ],
   ru: [
-    ['GitHub', 'quiet_plover.4k', true, 1, 'Опенсорс и релизы'],
-    ['Figma', 'marble.sails_0q', true, 4, ''],
-    ['Ozon', 'north.kite_5d', true, 9, 'Покупки'],
-    ['Рассылка Хабра', 'amber_wren.x1', false, 17, ''],
-    ['Steam', 'pale_otter.9m', true, 30, ''],
-    ['Notion', 'slate_heron.2c', true, 44, ''],
+    ['paperboat.news', 'quiet_plover.4k', true, 1, 'Еженедельная рассылка'],
+    ['kettle.app', 'marble.sails_0q', true, 4, ''],
+    ['bramble.travel', 'north.kite_5d', true, 9, 'Летняя поездка'],
+    ['Рассылка saltmarsh.cafe', 'amber_wren.x1', false, 17, ''],
+    ['lumen.games', 'pale_otter.9m', true, 30, ''],
+    ['tinyforge.dev', 'slate_heron.2c', true, 44, ''],
     ['Сайт с купонами', 'dusk.lark_3h', false, 61, 'Слишком много спама'],
-    ['Авито', 'cedar_finch.7p', true, 75, ''],
+    ['quietroom.co', 'cedar_finch.7p', true, 75, ''],
   ],
 };
 
@@ -145,7 +146,7 @@ for (const lang of LANGS) {
     await fresh();
     await popup.goto(url('popup.html'));
     await popup.waitForSelector('.v-address');
-    await popup.fill('#gen-label', 'github.com');
+    await popup.fill('#gen-label', 'orbit.fit');
     await pause(400);
     await shot(popup, `popup-generate-${theme}`);
 
@@ -160,15 +161,21 @@ for (const lang of LANGS) {
     await pause(500);
     await shot(popup, `popup-manage-${theme}`);
 
-    await popup.fill('input[type=search]', 'not');
+    await popup.fill('input[type=search]', 'app');
     await pause(300);
     await shot(popup, `popup-search-${theme}`);
     await popup.fill('input[type=search]', '');
 
-    await popup.click('.v-list-item:has-text("GitHub") >> nth=-1');
+    await popup.click('.v-list-item:has-text("paperboat.news") >> nth=-1');
     await popup.waitForSelector('.v-popup__header--nav');
     await pause(500);
     await shot(popup, `popup-details-${theme}`);
+
+    // Deactivated, with the "Undo" toast showing.
+    await popup.click('.v-btn--block:has(svg)');
+    await popup.waitForSelector('.v-toast__action');
+    await pause(450);
+    await shot(popup, `popup-deactivated-${theme}`);
     setList(lang);
   }
   await setOptions(lang, 'light');

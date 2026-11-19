@@ -1,11 +1,14 @@
-// Chrome Web Store artwork for Veil.
+// Chrome Web Store artwork for Veil. Frame 1 and the marquee are "Mail counter" (dark counter,
+// manila labels for made-up sites); frames 2–5 and the small tile are "Big and bold".
 //
 //   node store/artwork/render.mjs            (from the repo root)
 //
 // 1. Writes one HTML file per artwork, at its exact pixel size, to store/artwork/src/<lang>/.
 // 2. Screenshots each with Playwright (deviceScaleFactor 1) to store/artwork/<lang>/*.png.
-// The UI in the frames is the real extension, captured at 2x by store/capture.mjs into
-// store/raw/<lang>/ and shown here at 1x. Nothing is redrawn.
+// The UI in the frames is the real extension: the 2x captures that store/capture.mjs writes to
+// store/raw/<lang>/, cropped, scaled up and at most tilted 3°. Nothing is redrawn.
+// Headlines carry data-fit="maxWidth,maxHeight": the page shrinks them until they fit, so longer
+// languages keep the same layout without hyphenation.
 
 import { createRequire } from 'node:module';
 import fs from 'node:fs';
@@ -20,50 +23,42 @@ const BROWSER = process.env.BROWSER_PATH ?? '/Applications/Brave Browser.app/Con
 
 const COPY = {
   en: {
-    tagline: 'Hide My Email for iCloud',
-    s1: ['A new address for every site', 'One click in the toolbar. Mail still lands in your real inbox.'],
-    s2: ['Right inside the email field', 'Veil adds a button to sign-up forms. Click it and the address is filled in.'],
-    s2cap: 'after one click',
-    s3: ['Find any address', 'Search by label, address or note. Filter active and inactive.'],
-    s4: ['Too much mail? Turn the address off', 'Give each address a label and a note. Deactivate it, bring it back, or delete it.'],
-    s5: ['Just you and iCloud', null],
-    facts: [['servers', 'None of ours'], ['talks to', 'Apple’s iCloud only'], ['code', 'Open source, MIT'], ['languages', '15'], ['themes', 'Light and dark']],
-    promo: 'A new address for every site',
+    h1: 'A new address for every site', s1: 'Each one gets its own label. Mail still reaches you.',
+    h2: 'Right<br>inside<br>the email<br>field', s2: 'One click on any sign-up form.',
+    h3: 'Find any<br>address', s3: 'Search by label, address or note.',
+    h4: 'Too much<br>mail? Turn<br>it off', s4: 'Deactivate, bring back or delete.',
+    h5: 'Just you<br>and iCloud',
+    facts: ['No Veil servers', 'Talks only to Apple’s iCloud', 'Open source, MIT', '15 languages', 'Light and dark'],
+    marquee: 'A new address for every site', tagline: 'Hide My Email for iCloud', small: 'Hide My Email',
   },
   ru: {
-    tagline: 'Hide My Email для iCloud',
-    s1: ['Свой адрес для каждого сайта', 'Один клик на панели браузера. Письма придут на ваш настоящий ящик.'],
-    s2: ['Кнопка прямо в поле email', 'Veil добавляет её в формы регистрации. Нажмите, и адрес подставится сам.'],
-    s2cap: 'после клика',
-    s3: ['Все адреса под рукой', 'Поиск по метке, адресу и заметке. Фильтр активных и отключённых.'],
-    s4: ['Надоели письма? Отключите адрес', 'Подпишите адрес меткой и заметкой. Отключите, верните или удалите.'],
-    s5: ['Только вы и iCloud', null],
-    facts: [['серверы', 'Своих нет'], ['обмен данными', 'Только с iCloud от Apple'], ['код', 'Открытый, лицензия MIT'], ['языки', '15'], ['темы', 'Светлая и тёмная']],
-    promo: 'Свой адрес для каждого сайта',
+    h1: 'Свой адрес каждому сайту', s1: 'У каждого своя метка. Письма всё равно придут вам.',
+    h2: 'Кнопка<br>прямо<br>в поле', s2: 'Один клик в любой форме регистрации.',
+    h3: 'Все адреса<br>под рукой', s3: 'Поиск по метке, адресу и заметке.',
+    h4: 'Надоели<br>письма?<br>Отключите', s4: 'Отключите, верните или удалите адрес.',
+    h5: 'Только вы<br>и iCloud',
+    facts: ['Своих серверов нет', 'Данные идут только в iCloud', 'Открытый код, MIT', '15 языков', 'Светлая и тёмная темы'],
+    marquee: 'Свой адрес каждому сайту', tagline: 'Hide My Email для iCloud', small: 'Hide My Email',
   },
 };
 
 // The filled Veil mark (design/handoff/icons.md, "Logo (filled)").
 const FLAP = 'M5 5h14a3 3 0 0 1 2.6 1.5L12 13.2 2.4 6.5A3 3 0 0 1 5 5z';
 const BODY = 'M2 9.3l8.9 6.2a1.9 1.9 0 0 0 2.2 0L22 9.3V16a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3z';
-const glyph = (size, color = '#221C12') =>
-  `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="${color}" aria-hidden="true"><path d="${FLAP}"/><path d="${BODY}"/></svg>`;
-const icon = (size) =>
-  `<svg width="${size}" height="${size}" viewBox="0 0 128 128" aria-hidden="true"><rect x="4" y="4" width="120" height="120" rx="28" fill="#E9D8B4"/><g transform="translate(16 16) scale(4)" fill="#221C12"><path d="${FLAP}"/><path d="${BODY}"/></g></svg>`;
+const glyph = (size) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="${FLAP}"/><path d="${BODY}"/></svg>`;
+const lockup = (x = 64, y = 52) => `<div class="lockup" style="left: ${x}px; top: ${y}px">${glyph(36)}Veil</div>`;
 
-const line = (d) => `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${d}"/></svg>`;
-const bar = (url) => `<div class="bar">
-  ${line('m15 18-6-6 6-6')}${line('m9 18 6-6-6-6')}${line('M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8M3 3v5h5')}
-  <div class="url"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>${url}</div>
-  <span class="ext ext--on">${icon(20)}</span>
-  ${line('M12 5h.01M12 12h.01M12 19h.01')}
-</div>`;
+// Made-up sites for the mailing labels: no real brands, so nothing third-party is implied.
+const SITES = [
+  ['mosslane.shop', 'quiet_plover.4k'], ['paperboat.news', 'marble.sails_0q'], ['bramble.travel', 'north.kite_5d'],
+  ['kettle.app', 'slate_heron.2c'], ['quietroom.co', 'cedar_finch.7p'], ['lumen.games', 'pale_otter.9m'],
+  ['saltmarsh.cafe', 'amber_wren.x1'], ['orbit.fit', 'misty_harbor.3v'], ['tinyforge.dev', 'silent_fjord.2m'],
+];
+const tag = (i, x, y, rot, cls = '', extra = '') =>
+  `<div class="tag ${cls}" style="left: ${x}px; top: ${y}px; transform: rotate(${rot}deg); ${extra}"><b>${SITES[i][0]}</b><span>${SITES[i][1]}@icloud.com</span></div>`;
 
-const copyBlock = (c, [title, sub], width, extra = '') => `<div class="copy" style="width: ${width}px">
-  <div class="brand">${icon(36)}Veil</div>
-  <h1>${title}</h1>
-  ${sub ? `<p class="sub">${sub}</p>` : ''}${extra}
-</div>`;
+const POP = [380, 560];   // popup capture, CSS px at 1x
+const FORM = [640, 520];  // in-page capture, CSS px at 1x
 
 const doc = (lang, cls, body) => `<!doctype html>
 <html lang="${lang}">
@@ -74,68 +69,84 @@ ${body}
 </html>
 `;
 
-// store/raw/ru/inpage-*.png were captured without the Veil button and tooltip (both files show
-// the already-filled field), so the Russian frames borrow the English in-page captures until
-// the Russian ones are re-captured. Delete this map then.
-const raw = (lang, name) => `../../../raw/${lang}/${name}.png`;
-// Window geometry: the Veil toolbar icon sits 76px from the frame's right edge; the popup hangs under it.
-const POP_X = 836, POP_Y = 132;
-
 function pages(lang) {
   const c = COPY[lang];
-  const r = (n) => raw(lang, n);
+  const raw = (n) => `../../../raw/${lang}/${n}.png`;
+  // whole capture at `scale`, tilted `rot` degrees around its top-left corner
+  const ui = (name, base, scale, x, y, rot = 0, radius = 12) =>
+    `<img class="ui" src="${raw(name)}" width="${base[0] * scale}" height="${base[1] * scale}" style="left: ${x}px; top: ${y}px; border-radius: ${radius * scale}px; transform: rotate(${rot}deg)" alt="">`;
+  // a w×h region (CSS px at 1x, origin sx,sy) of a capture, shown at `scale`
+  const crop = (name, base, sx, sy, w, h, scale, x, y, radius = 12, rot = 0) =>
+    `<div class="crop" style="left: ${x}px; top: ${y}px; width: ${w * scale}px; height: ${h * scale}px; border-radius: ${radius * scale}px; transform: rotate(${rot}deg); background-image: url('${raw(name)}'); background-size: ${base[0] * scale}px ${base[1] * scale}px; background-position: ${-sx * scale}px ${-sy * scale}px"></div>`;
+  const h1 = (html, x, y, maxW, maxH) => `<h1 data-fit="${maxW},${maxH}" style="left: ${x}px; top: ${y}px">${html}</h1>`;
+  const sub = (text, x, y, w) => `<p class="sub" style="left: ${x}px; top: ${y}px; width: ${w}px">${text}</p>`;
+
   return {
-    'screenshot-1': [1280, 800, doc(lang, 'shot', `
-${copyBlock(c, c.s1, 400)}
-<div class="win" style="left: 520px">${bar('github.com/signup')}
-  <div class="page"><img src="${r('inpage-plain')}" width="640" height="520" style="left: -44px; top: 30px" alt=""></div>
+    // 1 · Mail counter · labels for made-up sites, the real popup among them
+    'screenshot-1': [1280, 800, doc(lang, 'shot counter', `
+<div class="abs" style="left: 72px; top: 64px; width: 620px; display: flex; flex-direction: column; gap: 20px">
+  <div class="lockup" style="position: static">${glyph(30)}Veil</div>
+  <h1 style="position: static">${c.h1}</h1>
+  <p class="sub" style="position: static">${c.s1}</p>
 </div>
-<img class="popup" src="${r('popup-generate-light')}" style="left: ${POP_X}px; top: ${POP_Y}px" alt="">`)],
+${tag(6, -60, 470, -14, 'lo')}${tag(5, 150, 600, 9)}${tag(3, 30, 640, -5, 'hi')}${tag(4, 330, 470, 13, 'lo')}
+${tag(2, 420, 640, -9)}${tag(8, 600, 720, 6, 'hi')}${tag(1, 250, 380, -3, 'hi')}${tag(7, 560, 500, 4, 'lo')}
+${tag(0, 520, 318, -7, '', 'width: 340px')}
+<img class="ui" src="${raw('popup-generate-light')}" width="437" height="644" style="left: 800px; top: 96px; border-radius: 14px; box-shadow: 0 2px 4px rgba(0,0,0,.4), 0 30px 70px rgba(0,0,0,.6)" alt="">`)],
 
-    'screenshot-2': [1280, 800, doc(lang, 'shot', `
-${copyBlock(c, c.s2, 420)}
-<div class="win" style="left: 548px">${bar('example.com/signup')}
-  <div class="page"><img src="${r('inpage-ready')}" width="640" height="520" style="left: 46px; top: -20px" alt=""></div>
+    // 2 · paper + ink block · the button inside the email field, then the filled field
+    'screenshot-2': [1280, 800, doc(lang, 'shot on-paper', `
+<div class="block fall"></div>
+${lockup()}
+${h1(c.h2, 60, 140, 400, 440)}
+${sub(c.s2, 64, 624, 340)}
+${crop('inpage-ready', FORM, 78, 94, 484, 332, 1.5, 506, 56, 14)}
+${crop('inpage-success', FORM, 100, 246, 440, 94, 1.5, 580, 610, 10)}`)],
+
+    // 3 · ink + paper block on the left · the list and a search
+    'screenshot-3': [1280, 800, doc(lang, 'shot on-ink', `
+<div class="block left"></div>
+${ui('popup-manage-light', POP, 1.5, 70, 84, -2)}
+${crop('popup-search-light', POP, 0, 56, 380, 250, 1.4, 270, 430, 12)}
+${lockup(840, 52)}
+${h1(c.h3, 836, 140, 400, 300)}
+${sub(c.s3, 840, 400, 360)}`)],
+
+    // 4 · mist + ink block · just deactivated: the inactive card, Turn back on / Delete, and the
+    //     "Address deactivated · Undo" toast. The popup is shifted up so the toast is in frame.
+    'screenshot-4': [1280, 800, doc(lang, 'shot on-mist-ink', `
+<div class="block rise"></div>
+${lockup()}
+${h1(c.h4, 60, 140, 450, 440)}
+${sub(c.s4, 64, 624, 340)}
+${ui('popup-deactivated-light', POP, 1.6, 630, -112, 2)}`)],
+
+    // 5 · graphite + paper block · privacy facts, both themes
+    'screenshot-5': [1280, 800, doc(lang, 'shot on-graphite', `
+<div class="block rise"></div>
+${lockup()}
+${h1(c.h5, 60, 140, 460, 220)}
+<ul class="facts" style="left: 64px; top: 400px">${c.facts.map((f) => `<li>${f}</li>`).join('')}</ul>
+${ui('popup-reserved-dark', POP, 1.2, 566, 200, -2)}
+${ui('popup-generate-light', POP, 1.2, 800, 70, 2)}`)],
+
+    // small tile · Big and bold: the name on paper, the mark on one ink block
+    'promo-small': [440, 280, doc(lang, 'small on-paper', `
+<div class="block" style="clip-path: polygon(62% 0, 100% 0, 100% 100%, 46% 100%)"></div>
+<div class="abs" style="left: 32px; top: 84px; font-size: 84px; line-height: 84px; font-weight: 600; letter-spacing: -0.05em">Veil</div>
+<div class="abs" style="left: 34px; top: 176px; font-size: 21px; line-height: 28px; font-weight: 500">${c.small}</div>
+<div class="abs" style="left: 284px; top: 82px; color: var(--paper)">${glyph(116)}</div>`)],
+
+    // marquee · Mail counter
+    'promo-marquee': [1400, 560, doc(lang, 'marquee counter', `
+<div class="abs" style="left: 88px; top: 0; bottom: 0; width: 540px; display: flex; flex-direction: column; justify-content: center; gap: 22px">
+  <div class="lockup" style="position: static; font-size: 30px">${glyph(38)}Veil</div>
+  <h1 style="position: static; font-size: 72px">${c.marquee}</h1>
+  <p class="sub" style="position: static; font-size: 26px; line-height: 34px">${c.tagline}</p>
 </div>
-<span class="cap" style="left: 792px; top: 580px">${c.s2cap}</span>
-<div class="card" style="left: 792px; top: 608px; width: 440px; height: 164px"><i style="width: 440px; height: 164px; background-image: url('${r('inpage-success')}'); background-size: 640px 520px; background-position: -100px -176px"></i></div>`)],
-
-    'screenshot-3': [1280, 800, doc(lang, 'shot', `
-${copyBlock(c, c.s3, 320)}
-<div class="win" style="left: 420px">${bar('github.com')}
-  <div class="page"></div>
-</div>
-<img class="popup" src="${r('popup-search-light')}" style="left: 440px; top: 196px" alt="">
-<img class="popup" src="${r('popup-manage-light')}" style="left: ${POP_X}px; top: ${POP_Y}px" alt="">`)],
-
-    'screenshot-4': [1280, 800, doc(lang, 'shot dark', `
-${copyBlock(c, c.s4, 560)}
-<div class="win" style="left: 720px">${bar('github.com')}
-  <div class="page"></div>
-</div>
-<img class="popup" src="${r('popup-details-dark')}" style="left: ${POP_X}px; top: ${POP_Y}px" alt="">`)],
-
-    'screenshot-5': [1280, 800, doc(lang, 'shot', `
-${copyBlock(c, c.s5, 340, `<dl class="facts">${c.facts.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>`)}
-<div class="win" style="left: 440px">${bar('github.com/signup')}
-  <div class="page"></div>
-</div>
-<img class="popup" src="${r('popup-reserved-dark')}" style="left: 460px; top: 196px" alt="">
-<img class="popup" src="${r('popup-generate-light')}" style="left: ${POP_X}px; top: ${POP_Y}px" alt="">`)],
-
-    'promo-small': [440, 280, doc(lang, 'small paper', `
-<div style="position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; gap: 14px; padding: 0 40px">
-  <div class="lockup">${glyph(64)}<span class="word" style="font-size: 60px; line-height: 64px">Veil</span></div>
-  <div style="font-size: 22px; line-height: 28px; color: var(--text-2)">${c.tagline}</div>
-</div>`)],
-
-    'promo-marquee': [1400, 560, doc(lang, 'marquee paper', `
-<div style="position: absolute; left: 96px; top: 0; bottom: 0; width: 640px; display: flex; flex-direction: column; justify-content: center; gap: 24px">
-  <div class="lockup">${glyph(44)}<span class="word" style="font-size: 40px; line-height: 44px">Veil</span></div>
-  <h1 style="font-size: 68px; line-height: 72px">${c.promo}</h1>
-  <p class="sub" style="font-size: 26px; line-height: 34px">${c.tagline}</p>
-</div>
-<img class="popup" src="${r('popup-generate-dark')}" style="left: 900px; top: 64px; box-shadow: 0 1px 2px rgba(34, 28, 18, 0.12), 0 24px 56px rgba(34, 28, 18, 0.28)" alt="">`)],
+${tag(6, 640, 40, -11, 'lo')}${tag(3, 700, 150, 6, 'hi')}${tag(2, 620, 270, -6)}${tag(4, 720, 390, 9, 'lo')}${tag(5, 610, 480, -4, 'hi')}
+${tag(1, 1120, 30, 8, 'hi')}${tag(7, 1150, 180, -7)}${tag(8, 1130, 330, 5, 'lo')}${tag(0, 1160, 460, -9, 'hi')}
+<img class="ui" src="${raw('popup-generate-light')}" width="380" height="560" style="left: 880px; top: 56px; border-radius: 12px; transform: rotate(-3deg); transform-origin: 50% 50%; box-shadow: 0 2px 4px rgba(0,0,0,.4), 0 30px 70px rgba(0,0,0,.6)" alt="">`)],
   };
 }
 
@@ -149,15 +160,23 @@ for (const lang of langs) {
     fs.writeFileSync(src, html);
     const page = await browser.newPage({ viewport: { width, height }, deviceScaleFactor: 1 });
     await page.goto(pathToFileURL(src).href);
-    await page.evaluate(async () => {
+    const fitted = await page.evaluate(async () => {
       await document.fonts.ready;
       await Promise.all([...document.images].map((i) => i.decode().catch(() => {})));
+      const out = [];
+      for (const el of document.querySelectorAll('[data-fit]')) {
+        const [maxW, maxH] = el.dataset.fit.split(',').map(Number);
+        let size = parseFloat(getComputedStyle(el).fontSize);
+        while (size > 40 && (el.offsetWidth > maxW || el.offsetHeight > maxH)) { size -= 2; el.style.fontSize = `${size}px`; }
+        out.push(size);
+      }
+      return out;
     });
     const broken = await page.evaluate(() => [...document.images].filter((i) => !i.naturalWidth).map((i) => i.src));
     if (broken.length) throw new Error(`${lang}/${name}: missing images ${broken.join(', ')}`);
     await page.screenshot({ path: path.join(HERE, lang, `${name}.png`), type: 'png', omitBackground: false, clip: { x: 0, y: 0, width, height } });
     await page.close();
-    console.log(`${lang}/${name}.png ${width}x${height}`);
+    console.log(`${lang}/${name}.png ${width}x${height}${fitted.length ? `  headline ${fitted.join('/')}px` : ''}`);
   }
 }
 await browser.close();

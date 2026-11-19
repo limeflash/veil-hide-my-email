@@ -1,0 +1,28 @@
+/* Veil store artwork — three concept directions (EN only). Shared pieces. */
+:root {
+  --paper: #E9D8B4; --paper-hi: #F3E7CB; --paper-lo: #D9C59C; --ink: #221C12; --ink-2: #5C5140;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI Variable", "Segoe UI", Inter, Roboto, system-ui, sans-serif;
+  --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { position: relative; overflow: hidden; font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+.shot { width: 1280px; height: 800px; }
+.marquee { width: 1400px; height: 560px; }
+.abs { position: absolute; }
+h1 { margin: 0; font-weight: 500; letter-spacing: -0.03em; text-wrap: balance; }
+.lockup { display: flex; align-items: center; gap: 12px; font-size: 24px; font-weight: 500; }
+.lockup svg { display: block; }
+.ui { position: absolute; display: block; border-radius: 12px; }
+.crop { position: absolute; overflow: hidden; border-radius: 12px; background-repeat: no-repeat; }
+
+/* a mailing label: an illustration of the idea, not a UI screenshot */
+.tag {
+  position: absolute; width: 320px; padding: 14px 18px 14px 46px; border-radius: 10px;
+  background: var(--paper); color: var(--ink);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.38);
+}
+.tag::before { content: ""; position: absolute; left: 16px; top: 50%; width: 14px; height: 14px; margin-top: -7px; border-radius: 50%; background: var(--hole, #17130D); box-shadow: 0 0 0 4px rgba(34, 28, 18, 0.14); }
+.tag b { display: block; font-size: 21px; line-height: 26px; font-weight: 500; }
+.tag span { display: block; margin-top: 8px; padding-top: 8px; border-top: 1px dashed rgba(34, 28, 18, 0.3); font-family: var(--mono); font-size: 15px; line-height: 20px; color: var(--ink-2); white-space: nowrap; }
+.tag.hi { background: var(--paper-hi); } .tag.lo { background: var(--paper-lo); }
