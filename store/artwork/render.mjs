@@ -92,7 +92,7 @@ function pages(lang) {
 ${tag(6, -60, 470, -14, 'lo')}${tag(5, 150, 600, 9)}${tag(3, 30, 640, -5, 'hi')}${tag(4, 330, 470, 13, 'lo')}
 ${tag(2, 420, 640, -9)}${tag(8, 600, 720, 6, 'hi')}${tag(1, 250, 380, -3, 'hi')}${tag(7, 560, 500, 4, 'lo')}
 ${tag(0, 520, 318, -7, '', 'width: 340px')}
-<img class="ui" src="${raw('popup-generate-light')}" width="437" height="644" style="left: 800px; top: 96px; border-radius: 14px; box-shadow: 0 2px 4px rgba(0,0,0,.4), 0 30px 70px rgba(0,0,0,.6)" alt="">`)],
+<img class="ui" src="${raw('popup-generate-light')}" width="437" height="644" style="left: 736px; top: 96px; border-radius: 14px; box-shadow: 0 2px 4px rgba(0,0,0,.4), 0 30px 70px rgba(0,0,0,.6)" alt="">`)],
 
     // 2 · paper + ink block · the button inside the email field, then the filled field
     'screenshot-2': [1280, 800, doc(lang, 'shot on-paper', `
