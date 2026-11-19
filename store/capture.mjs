@@ -188,7 +188,11 @@ for (const lang of LANGS) {
   await shot(page, 'welcome-light', { fullPage: true });
 
   // In-field button: ready (tooltip) and success (address filled)
-  await web.goto(`${SITE}#${lang}`);
+  // A query string forces a real navigation (a hash change alone would keep
+  // the previous language's filled-in page).
+  await web.goto(`${SITE}?l=${lang}#${lang}`);
+  await pause(300);
+  await shot(web, 'inpage-plain'); // the form alone, for backdrops behind the popup
   await web.click('#email');
   await pause(900);
   const box = await web.locator('#email').boundingBox();

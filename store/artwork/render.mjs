@@ -24,7 +24,7 @@ const COPY = {
     s1: ['A new address for every site', 'One click in the toolbar. Mail still lands in your real inbox.'],
     s2: ['Right inside the email field', 'Veil adds a button to sign-up forms. Click it and the address is filled in.'],
     s2cap: 'after one click',
-    s3: ['Every address, one search away', 'Search by label, address or note. Filter active and inactive.'],
+    s3: ['Find any address', 'Search by label, address or note. Filter active and inactive.'],
     s4: ['Too much mail? Turn the address off', 'Give each address a label and a note. Deactivate it, bring it back, or delete it.'],
     s5: ['Just you and iCloud', null],
     facts: [['servers', 'None of ours'], ['talks to', 'Apple’s iCloud only'], ['code', 'Open source, MIT'], ['languages', '15'], ['themes', 'Light and dark']],
@@ -77,8 +77,7 @@ ${body}
 // store/raw/ru/inpage-*.png were captured without the Veil button and tooltip (both files show
 // the already-filled field), so the Russian frames borrow the English in-page captures until
 // the Russian ones are re-captured. Delete this map then.
-const INPAGE_FALLBACK = { ru: 'en' };
-const raw = (lang, name) => `../../../raw/${name.startsWith('inpage-') ? INPAGE_FALLBACK[lang] ?? lang : lang}/${name}.png`;
+const raw = (lang, name) => `../../../raw/${lang}/${name}.png`;
 // Window geometry: the Veil toolbar icon sits 76px from the frame's right edge; the popup hangs under it.
 const POP_X = 836, POP_Y = 132;
 
@@ -89,7 +88,7 @@ function pages(lang) {
     'screenshot-1': [1280, 800, doc(lang, 'shot', `
 ${copyBlock(c, c.s1, 400)}
 <div class="win" style="left: 520px">${bar('github.com/signup')}
-  <div class="page"><img src="${r('inpage-ready')}" width="640" height="520" style="left: -44px; top: 30px" alt=""></div>
+  <div class="page"><img src="${r('inpage-plain')}" width="640" height="520" style="left: -44px; top: 30px" alt=""></div>
 </div>
 <img class="popup" src="${r('popup-generate-light')}" style="left: ${POP_X}px; top: ${POP_Y}px" alt="">`)],
 
