@@ -17,4 +17,4 @@ wasm-bindgen-futures.workspace = true
 js-sys.workspace = true
 leptos = { version = "0.8", features = ["csr"] }
 console_error_panic_hook = "0.1"
-web-sys = { workspace = true, features = ["Document", "Element", "HtmlElement", "Window", "DomTokenList"] }
+web-sys = { workspace = true, features = ["Document", "Element", "HtmlElement", "Window", "DomTokenList", "Node", "SvgElement", "SvgsvgElement"] }

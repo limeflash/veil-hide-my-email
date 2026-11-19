@@ -71,6 +71,12 @@ cd e2e && npm i && npx playwright install chromium && npm test
 
 The test loads the extension into Chromium and mocks iCloud, so no account is needed. It then exercises every feature and writes screenshots to `e2e/shots/`.
 
+### Store review notes
+
+- `web-ext lint` on `dist/firefox`: 0 errors, 1 warning (`UNSAFE_VAR_ASSIGNMENT` in `wasm/hme_ui.js`). It comes from Leptos's DOM renderer, which clones view templates through `<template>.innerHTML`. The markup is static and compiled into the WASM module; no user or page data ever reaches it. Icons and all user text are created with DOM APIs.
+- Extension pages need `'wasm-unsafe-eval'` in `content_security_policy.extension_pages` to instantiate WebAssembly. That is the only CSP relaxation.
+- The content script is plain JavaScript and never loads WASM, so pages pay almost nothing for it.
+
 ## License
 
 MIT — see [LICENSE](LICENSE). Includes the original copyright of Dimitrios Dedoussis.

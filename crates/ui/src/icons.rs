@@ -76,6 +76,9 @@ impl I {
 }
 
 /// `<svg class="v-icon …">` with the icon's shapes.
+///
+/// Shapes are created with `createElementNS` rather than `innerHTML`, so the
+/// bundle passes Mozilla's add-on linter without an unsafe-assignment warning.
 #[component]
 pub fn Icon(icon: I, #[prop(optional)] class: &'static str) -> impl IntoView {
     let class = if class.is_empty() {
@@ -83,7 +86,35 @@ pub fn Icon(icon: I, #[prop(optional)] class: &'static str) -> impl IntoView {
     } else {
         format!("v-icon {class}")
     };
-    view! {
-        <svg class=class viewBox="0 0 24 24" aria-hidden="true" inner_html=icon.paths()></svg>
+    let node = NodeRef::<leptos::svg::Svg>::new();
+    Effect::new(move |_| {
+        if let Some(svg) = node.get() {
+            if svg.child_element_count() == 0 {
+                append_shapes(&svg, icon.paths());
+            }
+        }
+    });
+    view! { <svg node_ref=node class=class viewBox="0 0 24 24" aria-hidden="true"></svg> }
+}
+
+const SVG_NS: &str = "http://www.w3.org/2000/svg";
+
+/// Appends `<tag a="b" …/>` shapes (the only form the icon table uses).
+fn append_shapes(svg: &web_sys::Element, markup: &str) {
+    let doc = document();
+    for chunk in markup.split('<').filter(|c| !c.trim().is_empty()) {
+        let body = chunk.trim_end().trim_end_matches('>').trim_end_matches('/');
+        let mut parts = body.splitn(2, char::is_whitespace);
+        let tag = parts.next().unwrap_or_default();
+        let Ok(el) = doc.create_element_ns(Some(SVG_NS), tag) else { continue };
+        let mut rest = parts.next().unwrap_or_default();
+        while let Some(eq) = rest.find("=\"") {
+            let name = rest[..eq].trim();
+            let after = &rest[eq + 2..];
+            let Some(end) = after.find('"') else { break };
+            let _ = el.set_attribute(name, &after[..end]);
+            rest = &after[end + 1..];
+        }
+        let _ = svg.append_child(&el);
     }
 }
