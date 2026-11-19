@@ -341,7 +341,10 @@ if (mock.signedIn) {
   check(mock.generated === generatedBefore, 'focusing a field makes no iCloud request');
   await page.screenshot({ path: path.join(SHOTS, 'inpage-ready.png') });
   // The button lives in a closed shadow root; click where it is drawn.
+  // Like a person: hover first (the tooltip opens), then click.
   const box = await page.locator('#email').boundingBox();
+  await page.mouse.move(box.x + box.width - 6 - 14, box.y + box.height / 2);
+  await pause(900);
   await page.mouse.click(box.x + box.width - 6 - 14, box.y + box.height / 2);
   await page.waitForFunction(() => document.querySelector('#email').value.endsWith('@icloud.com'), null, { timeout: 5000 });
   const filled = await page.inputValue('#email');
