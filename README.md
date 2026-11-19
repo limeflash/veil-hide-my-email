@@ -36,7 +36,7 @@ crates/
 extension/
   static/      manifest assets, HTML shells, background.js bootstrap,
                content.js (the in-page button; tiny plain JS on purpose)
-  styles/      design tokens + components (Astryx-based "Moonveil" theme)
+  styles/      design tokens + components (Astryx-based "Postmark" theme)
 xtask/         `cargo xtask build|package`: wasm-bindgen, wasm-opt,
                manifests for Chrome and Firefox, icons, zips
 e2e/           Playwright smoke test with a mocked iCloud API

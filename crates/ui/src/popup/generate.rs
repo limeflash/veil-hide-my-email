@@ -164,13 +164,8 @@ pub fn Generate() -> impl IntoView {
                     aria-busy=move || reserving.get().to_string()
                     disabled=move || generating.get() || address.get().is_none()
                 >
-                    {move || if reserving.get() {
-                        view! { <span class="v-spinner"></span>{c.t(T::Reserving)} }.into_any()
-                    } else if reserve_error.get().is_some() {
-                        c.t(T::TryAgain).into_any()
-                    } else {
-                        c.t(T::UseAddress).into_any()
-                    }}
+                    <span class="v-spinner"></span>
+                    {move || if reserve_error.get().is_some() { c.t(T::TryAgain) } else { c.t(T::UseAddress) }}
                 </button>
             </form>
         }

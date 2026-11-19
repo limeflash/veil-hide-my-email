@@ -98,11 +98,10 @@ strings! {
     // Common
     Loading => "Загрузка…", "Loading…";
     CheckingSession => "Проверяем сессию iCloud", "Checking your iCloud session";
-    CheckingHint => "Обычно это занимает пару секунд", "This usually takes a couple of seconds";
     Copy => "Копировать", "Copy";
     Copied => "Скопировано", "Copied";
-    FillOnPage => "Вставить на странице", "Fill on page";
-    FilledOnPage => "Вставлено на странице", "Filled on page";
+    FillOnPage => "Вставить на сайт", "Fill on page";
+    FilledOnPage => "Адрес вставлен", "Filled in";
     NothingToFill => "На странице нет поля для email", "No email field on this page";
     Save => "Сохранить", "Save";
     Saved => "Сохранено", "Saved";
@@ -120,11 +119,11 @@ strings! {
     SignInSubtitle => "Veil работает через вашу сессию на iCloud.com. Пароль расширению не нужен.", "Veil works through your iCloud.com session. It never needs your password.";
     OpenICloud => "Открыть iCloud.com", "Open iCloud.com";
     CheckAgain => "Я уже вошёл — проверить снова", "I'm signed in — check again";
-    TipTrust => "Войдите с **паролем и кодом 2FA**, затем выберите «Доверять этому браузеру».", "Sign in with **password + 2FA code**, then choose “Trust this browser”.";
-    TipKeepSignedIn => "Отметьте **«Оставаться в системе»** — иначе сессия быстро сбросится.", "Tick **“Keep me signed in”** — otherwise the session drops quickly.";
-    TipNoPasskey => "**Не входите через Passkey** — такую сессию расширение не увидит.", "**Don't sign in with a passkey** — the extension can't see that session.";
-    TipAdp => "Включена Расширенная защита данных? Разрешите **«Доступ к данным iCloud в интернете»**.", "Advanced Data Protection on? Allow **“Access iCloud Data on the Web”**.";
-    TipFirefoxContainers => "Multi-Account Containers: входите в **контейнере по умолчанию**.", "Multi-Account Containers: sign in in the **default container**.";
+    TipTrust => "Войдите с **паролем и кодом 2FA**, затем выберите «Доверять этому браузеру»", "Sign in with **password + 2FA code**, then choose “Trust this browser”";
+    TipKeepSignedIn => "Отметьте **«Оставаться в системе»** — иначе сессия быстро сбросится", "Tick **“Keep me signed in”** — otherwise the session drops quickly";
+    TipNoPasskey => "**Не входите через Passkey** — такую сессию расширение не увидит", "**Don't sign in with a passkey** — the extension can't see that session";
+    TipAdp => "Включена Расширенная защита данных? Разрешите **«Доступ к данным iCloud в интернете»**", "Advanced Data Protection on? Allow **“Access iCloud Data on the Web”**";
+    TipFirefoxContainers => "Multi-Account Containers: входите в **контейнере по умолчанию**", "Multi-Account Containers: sign in in the **default container**";
 
     // Popup: generate
     EyebrowNew => "Новый адрес", "New address";
@@ -141,7 +140,6 @@ strings! {
     NoteOptional => "необязательно", "optional";
     NotePlaceholder => "Например: рассылки и уведомления", "E.g. newsletters and notifications";
     UseAddress => "Использовать адрес", "Use this address";
-    Reserving => "Сохраняем…", "Saving…";
     Reserved => "Адрес сохранён", "Address saved";
     ReserveFailed => "Не удалось сохранить адрес", "Couldn't save the address";
     GenerateFailed => "Не удалось создать адрес", "Couldn't create an address";
@@ -151,7 +149,7 @@ strings! {
 
     // Popup: manage
     SearchAria => "Поиск", "Search";
-    SearchPlaceholder => "Поиск по метке, адресу, заметке", "Search label, address, note";
+    SearchPlaceholder => "Поиск", "Search";
     ClearSearch => "Очистить поиск", "Clear search";
     FilterAria => "Фильтр", "Filter";
     FilterAll => "Все", "All";
@@ -160,7 +158,7 @@ strings! {
     Active => "Активен", "Active";
     Inactive => "Отключён", "Inactive";
     EmptyTitle => "Пока нет адресов", "No addresses yet";
-    EmptyBody => "Создайте первый — он появится здесь, и вы сможете отключить его в любой момент.", "Create your first one — it shows up here, and you can turn it off at any time.";
+    EmptyBody => "Создайте первый — он появится здесь", "Create your first one — it will show up here";
     NoResultsTitle => "Ничего не найдено", "Nothing found";
     NoResultsBody => "По запросу «{}» совпадений нет. Проверьте написание или сбросьте поиск.", "Nothing matches “{}”. Check the spelling or reset the search.";
     ResetSearch => "Сбросить поиск", "Reset search";
@@ -195,9 +193,8 @@ strings! {
     FwdHint => "Это настройка вашего аккаунта iCloud", "This is a setting of your iCloud account";
     FwdCurrent => "Сейчас", "Current";
     FwdLoading => "Загружаем адреса из iCloud…", "Loading addresses from iCloud…";
-    FwdSignedOut => "Чтобы выбрать адрес пересылки, войдите в iCloud через значок Veil.", "To choose a forwarding address, sign in to iCloud from the Veil icon.";
+    FwdSignedOut => "Адреса для пересылки появятся после входа на iCloud.com", "Forwarding addresses appear after you sign in at iCloud.com";
     FwdSaved => "Адрес пересылки сохранён", "Forwarding address saved";
-    Saving => "Сохраняем…", "Saving…";
     AutofillTitle => "Автозаполнение", "Autofill";
     AutofillDesc => "Как Veil предлагает адрес на сайтах", "How Veil offers an address on websites";
     AutofillButton => "Кнопка в полях email", "Button in email fields";
@@ -222,14 +219,14 @@ strings! {
     SourceCode => "Исходный код", "Source code";
 
     // Welcome
-    WelcomeTitle => "Veil установлен", "Veil is installed";
-    WelcomeLead => "Случайные адреса Hide My Email для iCloud — в один клик, прямо в браузере. Осталось три шага.", "Random iCloud Hide My Email addresses in one click, right in your browser. Three steps to go.";
+    WelcomeTitle => "Свой адрес для каждого сайта", "A separate address for every site";
+    WelcomeLead => "Veil установлен. Он создаёт адреса Hide My Email для iCloud прямо в браузере. Осталось три шага.", "Veil is installed. It creates iCloud Hide My Email addresses right in your browser. Three steps to go.";
     Step1Title => "Войдите на iCloud.com", "Sign in to iCloud.com";
     Step1Body => "С паролем и кодом 2FA. Отметьте «Оставаться в системе».", "With your password and 2FA code. Tick “Keep me signed in”.";
     Step2Title => "Закрепите Veil на панели", "Pin Veil to the toolbar";
-    Step2Body => "Откройте меню расширений в панели браузера и нажмите на булавку рядом с Veil.", "Open the extensions menu in the toolbar and click the pin next to Veil.";
+    Step2Body => "Откройте меню расширений в панели браузера и нажмите на булавку рядом с Veil", "Open the extensions menu in the toolbar and click the pin next to Veil";
     Step3Title => "Создавайте адреса", "Create addresses";
-    Step3Body => "Из окна расширения, кнопкой в поле email или через правый клик по полю.", "From the popup, the button in email fields, or by right-clicking a field.";
+    Step3Body => "Из окна расширения, кнопкой в поле email или через правый клик по полю", "From the popup, the button in email fields, or by right-clicking a field";
     GrantTitle => "Разрешите доступ к icloud.com", "Allow access to icloud.com";
     FirefoxOnly => "Только Firefox", "Firefox only";
     GrantBody => "Firefox не выдаёт расширениям доступ к сайтам автоматически. Без него Veil не увидит вашу сессию.", "Firefox doesn't grant site access to extensions automatically. Without it Veil can't see your session.";
@@ -246,6 +243,7 @@ strings! {
     FaqAdpA => "Если она включена, разрешите в настройках iCloud на устройстве **«Доступ к данным iCloud в интернете»**.", "If it's on, allow **“Access iCloud Data on the Web”** in iCloud settings on your device.";
     FaqContainersQ => "Контейнеры в Firefox", "Firefox containers";
     FaqContainersA => "С Multi-Account Containers входите в iCloud в контейнере по умолчанию — сессии из других контейнеров Veil не видит.", "With Multi-Account Containers, sign in to iCloud in the default container — Veil can't see sessions from other containers.";
+    SampleForward => "me@example.com", "me@example.com";
     Footnote => "Veil — независимый проект с открытым исходным кодом. Не связан с Apple Inc.", "Veil is an independent open-source project. Not affiliated with Apple Inc.";
 
     // In-page button (content script reads these through the background)

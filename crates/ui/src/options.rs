@@ -171,9 +171,15 @@ fn ForwardSection(session: RwSignal<Option<ClientState>>, forward: RwSignal<Forw
         }
         .into_any(),
         Forward::SignedOut => view! {
-            <div class="v-alert v-alert--info" role="status">
-                <Icon icon=I::Info/>
-                <div class="v-alert__body">{tr(T::FwdSignedOut)}</div>
+            <div class="v-card">
+                <div class="v-empty v-empty--compact">
+                    <span class="v-empty__icon"><Icon icon=I::Lock class="v-icon--xl"/></span>
+                    <h3 class="v-empty__title">{tr(T::SignInTitle)}</h3>
+                    <p class="v-empty__text">{tr(T::FwdSignedOut)}</p>
+                    <a class="v-btn v-btn--primary v-empty__action" href="https://www.icloud.com/" target="_blank" rel="noreferrer">
+                        {tr(T::OpenICloud)}<Icon icon=I::External/>
+                    </a>
+                </div>
             </div>
         }
         .into_any(),
@@ -207,7 +213,7 @@ fn ForwardSection(session: RwSignal<Option<ClientState>>, forward: RwSignal<Forw
                             />
                             <span class="v-radio__mark"></span>
                             <span class="v-radio__label">{email.clone()}</span>
-                            {is_current.then(|| view! { <span class="v-badge v-badge--purple">{tr(T::FwdCurrent)}</span> })}
+                            {is_current.then(|| view! { <span class="v-badge">{tr(T::FwdCurrent)}</span> })}
                         </label>
                     }
                 })
@@ -239,11 +245,8 @@ fn ForwardSection(session: RwSignal<Option<ClientState>>, forward: RwSignal<Forw
                             aria-busy=move || saving.get().to_string()
                             on:click=save
                         >
-                            {move || if saving.get() {
-                                view! { <span class="v-spinner"></span>{c.t(T::Saving)} }.into_any()
-                            } else {
-                                c.t(T::Save).into_any()
-                            }}
+                            <span class="v-spinner"></span>
+                            {tr(T::Save)}
                         </button>
                     </div>
                 </div>

@@ -1,8 +1,8 @@
 /* ==========================================================================
    Veil — in-page autofill button + tooltip (Astryx IconButton + Tooltip look,
-   theme "Moonveil"). Self-contained: it lives in a Shadow DOM on third-party
+   theme "Postmark"). Self-contained: it lives in a Shadow DOM on third-party
    pages, so it does NOT use tokens.css; the values below are copies of the
-   Moonveil tokens named in the comments.
+   Postmark tokens named in the comments.
 
    Attach the shadow root to a host element that the content script positions
    over the focused email input (right edge, vertically centred, 6-8px inset):
@@ -24,90 +24,87 @@
 
 :host { all: initial; }
 
-/* light: --color-accent, --color-background-surface, --color-border-emphasized,
-   --color-text-accent, --color-track, --color-success, --color-text-error,
-   --shadow-med, tooltip = --color-background-inverted */
+/* ready fill = the label paper (--astryx-theme-postmark-label-paper) with ink;
+   everything else is the graphite ramp: --color-background-surface,
+   --color-border-emphasized, --color-track, --color-success, --color-text-error,
+   tooltip = --color-background-inverted */
 :host,
 .veil-root {
-  --veil-accent: #5746E0;
-  --veil-on-accent: #FFFFFF;
-  --veil-accent-glow: #5746E059;
-  --veil-overlay-hover: #1E20500D;
+  --veil-accent: #E9D8B4;
+  --veil-on-accent: #221C12;
+  --veil-overlay-hover: #1717170D;
   --veil-surface: #FFFFFF;
-  --veil-border: #CDCFE0;
-  --veil-glyph: #4A39CC;
-  --veil-track: #D5D7E6;
-  --veil-success: #0B7D55;
+  --veil-border: #D4D4D8;
+  --veil-glyph: #525252;
+  --veil-track: #D4D4D8;
+  --veil-success: #15803D;
   --veil-on-success: #FFFFFF;
-  --veil-danger: #9E1B30;
-  --veil-shadow: 0px 1px 2px #1E20501A, 0px 4px 14px #1E20501F;
-  --veil-tip-bg: #17182B;
+  --veil-danger: #991B1B;
+  --veil-shadow: 0px 1px 2px rgba(0, 0, 0, 0.08), 0px 4px 12px rgba(0, 0, 0, 0.08);
+  --veil-tip-bg: #171717;
   --veil-tip-fg: #FFFFFF;
-  --veil-tip-muted: #B1B4C8;
-  --veil-tip-danger: #FF9AA6;
-  --veil-focus: #4A39CC;
+  --veil-tip-muted: #A1A1A6;
+  --veil-tip-danger: #FF9592;
+  --veil-focus: #171717;
 }
 
 @media (prefers-color-scheme: dark) {
   :host,
   .veil-root {
-    --veil-accent: #6C5BEF;
-    --veil-on-accent: #FFFFFF;
-    --veil-accent-glow: #7462FF80;
-    --veil-overlay-hover: #FFFFFF0F;
-    --veil-surface: #1B1E30;
-    --veil-border: #3A3E57;
-    --veil-glyph: #B0A5FF;
-    --veil-track: #3A3E57;
-    --veil-success: #4FD6A0;
+    --veil-accent: #E9D8B4;
+    --veil-on-accent: #221C12;
+    --veil-overlay-hover: #EDEDED0F;
+    --veil-surface: #232325;
+    --veil-border: #38383C;
+    --veil-glyph: #A1A1A6;
+    --veil-track: #3A3A3E;
+    --veil-success: #4CC38A;
     --veil-on-success: #06140E;
-    --veil-danger: #FF9AA6;
-    --veil-shadow: 0px 1px 2px #00000040, 0px 4px 14px #0000004D;
-    --veil-tip-bg: #F2F2FA;
-    --veil-tip-fg: #141624;
-    --veil-tip-muted: #51546E;
-    --veil-tip-danger: #9E1B30;
-    --veil-focus: #B0A5FF;
+    --veil-danger: #FF9592;
+    --veil-shadow: 0px 0px 0px 1px #EDEDED14, 0px 4px 12px rgba(0, 0, 0, 0.4);
+    --veil-tip-bg: #EDEDED;
+    --veil-tip-fg: #141415;
+    --veil-tip-muted: #525252;
+    --veil-tip-danger: #991B1B;
+    --veil-focus: #EDEDED;
   }
 }
 
 .veil-root[data-scheme="light"] {
-  --veil-accent: #5746E0;
-  --veil-on-accent: #FFFFFF;
-  --veil-accent-glow: #5746E059;
-  --veil-overlay-hover: #1E20500D;
+  --veil-accent: #E9D8B4;
+  --veil-on-accent: #221C12;
+  --veil-overlay-hover: #1717170D;
   --veil-surface: #FFFFFF;
-  --veil-border: #CDCFE0;
-  --veil-glyph: #4A39CC;
-  --veil-track: #D5D7E6;
-  --veil-success: #0B7D55;
+  --veil-border: #D4D4D8;
+  --veil-glyph: #525252;
+  --veil-track: #D4D4D8;
+  --veil-success: #15803D;
   --veil-on-success: #FFFFFF;
-  --veil-danger: #9E1B30;
-  --veil-shadow: 0px 1px 2px #1E20501A, 0px 4px 14px #1E20501F;
-  --veil-tip-bg: #17182B;
+  --veil-danger: #991B1B;
+  --veil-shadow: 0px 1px 2px rgba(0, 0, 0, 0.08), 0px 4px 12px rgba(0, 0, 0, 0.08);
+  --veil-tip-bg: #171717;
   --veil-tip-fg: #FFFFFF;
-  --veil-tip-muted: #B1B4C8;
-  --veil-tip-danger: #FF9AA6;
-  --veil-focus: #4A39CC;
+  --veil-tip-muted: #A1A1A6;
+  --veil-tip-danger: #FF9592;
+  --veil-focus: #171717;
 }
 .veil-root[data-scheme="dark"] {
-  --veil-accent: #6C5BEF;
-  --veil-on-accent: #FFFFFF;
-  --veil-accent-glow: #7462FF80;
-  --veil-overlay-hover: #FFFFFF0F;
-  --veil-surface: #1B1E30;
-  --veil-border: #3A3E57;
-  --veil-glyph: #B0A5FF;
-  --veil-track: #3A3E57;
-  --veil-success: #4FD6A0;
+  --veil-accent: #E9D8B4;
+  --veil-on-accent: #221C12;
+  --veil-overlay-hover: #EDEDED0F;
+  --veil-surface: #232325;
+  --veil-border: #38383C;
+  --veil-glyph: #A1A1A6;
+  --veil-track: #3A3A3E;
+  --veil-success: #4CC38A;
   --veil-on-success: #06140E;
-  --veil-danger: #FF9AA6;
-  --veil-shadow: 0px 1px 2px #00000040, 0px 4px 14px #0000004D;
-  --veil-tip-bg: #F2F2FA;
-  --veil-tip-fg: #141624;
-  --veil-tip-muted: #51546E;
-  --veil-tip-danger: #9E1B30;
-  --veil-focus: #B0A5FF;
+  --veil-danger: #FF9592;
+  --veil-shadow: 0px 0px 0px 1px #EDEDED14, 0px 4px 12px rgba(0, 0, 0, 0.4);
+  --veil-tip-bg: #EDEDED;
+  --veil-tip-fg: #141415;
+  --veil-tip-muted: #525252;
+  --veil-tip-danger: #991B1B;
+  --veil-focus: #EDEDED;
 }
 
 .veil-root {
@@ -130,8 +127,8 @@
   background-color: var(--veil-surface); color: var(--veil-glyph);
   box-shadow: var(--veil-shadow);
   cursor: pointer; appearance: none; -webkit-appearance: none;
-  animation: veil-pop 200ms cubic-bezier(0.24, 1, 0.4, 1) both;
-  transition: background-color 150ms cubic-bezier(0.24, 1, 0.4, 1), border-color 150ms cubic-bezier(0.24, 1, 0.4, 1), color 150ms cubic-bezier(0.24, 1, 0.4, 1), box-shadow 150ms cubic-bezier(0.24, 1, 0.4, 1), transform 150ms cubic-bezier(0.24, 1, 0.4, 1);
+  animation: veil-pop 200ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  transition: background-color 150ms cubic-bezier(0.22, 1, 0.36, 1), border-color 150ms cubic-bezier(0.22, 1, 0.36, 1), color 150ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 150ms cubic-bezier(0.22, 1, 0.36, 1), transform 150ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 .veil-btn:focus { outline: none; }
 .veil-btn:focus-visible { outline: 2px solid var(--veil-focus); outline-offset: 2px; }
@@ -139,16 +136,16 @@
 
 .veil-icon {
   grid-area: 1 / 1; width: 16px; height: 16px;
-  fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+  fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;
   opacity: 0; transform: scale(0.6);
-  transition: opacity 150ms cubic-bezier(0.24, 1, 0.4, 1), transform 200ms cubic-bezier(0.24, 1, 0.4, 1);
+  transition: opacity 150ms cubic-bezier(0.22, 1, 0.36, 1), transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 .veil-spinner {
   grid-area: 1 / 1; width: 14px; height: 14px; border-radius: 50%;
   border: 3px solid var(--veil-track); border-top-color: currentColor;
   opacity: 0;
   animation: veil-spin 800ms linear infinite;
-  transition: opacity 150ms cubic-bezier(0.24, 1, 0.4, 1);
+  transition: opacity 150ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* loading — generating an address: neutral chip, accent spinner */
@@ -157,11 +154,11 @@
 
 /* ready — filled accent, logo glyph */
 .veil-btn[data-state="ready"] {
-  border-color: transparent; color: var(--veil-on-accent);
+  border-color: #221C1233; color: var(--veil-on-accent);
   background-color: var(--veil-accent);
-  box-shadow: 0 1px 2px rgba(20, 16, 80, 0.3), 0 3px 12px var(--veil-accent-glow);
+  box-shadow: var(--veil-shadow);
 }
-.veil-btn[data-state="ready"]:hover { background-image: linear-gradient(var(--veil-overlay-hover), var(--veil-overlay-hover)); }
+.veil-btn[data-state="ready"]:hover { background-image: linear-gradient(#221C1214, #221C1214); }
 .veil-btn[data-state="ready"] .veil-icon--logo { opacity: 1; transform: none; }
 
 /* reserving — filled accent, white spinner */
@@ -175,7 +172,6 @@
 /* success — green flash, check; the content script removes the button ~900ms later */
 .veil-btn[data-state="success"] {
   border-color: transparent; color: var(--veil-on-success); background-color: var(--veil-success);
-  animation: veil-flash 600ms cubic-bezier(0.24, 1, 0.4, 1) both;
 }
 .veil-btn[data-state="success"] .veil-icon--check { opacity: 1; transform: none; }
 
@@ -196,7 +192,7 @@
   box-shadow: var(--veil-shadow);
   pointer-events: none;
   opacity: 0; transform: translateY(4px) scale(0.98); transform-origin: calc(100% - 20px) 100%;
-  transition: opacity 150ms cubic-bezier(0.24, 1, 0.4, 1), transform 150ms cubic-bezier(0.24, 1, 0.4, 1);
+  transition: opacity 150ms cubic-bezier(0.22, 1, 0.36, 1), transform 150ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 /* arrow */
 .veil-tip::after {
@@ -217,20 +213,15 @@
 .veil-tip__title { color: var(--veil-tip-muted); font-weight: 500; }
 .veil-tip__addr {
   font-family: ui-monospace, "SF Mono", SFMono-Regular, "Cascadia Code", "Segoe UI Mono", "Roboto Mono", Menlo, Consolas, monospace;
-  font-size: 12px; letter-spacing: -0.01em; font-weight: 600;
+  font-size: 12px; font-weight: 500;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-.veil-tip--error .veil-tip__title { color: var(--veil-tip-danger); font-weight: 600; }
+.veil-tip--error .veil-tip__title { color: var(--veil-tip-danger); font-weight: 500; }
 .veil-tip--error .veil-tip__text { color: var(--veil-tip-fg); font-weight: 400; }
 
 /* ----------------------------------------------------------- Keyframes -- */
 @keyframes veil-spin { to { transform: rotate(360deg); } }
-@keyframes veil-pop { from { opacity: 0; transform: scale(0.6); } to { opacity: 1; transform: none; } }
-@keyframes veil-flash {
-  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--veil-success) 55%, transparent); transform: scale(0.9); }
-  40% { transform: scale(1.08); }
-  100% { box-shadow: 0 0 0 10px transparent; transform: none; }
-}
+@keyframes veil-pop { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: none; } }
 
 @media (prefers-reduced-motion: reduce) {
   .veil-btn, .veil-icon, .veil-tip { animation: none !important; transition-duration: 0.01ms !important; }

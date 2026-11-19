@@ -149,11 +149,7 @@
       ['path', { d: 'm7.5 10 4.5 4 4.5-4' }],
     ],
     check: [['path', { d: 'M5 12.5l4.5 4.5L19 7.5' }]],
-    alert: [
-      ['circle', { cx: '12', cy: '12', r: '9' }],
-      ['path', { d: 'M12 7.5v5' }],
-      ['path', { d: 'M12 16.25v.01' }],
-    ],
+    alert: [['path', { d: 'M12 7v6M12 17h.01' }]],
   };
 
   const el = (tag, cls, text) => {

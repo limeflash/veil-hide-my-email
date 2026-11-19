@@ -480,7 +480,7 @@ fn Details() -> impl IntoView {
                         {tr(T::Cancel)}
                     </button>
                     <button class="v-btn v-btn--primary" type="submit" aria-busy=move || saving.get().to_string()>
-                        {move || if saving.get() { view! { <span class="v-spinner"></span> }.into_any() } else { ().into_any() }}
+                        <span class="v-spinner"></span>
                         {tr(T::Save)}
                     </button>
                 </div>
@@ -506,7 +506,7 @@ fn Details() -> impl IntoView {
                         </button>
                         <button class="v-btn v-btn--danger" type="button" aria-busy=move || busy.get().to_string()
                             disabled=move || busy.get() on:click=move |_| delete()>
-                            {move || busy.get().then(|| view! { <span class="v-spinner"></span> })}
+                            <span class="v-spinner"></span>
                             {tr(T::Delete)}
                         </button>
                     </div>

@@ -322,7 +322,6 @@ fn Loading() -> impl IntoView {
             <div class="v-loading" role="status" aria-live="polite">
                 <span class="v-logo v-logo--xl v-logo--pulse"><Icon icon=I::Logo/></span>
                 <p class="v-loading__title"><span class="v-spinner v-spinner--sm"></span>{tr(T::CheckingSession)}</p>
-                <p class="v-loading__text">{tr(T::CheckingHint)}</p>
             </div>
         </main>
     }
@@ -369,7 +368,7 @@ fn SignedOut() -> impl IntoView {
                     <li class="v-tip v-tip--warn">
                         <span class="v-tip__icon"><Icon icon=I::Box/></span>
                         <span>
-                            <span class="v-badge v-badge--warning">"Firefox"</span>" "
+                            <span class="v-badge">"Firefox"</span>" "
                             {move || rich(c.t(T::TipFirefoxContainers))}
                         </span>
                     </li>

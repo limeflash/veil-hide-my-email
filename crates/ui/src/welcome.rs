@@ -30,11 +30,13 @@ pub fn WelcomePage() -> impl IntoView {
 
     let step = |n: u8, title: T, body: T, action: Option<AnyView>| {
         view! {
-            <li class="v-card v-step">
+            <li class="v-step">
                 <span class="v-step__num">{n}</span>
-                <h2 class="v-step__title">{tr(title)}</h2>
-                <p class="v-step__text">{tr(body)}</p>
-                {action.map(|a| view! { <div class="v-step__action">{a}</div> })}
+                <div class="v-step__body">
+                    <h2 class="v-step__title">{tr(title)}</h2>
+                    <p class="v-step__text">{tr(body)}</p>
+                </div>
+                {action}
             </li>
         }
     };
@@ -53,13 +55,34 @@ pub fn WelcomePage() -> impl IntoView {
         <div class="v-page">
             <div class="v-page__container">
                 <header class="v-hero">
-                    <span class="v-logo v-logo--xl"><Icon icon=I::Logo/></span>
-                    <h1 class="v-hero__title">{tr(T::WelcomeTitle)}</h1>
-                    <p class="v-hero__lead">{tr(T::WelcomeLead)}</p>
+                    <div class="v-hero__text">
+                        <div class="v-brand">
+                            <span class="v-logo"><Icon icon=I::Logo/></span>
+                            <div class="v-brand__text">
+                                <span class="v-brand__title">{tr(T::AppName)}</span>
+                                <span class="v-brand__sub">{tr(T::AppTagline)}</span>
+                            </div>
+                        </div>
+                        <h1 class="v-hero__title">{tr(T::WelcomeTitle)}</h1>
+                        <p class="v-hero__lead">{tr(T::WelcomeLead)}</p>
+                    </div>
+                    // A sample label: what Veil hands out, drawn with the real component.
+                    <div class="v-hero__visual" aria-hidden="true">
+                        <div class="v-address-card v-address-card--neutral">
+                            <div class="v-address-card__eyebrow"><span>"github.com"</span></div>
+                            <div class="v-address-card__row">
+                                <span class="v-address">"quiet_plover.4k"<span class="v-address__domain">"@icloud.com"</span></span>
+                            </div>
+                            <div class="v-address-card__meta">
+                                <Icon icon=I::Forward class="v-icon--sm"/>
+                                <span>{move || crate::widgets::templ(c.t(T::ForwardsTo), c.t(T::SampleForward).to_string())}</span>
+                            </div>
+                        </div>
+                    </div>
                 </header>
-                <ol class="v-steps">
+                <ol class="v-card v-steps">
                     {step(1, T::Step1Title, T::Step1Body, Some(view! {
-                        <a class="v-btn v-btn--primary v-btn--block" href="https://www.icloud.com/" target="_blank" rel="noreferrer">
+                        <a class="v-btn v-btn--primary v-step__action" href="https://www.icloud.com/" target="_blank" rel="noreferrer">
                             {tr(T::OpenICloud)}<Icon icon=I::External/>
                         </a>
                     }.into_any()))}
@@ -72,14 +95,14 @@ pub fn WelcomePage() -> impl IntoView {
                         <div class="v-alert__body">
                             <span class="v-alert__title" id="wel-ff">
                                 {tr(T::GrantTitle)}" "
-                                <span class="v-badge v-badge--warning">{tr(T::FirefoxOnly)}</span>
+                                <span class="v-badge">{tr(T::FirefoxOnly)}</span>
                             </span>
                             {tr(T::GrantBody)}
                         </div>
                         {move || if granted.get() {
                             view! { <span class="v-badge v-badge--green v-alert__action"><Icon icon=I::Check class="v-icon--sm"/>{tr(T::Granted)}</span> }.into_any()
                         } else {
-                            view! { <button class="v-btn v-btn--primary v-alert__action" type="button" on:click=grant>{tr(T::GrantButton)}</button> }.into_any()
+                            view! { <button class="v-btn v-btn--secondary v-alert__action" type="button" on:click=grant>{tr(T::GrantButton)}</button> }.into_any()
                         }}
                     </section>
                 })}
