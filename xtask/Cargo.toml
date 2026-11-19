@@ -1,0 +1,13 @@
+[package]
+name = "xtask"
+description = "Build tool: cargo xtask build | package | watch"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+
+[dependencies]
+anyhow = "1"
+serde_json.workspace = true
+resvg = "0.50"
+zip = { version = "2", default-features = false, features = ["deflate"] }

@@ -1,0 +1,259 @@
+/* ==========================================================================
+   Veil — design tokens
+   Theme selection:
+     <html data-theme="light">  -> light
+     <html data-theme="dark">   -> dark
+     no data-theme              -> follows prefers-color-scheme
+   The [data-theme] selectors are intentionally not limited to :root, so a
+   subtree can be forced to a theme too (used by the design previews).
+   ========================================================================== */
+
+:root {
+  /* ---- Typography ---- */
+  --v-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI Variable", "Segoe UI", Inter, Roboto, system-ui, sans-serif;
+  --v-font-mono: ui-monospace, "SF Mono", SFMono-Regular, "Cascadia Code", "Segoe UI Mono", "Roboto Mono", Menlo, Consolas, monospace;
+
+  --v-text-xs: 11px;    --v-leading-xs: 16px;
+  --v-text-sm: 12px;    --v-leading-sm: 16px;
+  --v-text-base: 13px;  --v-leading-base: 20px;   /* popup body */
+  --v-text-md: 14px;    --v-leading-md: 20px;     /* page body, titles in popup */
+  --v-text-lg: 16px;    --v-leading-lg: 24px;
+  --v-text-xl: 20px;    --v-leading-xl: 28px;
+  --v-text-2xl: 28px;   --v-leading-2xl: 34px;
+  --v-text-3xl: 40px;   --v-leading-3xl: 44px;
+
+  --v-weight-regular: 400;
+  --v-weight-medium: 500;
+  --v-weight-semibold: 600;
+  --v-weight-bold: 700;
+
+  --v-tracking-tight: -0.02em;
+  --v-tracking-caps: 0.05em;
+
+  /* ---- Spacing (4px base) ---- */
+  --v-space-1: 4px;
+  --v-space-2: 8px;
+  --v-space-3: 12px;
+  --v-space-4: 16px;
+  --v-space-5: 20px;
+  --v-space-6: 24px;
+  --v-space-8: 32px;
+  --v-space-10: 40px;
+  --v-space-12: 48px;
+  --v-space-16: 64px;
+
+  /* ---- Radii ---- */
+  --v-radius-xs: 4px;
+  --v-radius-sm: 6px;
+  --v-radius-md: 8px;    /* buttons, inputs */
+  --v-radius-lg: 10px;   /* list rows, alerts, toasts */
+  --v-radius-xl: 14px;   /* hero address card */
+  --v-radius-2xl: 16px;  /* page cards, sheets */
+  --v-radius-full: 999px;
+
+  /* ---- Sizes ---- */
+  --v-popup-w: 380px;
+  --v-popup-h: 560px;
+  --v-page-max: 720px;
+  --v-control-h: 36px;
+  --v-control-h-sm: 28px;
+  --v-control-h-lg: 40px;
+  --v-icon: 16px;
+
+  /* ---- Motion ---- */
+  --v-dur-1: 120ms;   /* hover, colour */
+  --v-dur-2: 180ms;   /* press, toggles, chips */
+  --v-dur-3: 260ms;   /* view / toast / sheet enter */
+  --v-dur-4: 420ms;   /* success check draw */
+  --v-ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --v-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --v-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --v-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* ---- Z-index ---- */
+  --v-z-sticky: 5;
+  --v-z-scrim: 10;
+  --v-z-sheet: 11;
+  --v-z-toast: 20;
+
+  /* ---- Theme-independent colours ---- */
+  --v-on-accent: #ffffff;
+  --v-danger-solid: #d1344b;
+  --v-danger-solid-hover: #bd2b41;
+  --v-brand-from: #8f7dff;   /* logo tile gradient */
+  --v-brand-to: #4b3bd0;
+}
+
+/* ------------------------------- Light ---------------------------------- */
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+
+  --v-bg: #f5f5f8;              /* popup / page ground */
+  --v-surface: #ffffff;         /* cards, bars */
+  --v-surface-2: #eeeef3;       /* wells, segmented track */
+  --v-surface-3: #e3e3ea;       /* neutral badges, toggle off */
+  --v-field: #ffffff;           /* input background */
+  --v-hover: rgba(17, 18, 28, 0.05);
+  --v-pressed: rgba(17, 18, 28, 0.09);
+  --v-scrim: rgba(17, 18, 28, 0.32);
+
+  --v-border: rgba(17, 18, 28, 0.10);
+  --v-border-strong: rgba(17, 18, 28, 0.18);
+
+  --v-text: #14151c;
+  --v-text-2: #474a57;
+  --v-text-3: #666a77;          /* 4.6:1 on --v-surface-2 */
+
+  --v-accent: #5546d6;                       /* accent text / icons */
+  --v-accent-solid: #5b4be0;                 /* primary button fill (white text 5.9:1) */
+  --v-accent-solid-hover: #4f3fd4;
+  --v-accent-solid-active: #4536c2;
+  --v-accent-soft: rgba(91, 75, 224, 0.09);
+  --v-accent-soft-hover: rgba(91, 75, 224, 0.15);
+  --v-accent-border: rgba(91, 75, 224, 0.32);
+  --v-accent-ring: rgba(91, 75, 224, 0.22);  /* input focus halo */
+  --v-accent-glow: rgba(91, 75, 224, 0.30);  /* primary button glow */
+  --v-focus: #5b4be0;
+
+  --v-success: #0b7d55;
+  --v-success-soft: rgba(11, 125, 85, 0.09);
+  --v-success-border: rgba(11, 125, 85, 0.30);
+  --v-warning: #8a5100;
+  --v-warning-soft: rgba(214, 140, 0, 0.13);
+  --v-warning-border: rgba(170, 105, 0, 0.32);
+  --v-danger: #c42b43;
+  --v-danger-soft: rgba(209, 52, 75, 0.08);
+  --v-danger-border: rgba(209, 52, 75, 0.32);
+
+  --v-toast-bg: #1b1c24;
+  --v-toast-fg: #f3f3f6;
+  --v-toast-border: rgba(255, 255, 255, 0.08);
+  --v-toast-success: #4fd6a0;
+  --v-toast-danger: #ff8090;
+
+  --v-skeleton: rgba(17, 18, 28, 0.07);
+  --v-skeleton-hi: rgba(17, 18, 28, 0.13);
+
+  --v-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  --v-shadow-xs: 0 1px 2px rgba(17, 18, 28, 0.06);
+  --v-shadow-sm: 0 1px 2px rgba(17, 18, 28, 0.05), 0 2px 8px rgba(17, 18, 28, 0.05);
+  --v-shadow-md: 0 1px 3px rgba(17, 18, 28, 0.06), 0 6px 18px rgba(17, 18, 28, 0.09);
+  --v-shadow-lg: 0 2px 8px rgba(17, 18, 28, 0.08), 0 18px 44px rgba(17, 18, 28, 0.16);
+}
+
+/* -------------------------------- Dark ---------------------------------- */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+
+    --v-bg: #0d0e12;
+    --v-surface: #15161c;
+    --v-surface-2: #1c1d25;
+    --v-surface-3: #282a35;
+    --v-field: #0f1015;
+    --v-hover: rgba(255, 255, 255, 0.06);
+    --v-pressed: rgba(255, 255, 255, 0.10);
+    --v-scrim: rgba(0, 0, 0, 0.56);
+
+    --v-border: rgba(255, 255, 255, 0.08);
+    --v-border-strong: rgba(255, 255, 255, 0.15);
+
+    --v-text: #edeef2;
+    --v-text-2: #b4b7c3;
+    --v-text-3: #8d91a0;
+
+    --v-accent: #ab9eff;
+    --v-accent-solid: #6c5bef;
+    --v-accent-solid-hover: #7a6af5;
+    --v-accent-solid-active: #5f4ee3;
+    --v-accent-soft: rgba(140, 124, 255, 0.15);
+    --v-accent-soft-hover: rgba(140, 124, 255, 0.22);
+    --v-accent-border: rgba(150, 136, 255, 0.42);
+    --v-accent-ring: rgba(140, 124, 255, 0.30);
+    --v-accent-glow: rgba(116, 98, 255, 0.45);
+    --v-focus: #ab9eff;
+
+    --v-success: #4fd6a0;
+    --v-success-soft: rgba(79, 214, 160, 0.13);
+    --v-success-border: rgba(79, 214, 160, 0.34);
+    --v-warning: #f2bb55;
+    --v-warning-soft: rgba(242, 187, 85, 0.13);
+    --v-warning-border: rgba(242, 187, 85, 0.32);
+    --v-danger: #ff7f8f;
+    --v-danger-soft: rgba(255, 122, 138, 0.13);
+    --v-danger-border: rgba(255, 122, 138, 0.36);
+
+    --v-toast-bg: #2a2c38;
+    --v-toast-fg: #f3f3f6;
+    --v-toast-border: rgba(255, 255, 255, 0.12);
+    --v-toast-success: #4fd6a0;
+    --v-toast-danger: #ff8090;
+
+    --v-skeleton: rgba(255, 255, 255, 0.06);
+    --v-skeleton-hi: rgba(255, 255, 255, 0.12);
+
+    --v-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    --v-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --v-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.28);
+    --v-shadow-md: 0 1px 3px rgba(0, 0, 0, 0.4), 0 8px 22px rgba(0, 0, 0, 0.4);
+    --v-shadow-lg: 0 2px 8px rgba(0, 0, 0, 0.4), 0 20px 48px rgba(0, 0, 0, 0.6);
+  }
+}
+
+/* Keep this block identical to the media-query block above. */
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --v-bg: #0d0e12;
+  --v-surface: #15161c;
+  --v-surface-2: #1c1d25;
+  --v-surface-3: #282a35;
+  --v-field: #0f1015;
+  --v-hover: rgba(255, 255, 255, 0.06);
+  --v-pressed: rgba(255, 255, 255, 0.10);
+  --v-scrim: rgba(0, 0, 0, 0.56);
+
+  --v-border: rgba(255, 255, 255, 0.08);
+  --v-border-strong: rgba(255, 255, 255, 0.15);
+
+  --v-text: #edeef2;
+  --v-text-2: #b4b7c3;
+  --v-text-3: #8d91a0;
+
+  --v-accent: #ab9eff;
+  --v-accent-solid: #6c5bef;
+  --v-accent-solid-hover: #7a6af5;
+  --v-accent-solid-active: #5f4ee3;
+  --v-accent-soft: rgba(140, 124, 255, 0.15);
+  --v-accent-soft-hover: rgba(140, 124, 255, 0.22);
+  --v-accent-border: rgba(150, 136, 255, 0.42);
+  --v-accent-ring: rgba(140, 124, 255, 0.30);
+  --v-accent-glow: rgba(116, 98, 255, 0.45);
+  --v-focus: #ab9eff;
+
+  --v-success: #4fd6a0;
+  --v-success-soft: rgba(79, 214, 160, 0.13);
+  --v-success-border: rgba(79, 214, 160, 0.34);
+  --v-warning: #f2bb55;
+  --v-warning-soft: rgba(242, 187, 85, 0.13);
+  --v-warning-border: rgba(242, 187, 85, 0.32);
+  --v-danger: #ff7f8f;
+  --v-danger-soft: rgba(255, 122, 138, 0.13);
+  --v-danger-border: rgba(255, 122, 138, 0.36);
+
+  --v-toast-bg: #2a2c38;
+  --v-toast-fg: #f3f3f6;
+  --v-toast-border: rgba(255, 255, 255, 0.12);
+  --v-toast-success: #4fd6a0;
+  --v-toast-danger: #ff8090;
+
+  --v-skeleton: rgba(255, 255, 255, 0.06);
+  --v-skeleton-hi: rgba(255, 255, 255, 0.12);
+
+  --v-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --v-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --v-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.28);
+  --v-shadow-md: 0 1px 3px rgba(0, 0, 0, 0.4), 0 8px 22px rgba(0, 0, 0, 0.4);
+  --v-shadow-lg: 0 2px 8px rgba(0, 0, 0, 0.4), 0 20px 48px rgba(0, 0, 0, 0.6);
+}

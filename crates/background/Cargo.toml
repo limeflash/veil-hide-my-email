@@ -1,0 +1,18 @@
+[package]
+name = "hme-background"
+description = "Veil background service worker (compiled to WASM)."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+hme-core.workspace = true
+hme-web.workspace = true
+serde.workspace = true
+wasm-bindgen.workspace = true
+wasm-bindgen-futures.workspace = true
+js-sys.workspace = true
+futures.workspace = true
