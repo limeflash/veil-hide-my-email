@@ -13,7 +13,7 @@ Package: `cargo xtask package` → `dist/veil-chrome-<version>.zip`.
 
 **Category:** Privacy & Security (or Productivity → Tools)
 
-**Language:** English (default). The extension name and summary are localized in 12 languages through `_locales`; the long description above can be added for each language in the dashboard.
+**Language:** English (default). The extension name and summary are localized in 15 languages through `_locales`; the long description above can be added for each language in the dashboard.
 
 ### Description — English
 
@@ -24,7 +24,7 @@ Veil gives every website its own iCloud+ Hide My Email address, so your real inb
 • Right-click any text field → "Generate and fill a hidden address".
 • My addresses: instant fuzzy search across labels, addresses and notes, filter active or inactive, edit labels and notes, deactivate (with undo), reactivate and delete.
 • Settings: choose the forwarding address, turn each autofill method on or off, light/dark/system theme.
-• 12 languages: English, Русский, Українська, Español, Deutsch, Français, Türkçe, العربية, فارسی, 简体中文, 日本語, 한국어.
+• 15 languages: English, Русский, Українська, Español, Português, Italiano, Deutsch, Français, Polski, Türkçe, العربية, فارسی, 简体中文, 日本語, 한국어.
 • Fast and light: written in Rust and compiled to WebAssembly. The popup opens in milliseconds.
 • Private by design: no servers, no analytics. Veil only talks to Apple's iCloud, using the iCloud.com session already in your browser. It never sees your password.
 • Works with iCloud.com and iCloud.com.cn.
@@ -44,7 +44,7 @@ Veil создаёт для каждого сайта отдельный адре
 • Правый клик по любому полю → «Создать и вставить скрытый адрес».
 • Мои адреса: мгновенный поиск по меткам, адресам и заметкам, фильтр активных и отключённых, редактирование, отключение (с отменой), повторное включение и удаление.
 • Настройки: адрес пересылки, включение и выключение автозаполнения, светлая, тёмная или системная тема.
-• 12 языков: русский, украинский, английский, испанский, немецкий, французский, турецкий, арабский, фарси, китайский, японский и корейский.
+• 15 языков: русский, украинский, английский, испанский, португальский, итальянский, немецкий, французский, польский, турецкий, арабский, фарси, китайский, японский и корейский.
 • Быстро и легко: написано на Rust и скомпилировано в WebAssembly, окно открывается за миллисекунды.
 • Приватность: никаких серверов и аналитики. Veil обращается только к iCloud Apple через вашу сессию iCloud.com в браузере. Пароль он не видит.
 • Работает с iCloud.com и iCloud.com.cn.

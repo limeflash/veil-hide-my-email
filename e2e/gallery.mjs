@@ -16,7 +16,7 @@ process.env.PW_EXPERIMENTAL_SERVICE_WORKER_NETWORK_EVENTS = '1';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const EXT = path.resolve(HERE, '../dist/chrome');
 const OUT = path.join(HERE, 'gallery');
-const LANGS = (process.env.LANGS ?? 'en,ru,uk,es,de,fr,tr,ar,fa,zh,ja,ko').split(',');
+const LANGS = (process.env.LANGS ?? 'en,ru,uk,es,pt,it,de,fr,pl,tr,ar,fa,zh,ja,ko').split(',');
 fs.mkdirSync(OUT, { recursive: true });
 // Replace old screenshots only; review.html lives in the same folder.
 for (const f of fs.readdirSync(OUT)) if (f.endsWith('.png')) fs.rmSync(path.join(OUT, f));

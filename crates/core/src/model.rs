@@ -153,6 +153,9 @@ pub enum LanguagePref {
     Ja,
     Ko,
     Uk,
+    Pl,
+    Pt,
+    It,
 }
 
 impl LanguagePref {
@@ -173,6 +176,9 @@ impl LanguagePref {
             LanguagePref::Ja => Lang::Ja,
             LanguagePref::Ko => Lang::Ko,
             LanguagePref::Uk => Lang::Uk,
+            LanguagePref::Pl => Lang::Pl,
+            LanguagePref::Pt => Lang::Pt,
+            LanguagePref::It => Lang::It,
         })
     }
 
@@ -191,6 +197,9 @@ impl LanguagePref {
             Lang::Ja => LanguagePref::Ja,
             Lang::Ko => LanguagePref::Ko,
             Lang::Uk => LanguagePref::Uk,
+            Lang::Pl => LanguagePref::Pl,
+            Lang::Pt => LanguagePref::Pt,
+            Lang::It => LanguagePref::It,
         }
     }
 }

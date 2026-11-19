@@ -22,6 +22,9 @@ const LANGS: &[(&str, &str)] = &[
     ("ja", "Ja"),
     ("ko", "Ko"),
     ("uk", "Uk"),
+    ("pl", "Pl"),
+    ("pt", "Pt"),
+    ("it", "It"),
 ];
 
 fn load(stem: &str) -> Option<Map<String, Value>> {

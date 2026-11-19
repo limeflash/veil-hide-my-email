@@ -1,0 +1,14 @@
+{
+  "extName": {
+    "message": "Veil — Ocultar Meu E-mail para iCloud"
+  },
+  "extShortName": {
+    "message": "Veil"
+  },
+  "extDescription": {
+    "message": "Crie e gerencie endereços do Ocultar Meu E-mail (iCloud+) em qualquer navegador. Preenchimento automático e menu de contexto."
+  },
+  "actionTitle": {
+    "message": "Veil — Ocultar Meu E-mail"
+  }
+}

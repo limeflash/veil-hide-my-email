@@ -22,10 +22,13 @@ pub enum Lang {
     Ja,
     Ko,
     Uk,
+    Pl,
+    Pt,
+    It,
 }
 
 impl Lang {
-    pub const ALL: [Lang; 12] = [
+    pub const ALL: [Lang; 15] = [
         Lang::En,
         Lang::Ru,
         Lang::Es,
@@ -38,6 +41,9 @@ impl Lang {
         Lang::Ja,
         Lang::Ko,
         Lang::Uk,
+        Lang::Pl,
+        Lang::Pt,
+        Lang::It,
     ];
 
     /// Resolves the user preference against the browser UI language
@@ -62,6 +68,10 @@ impl Lang {
             "zh" => Lang::Zh,
             "ja" => Lang::Ja,
             "ko" => Lang::Ko,
+            "pl" => Lang::Pl,
+            // Brazilian Portuguese also serves pt-PT readers.
+            "pt" => Lang::Pt,
+            "it" => Lang::It,
             _ => Lang::En,
         }
     }
@@ -81,6 +91,9 @@ impl Lang {
             Lang::Ja => "ja",
             Lang::Ko => "ko",
             Lang::Uk => "uk",
+            Lang::Pl => "pl",
+            Lang::Pt => "pt-BR",
+            Lang::It => "it",
         }
     }
 
@@ -104,6 +117,9 @@ impl Lang {
             Lang::Ja => "日本語",
             Lang::Ko => "한국어",
             Lang::Uk => "Українська",
+            Lang::Pl => "Polski",
+            Lang::Pt => "Português (Brasil)",
+            Lang::It => "Italiano",
         }
     }
 }
@@ -144,7 +160,11 @@ mod tests {
         assert_eq!(Lang::resolve(LanguagePref::Auto, "rup"), Lang::En);
         assert_eq!(Lang::resolve(LanguagePref::Auto, "zh_TW"), Lang::Zh);
         assert_eq!(Lang::resolve(LanguagePref::Auto, "fa-IR"), Lang::Fa);
-        assert_eq!(Lang::resolve(LanguagePref::Auto, "pt-BR"), Lang::En);
+        assert_eq!(Lang::resolve(LanguagePref::Auto, "pt-BR"), Lang::Pt);
+        assert_eq!(Lang::resolve(LanguagePref::Auto, "pt-PT"), Lang::Pt);
+        assert_eq!(Lang::resolve(LanguagePref::Auto, "it-IT"), Lang::It);
+        assert_eq!(Lang::resolve(LanguagePref::Auto, "pl"), Lang::Pl);
+        assert_eq!(Lang::resolve(LanguagePref::Auto, "nl-NL"), Lang::En);
         assert_eq!(Lang::resolve(LanguagePref::En, "ru"), Lang::En);
         assert_eq!(Lang::resolve(LanguagePref::Ja, "ru"), Lang::Ja);
         assert!(Lang::Ar.is_rtl() && Lang::Fa.is_rtl() && !Lang::Tr.is_rtl());

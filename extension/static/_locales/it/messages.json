@@ -1,0 +1,14 @@
+{
+  "extName": {
+    "message": "Veil — Nascondi la mia email per iCloud"
+  },
+  "extShortName": {
+    "message": "Veil"
+  },
+  "extDescription": {
+    "message": "Crea e gestisci gli indirizzi di Nascondi la mia email di iCloud+ in ogni browser. Compilazione automatica e ricerca fuzzy."
+  },
+  "actionTitle": {
+    "message": "Veil — Nascondi la mia email"
+  }
+}
