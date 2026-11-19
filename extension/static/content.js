@@ -103,7 +103,7 @@
       .map((a) => el.getAttribute(a) || '')
       .join(' ')
       .toLowerCase();
-    return /e-?mail|почт|correo|courriel|e-?posta|邮箱|メール|ایمیل|بريد/.test(hints);
+    return /e-?mail|почт|пошт|correo|courriel|e-?posta|邮箱|メール|이메일|ایمیل|بريد/.test(hints);
   };
 
   const isEditable = (el) =>

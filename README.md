@@ -19,7 +19,7 @@ Veil creates random `@icloud.com` forwarding addresses right in the browser, so 
 - **In-field button**: when you focus an email field on any site, a small button appears inside it. One click reserves an address labelled with the site and fills it in. It works with React, Vue and Angular forms, is isolated in a Shadow DOM, and picks a light or dark style to match the page.
 - **Right-click menu**: on any text field, "Generate and fill a hidden address" (also copies it to the clipboard).
 - **Settings**: choose the forward-to address, toggle both autofill methods, pick the theme (system, light or dark) and the language.
-- **10 languages**: English, Russian, Spanish, German, French, Turkish, Arabic, Persian, Simplified Chinese and Japanese. Arabic and Persian get a full right-to-left layout. Strings live in `crates/core/locales/*.json`, and the build fails if a translation drops a placeholder.
+- **12 languages**: English, Russian, Ukrainian, Spanish, German, French, Turkish, Arabic, Persian, Simplified Chinese, Japanese and Korean. Arabic and Persian get a full right-to-left layout. Strings live in `crates/core/locales/*.json`, and the build fails if a translation drops a placeholder.
 - **Session sync**: Veil picks up your iCloud.com sign-in automatically, follows sign-outs, and supports iCloud.com.cn.
 - **Welcome page** with a quick start and troubleshooting tips (passkeys, Advanced Data Protection, Firefox containers). In Firefox it also has a button to grant host access.
 

@@ -20,10 +20,12 @@ pub enum Lang {
     Fa,
     Zh,
     Ja,
+    Ko,
+    Uk,
 }
 
 impl Lang {
-    pub const ALL: [Lang; 10] = [
+    pub const ALL: [Lang; 12] = [
         Lang::En,
         Lang::Ru,
         Lang::Es,
@@ -34,6 +36,8 @@ impl Lang {
         Lang::Fa,
         Lang::Zh,
         Lang::Ja,
+        Lang::Ko,
+        Lang::Uk,
     ];
 
     /// Resolves the user preference against the browser UI language
@@ -45,9 +49,10 @@ impl Lang {
         let l = browser_lang.to_ascii_lowercase().replace('_', "-");
         let primary = l.split('-').next().unwrap_or_default();
         match primary {
+            "uk" => Lang::Uk,
             // Russian, plus languages whose speakers usually read Russian
             // better than English.
-            "ru" | "be" | "uk" | "kk" | "ky" | "tg" => Lang::Ru,
+            "ru" | "be" | "kk" | "ky" | "tg" => Lang::Ru,
             "es" => Lang::Es,
             "de" => Lang::De,
             "fr" => Lang::Fr,
@@ -56,6 +61,7 @@ impl Lang {
             "fa" => Lang::Fa,
             "zh" => Lang::Zh,
             "ja" => Lang::Ja,
+            "ko" => Lang::Ko,
             _ => Lang::En,
         }
     }
@@ -73,6 +79,8 @@ impl Lang {
             Lang::Fa => "fa",
             Lang::Zh => "zh-CN",
             Lang::Ja => "ja",
+            Lang::Ko => "ko",
+            Lang::Uk => "uk",
         }
     }
 
@@ -94,6 +102,8 @@ impl Lang {
             Lang::Fa => "فارسی",
             Lang::Zh => "简体中文",
             Lang::Ja => "日本語",
+            Lang::Ko => "한국어",
+            Lang::Uk => "Українська",
         }
     }
 }
@@ -127,7 +137,9 @@ mod tests {
     #[test]
     fn resolves_language() {
         assert_eq!(Lang::resolve(LanguagePref::Auto, "ru-RU"), Lang::Ru);
-        assert_eq!(Lang::resolve(LanguagePref::Auto, "uk"), Lang::Ru);
+        assert_eq!(Lang::resolve(LanguagePref::Auto, "uk"), Lang::Uk);
+        assert_eq!(Lang::resolve(LanguagePref::Auto, "be-BY"), Lang::Ru);
+        assert_eq!(Lang::resolve(LanguagePref::Auto, "ko-KR"), Lang::Ko);
         assert_eq!(Lang::resolve(LanguagePref::Auto, "en-US"), Lang::En);
         assert_eq!(Lang::resolve(LanguagePref::Auto, "rup"), Lang::En);
         assert_eq!(Lang::resolve(LanguagePref::Auto, "zh_TW"), Lang::Zh);
