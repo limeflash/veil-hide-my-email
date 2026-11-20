@@ -352,10 +352,10 @@
       // Elements drawn over the field where we'd go, topmost first.
       const y = top + BUTTON / 2;
       for (let i = 0; i < 3; i++) {
-        const other = this.coveringSlot(r, rtl, offset, y);
-        if (!other) break;
-        const o = other.getBoundingClientRect();
-        offset = rtl ? o.right - r.left - INSET + GAP : r.right - o.left - INSET + GAP;
+        const hit = this.coveringSlot(r, rtl, offset, y);
+        if (!hit) break;
+        const edge = this.innerEdge(hit.el, hit.x, y, rtl);
+        offset = rtl ? edge - r.left - INSET + GAP : r.right - edge - INSET + GAP;
       }
       // No room left inside the field: give up the shift rather than cover text.
       if (offset > r.width / 2) offset = 0;
@@ -372,10 +372,29 @@
       const end = rtl ? r.left + INSET + offset : r.right - INSET - offset;
       const inward = rtl ? 1 : -1;
       for (const d of [BUTTON / 2, 2, BUTTON - 2, BUTTON + GAP - 1]) {
-        const other = this.coveringElement(end + inward * d, y, r);
-        if (other) return other;
+        const x = end + inward * d;
+        const el = this.coveringElement(x, y, r);
+        if (el) return { el, x };
       }
       return null;
+    }
+
+    /**
+     * Where `el`, hit at (x, y), ends on the side of the field's text. Usually
+     * its box; but Bitwarden's host is an empty 0×0 element whose icon is a
+     * fixed-position iframe in a closed shadow root, so its box says nothing.
+     * Then walk toward the text until the point stops hitting it.
+     */
+    innerEdge(el, x, y, rtl) {
+      const b = el.getBoundingClientRect();
+      if (b.width && b.height && x >= b.left && x <= b.right) return rtl ? b.right : b.left;
+      const step = rtl ? 2 : -2;
+      let edge = x;
+      for (let n = 0; n < 40; n++) {
+        if (!D.elementsFromPoint.call(doc, edge + step, y).includes(el)) break;
+        edge += step;
+      }
+      return edge;
     }
 
     /** The first icon-sized element above the field at (x, y) that isn't ours. */

@@ -149,17 +149,23 @@ const SITE_HTML = `<!doctype html><html><head><meta charset="utf-8"><title>Sign 
 <label>Email<input id="email" type="email" name="email" autocomplete="email"></label>
 </form>
 <script>
-  // Stand-in for a password manager's in-field icon (Bitwarden, 1Password…):
-  // a clickable 24px element shown on focus. Like Bitwarden's, it sits a bit
-  // in from the edge, so it covers only the left part of where our button
-  // would go and leaves the middle of that spot free.
+  // Stand-in for a password manager's in-field icon, built like Bitwarden's:
+  // an empty 0×0 custom element in the top layer (popover) whose 24px icon is
+  // a fixed-position child in a closed shadow root. It sits a bit in from the
+  // edge, so it covers only the left part of where our button would go.
   document.getElementById('email').addEventListener('focus', (e) => {
-    if (document.getElementById('pm')) return;
+    if (window.pmIcon) return;
     const r = e.target.getBoundingClientRect();
-    const pm = Object.assign(document.createElement('div'), { id: 'pm' });
-    Object.assign(pm.style, { position: 'fixed', width: '24px', height: '24px', borderRadius: '6px', background: '#175ddc',
-      left: (r.right - 44) + 'px', top: (r.top + (r.height - 24) / 2) + 'px', zIndex: 2147483646, cursor: 'pointer' });
-    document.body.appendChild(pm);
+    const host = document.createElement('pm-inline-button');
+    host.setAttribute('popover', 'manual');
+    host.style.cssText = 'all: initial; position: fixed; display: block; z-index: 2147483647';
+    const icon = document.createElement('div');
+    Object.assign(icon.style, { position: 'fixed', width: '24px', height: '24px', borderRadius: '6px', background: '#175ddc',
+      left: (r.right - 44) + 'px', top: (r.top + (r.height - 24) / 2) + 'px', cursor: 'pointer' });
+    host.attachShadow({ mode: 'closed' }).appendChild(icon);
+    document.body.appendChild(host);
+    host.showPopover();
+    window.pmIcon = icon;
   });
 </script></body></html>`;
 const site = http.createServer((_req, res) => res.writeHead(200, { 'content-type': 'text/html' }).end(SITE_HTML));
@@ -358,7 +364,7 @@ if (mock.signedIn) {
   const placement = await page.evaluate(() => {
     const host = [...document.documentElement.children].find((e) => e.hasAttribute('popover'));
     const h = host.getBoundingClientRect();
-    const pm = document.getElementById('pm').getBoundingClientRect();
+    const pm = window.pmIcon.getBoundingClientRect();
     return { x: h.x + h.width / 2, y: h.y + h.height / 2, width: h.width, clear: h.right <= pm.left };
   });
   check(placement.width === 22 && placement.clear, `in-field button (22px) sits left of a password-manager icon`);
