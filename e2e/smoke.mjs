@@ -150,13 +150,15 @@ const SITE_HTML = `<!doctype html><html><head><meta charset="utf-8"><title>Sign 
 </form>
 <script>
   // Stand-in for a password manager's in-field icon (Bitwarden, 1Password…):
-  // a clickable 24px element pinned to the field's right edge on focus.
+  // a clickable 24px element shown on focus. Like Bitwarden's, it sits a bit
+  // in from the edge, so it covers only the left part of where our button
+  // would go and leaves the middle of that spot free.
   document.getElementById('email').addEventListener('focus', (e) => {
     if (document.getElementById('pm')) return;
     const r = e.target.getBoundingClientRect();
     const pm = Object.assign(document.createElement('div'), { id: 'pm' });
     Object.assign(pm.style, { position: 'fixed', width: '24px', height: '24px', borderRadius: '6px', background: '#175ddc',
-      left: (r.right - 30) + 'px', top: (r.top + (r.height - 24) / 2) + 'px', zIndex: 2147483646, cursor: 'pointer' });
+      left: (r.right - 44) + 'px', top: (r.top + (r.height - 24) / 2) + 'px', zIndex: 2147483646, cursor: 'pointer' });
     document.body.appendChild(pm);
   });
 </script></body></html>`;

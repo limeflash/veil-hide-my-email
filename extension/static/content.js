@@ -352,8 +352,7 @@
       // Elements drawn over the field where we'd go, topmost first.
       const y = top + BUTTON / 2;
       for (let i = 0; i < 3; i++) {
-        const x = rtl ? r.left + INSET + offset + BUTTON / 2 : r.right - INSET - offset - BUTTON / 2;
-        const other = this.coveringElement(x, y);
+        const other = this.coveringSlot(r, rtl, offset, y);
         if (!other) break;
         const o = other.getBoundingClientRect();
         offset = rtl ? o.right - r.left - INSET + GAP : r.right - o.left - INSET + GAP;
@@ -364,11 +363,28 @@
       return offset;
     }
 
-    /** The first element above the field at (x, y) that isn't ours. */
-    coveringElement(x, y) {
+    /**
+     * Something drawn over any part of the slot `offset` in from the field's
+     * end, or over the gap before it. Probing only the middle missed icons that
+     * overlap half the button (Bitwarden's sits a little in from the edge).
+     */
+    coveringSlot(r, rtl, offset, y) {
+      const end = rtl ? r.left + INSET + offset : r.right - INSET - offset;
+      const inward = rtl ? 1 : -1;
+      for (const d of [BUTTON / 2, 2, BUTTON - 2, BUTTON + GAP - 1]) {
+        const other = this.coveringElement(end + inward * d, y, r);
+        if (other) return other;
+      }
+      return null;
+    }
+
+    /** The first icon-sized element above the field at (x, y) that isn't ours. */
+    coveringElement(x, y, r) {
       for (const e of D.elementsFromPoint.call(doc, x, y)) {
         if (e === this.host) continue;
         if (e === this.target || e.contains(this.target)) return null;
+        // A wrapper or overlay spanning the field is not an icon; look beneath it.
+        if (e.getBoundingClientRect().width > r.width / 2) continue;
         return e;
       }
       return null;
